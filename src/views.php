@@ -126,7 +126,6 @@ function page_home(array $posts, ?string $flash): void
         </section>
 
         <section class="proof" aria-label="Testimonial">
-          <!-- PLACEHOLDER: replace with a real customer testimonial, with their permission. -->
           <blockquote>
             <p>[Real customer testimonial about the result they got].</p>
             <footer>[Name], [role and company]</footer>
