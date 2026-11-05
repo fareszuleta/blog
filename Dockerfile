@@ -1,13 +1,19 @@
 FROM php:8.3-apache
 
-# PDO + SQLite ya vienen en la imagen oficial de PHP.
-# public/ es la raíz web; src/ queda fuera de ella (no es accesible por URL).
+# PDO + SQLite are already included in the official PHP image.
+# public/ is the web root; src/ sits outside it (not reachable by URL).
 COPY public/ /var/www/html/
 COPY src/ /var/www/src/
 
-# Carpeta de datos (SQLite) escribible por Apache. Montar un volumen aquí para persistir.
+# Data directory for SQLite. A mounted volume can override these permissions,
+# so the entrypoint fixes ownership at every start.
 RUN mkdir -p /var/www/data && chown -R www-data:www-data /var/www/data
 ENV DATA_DIR=/var/www/data
 VOLUME ["/var/www/data"]
 
+COPY docker-entrypoint-blog.sh /usr/local/bin/docker-entrypoint-blog.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint-blog.sh
+
 EXPOSE 80
+ENTRYPOINT ["docker-entrypoint-blog.sh"]
+CMD ["apache2-foreground"]
