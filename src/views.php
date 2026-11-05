@@ -320,11 +320,11 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
           <?php foreach ($comments as $c): ?>
             <div class="comment">
               <div class="note-meta">
-                <strong><?= comment_author($c['author']) ?></strong>
+                <strong><?= h($c['author']) ?></strong>
                 <span>on <a href="<?= h(url(['r' => 'post', 'slug' => $c['slug']])) ?>"><?= h($c['title']) ?></a></span>
                 <time datetime="<?= h($c['created_at']) ?>"><?= h(date('M j, Y · H:i', strtotime($c['created_at']))) ?></time>
               </div>
-              <p><?= comment_text($c['body']) ?></p>
+              <p><?= nl2br(h($c['body'])) ?></p>
               <form method="post" action="<?= h(url()) ?>" onsubmit="return confirm('Delete this comment?');">
                 <input type="hidden" name="action" value="comment_delete">
                 <input type="hidden" name="csrf" value="<?= h($csrf) ?>">

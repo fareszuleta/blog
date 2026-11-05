@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 
+// Session cookie hardening: page scripts cannot read it, and it is not sent cross-site.
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
+ini_set('session.use_strict_mode', '1');
 session_start();
 
 require __DIR__ . '/../src/db.php';

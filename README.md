@@ -31,6 +31,14 @@ Open http://localhost:8080
 
 Copy `.env.example` to `.env` and set `ADMIN_PASSWORD`. If it is not set, login is disabled. `.env` is git-ignored and must never be committed.
 
+## Deploy on Render
+
+1. In Render: **New → Blueprint**, then select this GitHub repo. Render reads `render.yaml`.
+2. In the service's **Environment** tab, set `ADMIN_PASSWORD` to a strong password.
+3. Deploy. The SQLite database lives on the persistent disk at `/var/www/data`.
+
+`render.yaml` deploys with `CTF_MODE=1` for the public CTF target. For a plain sales site, change that value to `0` before deploying.
+
 ## CTF mode (intentionally vulnerable)
 
 Setting `CTF_MODE=1` turns on a **deliberate stored XSS** in comments (author and body are printed without escaping, on post pages and in the admin dashboard). It exists for security training and CTF exercises.
