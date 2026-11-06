@@ -50,14 +50,22 @@ switch ($route) {
         }
         $editId = (int) ($_GET['edit'] ?? 0);
         $editPost = $editId > 0 ? get_post_by_id($editId) : null;
-        if ($editId > 0 && $editPost === null) {
+        $editSkillId = (int) ($_GET['edit_skill'] ?? 0);
+        $editSkill = $editSkillId > 0 ? get_skill_by_id($editSkillId) : null;
+        if (($editId > 0 && $editPost === null) || ($editSkillId > 0 && $editSkill === null)) {
             http_response_code(404);
             page_not_found();
         } elseif ($editPost !== null) {
             page_admin_edit($editPost, csrf_token(), flash());
+        } elseif ($editSkill !== null) {
+            page_admin_edit_skill($editSkill, csrf_token(), flash());
         } else {
-            page_admin(get_posts(), get_recent_comments(), get_leads(), csrf_token(), flash());
+            page_admin(get_posts(), get_recent_comments(), get_leads(), get_skills(), csrf_token(), flash());
         }
+        break;
+
+    case 'skills':
+        page_skills(get_skills(), flash());
         break;
 
     case 'home':
@@ -184,6 +192,53 @@ function handle_action(string $action): void
             require_admin();
             delete_comment((int) ($_POST['id'] ?? 0));
             flash('Comment deleted.');
+            redirect(url(['r' => 'admin']));
+
+        case 'skill_create':
+            require_admin();
+            $name     = trim((string) ($_POST['name'] ?? ''));
+            $category = trim((string) ($_POST['category'] ?? ''));
+            $desc     = trim((string) ($_POST['description'] ?? ''));
+            $command  = trim((string) ($_POST['command'] ?? ''));
+            $postSlug = trim((string) ($_POST['post_slug'] ?? ''));
+
+            if ($name === '' || $category === '' || $desc === '' || $command === ''
+                || mb_strlen($name) > 80 || mb_strlen($category) > 40
+                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150) {
+                flash('Fill in every field within the length limits.');
+            } else {
+                create_skill($name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null);
+                flash('Skill added.');
+            }
+            redirect(url(['r' => 'admin']));
+
+        case 'skill_update':
+            require_admin();
+            $id       = (int) ($_POST['id'] ?? 0);
+            $name     = trim((string) ($_POST['name'] ?? ''));
+            $category = trim((string) ($_POST['category'] ?? ''));
+            $desc     = trim((string) ($_POST['description'] ?? ''));
+            $command  = trim((string) ($_POST['command'] ?? ''));
+            $postSlug = trim((string) ($_POST['post_slug'] ?? ''));
+
+            if ($id <= 0 || get_skill_by_id($id) === null) {
+                flash('That skill no longer exists.');
+                redirect(url(['r' => 'admin']));
+            }
+            if ($name === '' || $category === '' || $desc === '' || $command === ''
+                || mb_strlen($name) > 80 || mb_strlen($category) > 40
+                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150) {
+                flash('Fill in every field within the length limits.');
+                redirect(url(['r' => 'admin', 'edit_skill' => (string) $id]));
+            }
+            update_skill($id, $name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null);
+            flash('Skill updated.');
+            redirect(url(['r' => 'admin']));
+
+        case 'skill_delete':
+            require_admin();
+            delete_skill((int) ($_POST['id'] ?? 0));
+            flash('Skill deleted.');
             redirect(url(['r' => 'admin']));
 
         default:

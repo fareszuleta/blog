@@ -21,7 +21,7 @@ function render_page(string $title, ?string $flash, callable $body): void
   <a class="brand" href="<?= h(url()) ?>"><?= h(SITE_NAME) ?></a>
   <nav>
     <a href="<?= h(url()) ?>#notes">Notes</a>
-    <a href="skills.html">Skills</a>
+    <a href="<?= h(url(['r' => 'skills'])) ?>">Skills</a>
     <a href="<?= h(url(['r' => 'admin'])) ?>">Admin</a>
   </nav>
 </header>
@@ -154,9 +154,9 @@ function page_login(?string $flash, string $csrf): void
     <?php });
 }
 
-function page_admin(array $posts, array $comments, array $leads, string $csrf, ?string $flash): void
+function page_admin(array $posts, array $comments, array $leads, array $skills, string $csrf, ?string $flash): void
 {
-    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $csrf) { ?>
+    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $skills, $csrf) { ?>
         <div class="admin-top">
           <h1>Dashboard</h1>
           <form method="post" action="index.php">
@@ -200,6 +200,54 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
             <?php endforeach; ?>
             </tbody>
           </table>
+        </section>
+
+        <section class="admin-block">
+          <h2>New skill</h2>
+          <form method="post" action="index.php" class="form">
+            <input type="hidden" name="action" value="skill_create">
+            <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+            <label>Name <input type="text" name="name" required maxlength="80" placeholder="pdf-tables"></label>
+            <label>Category <input type="text" name="category" required maxlength="40" placeholder="documents"></label>
+            <label>Description <input type="text" name="description" required maxlength="400"></label>
+            <label>Install command <input type="text" name="command" required maxlength="120" placeholder="skills add pdf-tables"></label>
+            <label>Linked note slug (optional) <input type="text" name="post_slug" maxlength="150" placeholder="pdf-tables-and-why-ocr-is-the-wrong-tool"></label>
+            <button type="submit">Add skill</button>
+          </form>
+        </section>
+
+        <section class="admin-block">
+          <h2>Skills (<?= count($skills) ?>)</h2>
+          <?php if (!$skills): ?><p class="muted">No skills yet.</p><?php endif; ?>
+          <?php if ($skills): ?>
+          <table>
+            <thead><tr><th>Name</th><th>Category</th><th>Linked note</th><th></th></tr></thead>
+            <tbody>
+            <?php foreach ($skills as $s): ?>
+              <tr>
+                <td><?= h($s['name']) ?></td>
+                <td><?= h($s['category']) ?></td>
+                <td>
+                  <?php if (!empty($s['post_slug']) && get_post_by_slug((string) $s['post_slug']) !== null): ?>
+                    <a href="<?= h(url(['r' => 'post', 'slug' => (string) $s['post_slug']])) ?>">note</a>
+                  <?php else: ?>
+                    <span class="muted">none</span>
+                  <?php endif; ?>
+                </td>
+                <td class="admin-row-actions">
+                  <a class="secondary" href="<?= h(url(['r' => 'admin', 'edit_skill' => (string) $s['id']])) ?>">Edit</a>
+                  <form method="post" action="index.php" onsubmit="return confirm('Delete this skill?');">
+                    <input type="hidden" name="action" value="skill_delete">
+                    <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+                    <input type="hidden" name="id" value="<?= (int) $s['id'] ?>">
+                    <button type="submit" class="danger">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+            </tbody>
+          </table>
+          <?php endif; ?>
         </section>
 
         <section class="admin-block">
@@ -264,6 +312,66 @@ function page_admin_edit(array $post, string $csrf, ?string $flash): void
             <p class="fine">Slug stays <code><?= h($post['slug']) ?></code> — existing links to this note keep working.</p>
             <button type="submit">Save changes</button>
           </form>
+        </section>
+    <?php });
+}
+
+function page_admin_edit_skill(array $skill, string $csrf, ?string $flash): void
+{
+    render_page('Edit · ' . $skill['name'], $flash, function () use ($skill, $csrf) { ?>
+        <div class="admin-top">
+          <h1>Edit skill</h1>
+          <a class="secondary" href="<?= h(url(['r' => 'admin'])) ?>">Back to dashboard</a>
+        </div>
+
+        <section class="admin-block">
+          <form method="post" action="index.php" class="form">
+            <input type="hidden" name="action" value="skill_update">
+            <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+            <input type="hidden" name="id" value="<?= (int) $skill['id'] ?>">
+            <label>Name <input type="text" name="name" required maxlength="80" value="<?= h($skill['name']) ?>"></label>
+            <label>Category <input type="text" name="category" required maxlength="40" value="<?= h($skill['category']) ?>"></label>
+            <label>Description <input type="text" name="description" required maxlength="400" value="<?= h($skill['description']) ?>"></label>
+            <label>Install command <input type="text" name="command" required maxlength="120" value="<?= h($skill['command']) ?>"></label>
+            <label>Linked note slug (optional) <input type="text" name="post_slug" maxlength="150" value="<?= h((string) ($skill['post_slug'] ?? '')) ?>"></label>
+            <button type="submit">Save changes</button>
+          </form>
+        </section>
+    <?php });
+}
+
+function page_skills(array $skills, ?string $flash): void
+{
+    render_page('A few example skills', $flash, function () use ($skills) { ?>
+        <section class="hero" style="padding-bottom: 8px;">
+          <p class="masthead">a reference page, not a catalog</p>
+          <h1>A few example skills.</h1>
+          <p class="lead">Skills from the personal registry referenced in the notes on writing and installing skills — narrow enough to trust, named for what they do, upfront about what they read or run. Each one installs the same way:</p>
+          <code class="cmd" style="max-width: 30rem; margin: 4px 0 0; display: block;"><span class="prompt">$</span> skills add &lt;name&gt;</code>
+        </section>
+
+        <section class="skills-index" aria-label="Example skills">
+          <?php if (!$skills): ?><p class="muted">No skills listed yet.</p><?php endif; ?>
+          <dl>
+            <?php foreach ($skills as $s): ?>
+              <div>
+                <dt><?= h($s['category']) ?></dt>
+                <dd>
+                  <strong><?= h($s['name']) ?>.</strong> <?= h($s['description']) ?>
+                  <?php $linkedPost = !empty($s['post_slug']) ? get_post_by_slug((string) $s['post_slug']) : null; ?>
+                  <?php if ($linkedPost !== null): ?>
+                    <a href="<?= h(url(['r' => 'post', 'slug' => (string) $s['post_slug']])) ?>">Read the note</a>
+                  <?php endif; ?>
+                  <code class="cmd"><span class="prompt">$</span> <?= h($s['command']) ?></code>
+                </dd>
+              </div>
+            <?php endforeach; ?>
+          </dl>
+        </section>
+
+        <section class="about-log" aria-labelledby="about-skills-title">
+          <h2 id="about-skills-title">Why these, specifically</h2>
+          <p>Each one does a single, checkable thing — you can tell from the name alone whether it's the right tool for a task, and from the description alone what it reads or touches. Nothing hidden about what happens once it fires.</p>
         </section>
     <?php });
 }

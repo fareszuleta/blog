@@ -49,6 +49,16 @@ function db(): PDO
         created_at TEXT NOT NULL DEFAULT (datetime(\'now\', \'localtime\'))
     )');
 
+    $pdo->exec('CREATE TABLE IF NOT EXISTS skills (
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        name        TEXT NOT NULL,
+        category    TEXT NOT NULL,
+        description TEXT NOT NULL,
+        command     TEXT NOT NULL,
+        post_slug   TEXT,
+        created_at  TEXT NOT NULL DEFAULT (datetime(\'now\', \'localtime\'))
+    )');
+
     // Migration: add the cover image column to databases created before it existed.
     $cols = array_column($pdo->query('PRAGMA table_info(posts)')->fetchAll(), 'name');
     if (!in_array('cover', $cols, true)) {
@@ -58,6 +68,7 @@ function db(): PDO
     }
 
     seed_if_empty($pdo);
+    seed_skills_if_empty($pdo);
     return $pdo;
 }
 
@@ -223,4 +234,55 @@ function get_leads(int $limit = 200): array
     $st->bindValue(1, $limit, PDO::PARAM_INT);
     $st->execute();
     return $st->fetchAll();
+}
+
+function get_skills(): array
+{
+    return db()->query('SELECT * FROM skills ORDER BY id ASC')->fetchAll();
+}
+
+function get_skill_by_id(int $id): ?array
+{
+    $st = db()->prepare('SELECT * FROM skills WHERE id = ?');
+    $st->execute([$id]);
+    $row = $st->fetch();
+    return $row ?: null;
+}
+
+function create_skill(string $name, string $category, string $description, string $command, ?string $postSlug): void
+{
+    db()->prepare('INSERT INTO skills (name, category, description, command, post_slug) VALUES (?, ?, ?, ?, ?)')
+        ->execute([$name, $category, $description, $command, $postSlug]);
+}
+
+function update_skill(int $id, string $name, string $category, string $description, string $command, ?string $postSlug): void
+{
+    db()->prepare('UPDATE skills SET name = ?, category = ?, description = ?, command = ?, post_slug = ? WHERE id = ?')
+        ->execute([$name, $category, $description, $command, $postSlug, $id]);
+}
+
+function delete_skill(int $id): void
+{
+    db()->prepare('DELETE FROM skills WHERE id = ?')->execute([$id]);
+}
+
+function seed_skills_if_empty(PDO $pdo): void
+{
+    if ((int) $pdo->query('SELECT COUNT(*) FROM skills')->fetchColumn() > 0) {
+        return;
+    }
+    $rows = [
+        ['pdf-tables', 'documents', "Pulls structured tables out of a PDF and returns them as CSV, instead of a wall of OCR'd text.", 'skills add pdf-tables', 'pdf-tables-and-why-ocr-is-the-wrong-tool'],
+        ['lcp-audit', 'web performance', 'Runs a Lighthouse pass against a URL and returns the changes with the best time-to-fix ratio, ranked by effort.', 'skills add lcp-audit', 'lcp-audit-ranking-fixes-by-effort'],
+        ['memory-gc', 'agent memory', "Walks a long-lived memory file and flags entries past their stated expiry, so stale facts don't silently persist.", 'skills add memory-gc', 'memory-gc-why-agent-memory-needs-a-garbage-collector'],
+        ['flaky-test-finder', 'testing', 'Reruns a test suite several times and reports which tests fail intermittently, with the failure rate per test.', 'skills add flaky-test-finder', 'flaky-test-finder-stop-rerunning-ci-by-hand'],
+        ['deploy-rollback', 'deploy', "Finds the last known-good deploy for a service and prepares the rollback command — it stages the fix, it doesn't run it.", 'skills add deploy-rollback', 'deploy-rollback-why-the-agent-should-stage-not-execute'],
+        ['changelog-draft', 'writing', 'Turns a range of commits into a changelog entry, grouped by the kind of change rather than by commit message.', 'skills add changelog-draft', 'changelog-draft-grouping-by-change-not-by-message'],
+        ['schema-diff', 'data', 'Compares two database schemas and lists every column that changed type or went missing, before a migration runs.', 'skills add schema-diff', 'schema-diff-the-migration-check-everyone-skips'],
+        ['citation-check', 'research', 'Checks that every claim in a draft that cites a source actually matches what that source says.', 'skills add citation-check', 'citation-check-does-the-source-actually-say-that'],
+    ];
+    $stmt = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug) VALUES (?, ?, ?, ?, ?)');
+    foreach ($rows as $row) {
+        $stmt->execute($row);
+    }
 }
