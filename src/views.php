@@ -21,6 +21,7 @@ function render_page(string $title, ?string $flash, callable $body): void
   <a class="brand" href="<?= h(url()) ?>"><?= h(SITE_NAME) ?></a>
   <nav>
     <a href="<?= h(url()) ?>#notes">Notes</a>
+    <a href="skills.html">Skills</a>
     <a href="<?= h(url(['r' => 'admin'])) ?>">Admin</a>
   </nav>
 </header>

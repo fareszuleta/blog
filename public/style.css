@@ -244,6 +244,21 @@ button.small { font-size: 0.82rem; padding: 6px 10px; }
 .index-block dt { font-family: var(--mono); font-size: 0.9rem; color: var(--signal); padding-top: 2px; }
 .index-block dd { margin: 0; color: var(--muted); }
 
+/* ---------- Skills index (same pattern as index-block, more rows) ---------- */
+.skills-index { padding: 24px 0 48px; }
+.skills-index dl { margin: 0; }
+.skills-index dl > div {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 20px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+.skills-index dl > div:last-child { border-bottom: 1px solid var(--line); }
+.skills-index dt { font-family: var(--mono); font-size: 0.88rem; color: var(--signal); padding-top: 2px; }
+.skills-index dd { margin: 0; color: var(--muted); }
+.skills-index dd strong { font-family: var(--display); font-weight: 600; color: var(--ink); }
+
 /* ---------- About band (replaces generic sales testimonial) ---------- */
 .about-log { padding: 32px 0 48px; border-top: 1px solid var(--line); }
 .about-log p {
@@ -416,7 +431,7 @@ th { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); font-weig
   .lead-form { flex-direction: column; }
   .lead-form input[type="email"] { padding: 14px; border-bottom: 1px solid var(--line); }
   .lead-form button { border-radius: 0 0 1px 1px; justify-self: stretch; }
-  .index-block dl > div { grid-template-columns: 1fr; gap: 6px; }
+  .index-block dl > div, .skills-index dl > div { grid-template-columns: 1fr; gap: 6px; }
   .closing { padding: 40px max(20px, calc((100vw - 760px) / 2 + 24px)); }
   .note-title { font-size: 1.2rem; }
 }
