@@ -274,7 +274,7 @@ function seed_skills_if_empty(PDO $pdo): void
     $rows = [
         ['pdf-tables', 'documents', "Pulls structured tables out of a PDF and returns them as CSV, instead of a wall of OCR'd text.", 'skills add pdf-tables', 'pdf-tables-and-why-ocr-is-the-wrong-tool'],
         ['lcp-audit', 'web performance', 'Runs a Lighthouse pass against a URL and returns the changes with the best time-to-fix ratio, ranked by effort.', 'skills add lcp-audit', 'lcp-audit-ranking-fixes-by-effort'],
-        ['memory-gc', 'agent memory', "Walks a long-lived memory file and flags entries past their stated expiry, so stale facts don't silently persist.", 'skills add memory-gc', 'memory-gc-why-agent-memory-needs-a-garbage-collector'],
+        ['memory-gc', 'agent memory', "Walks a long-lived memory file and flags entries past their stated expiry, so stale facts don't silently persist.", 'skills add memory-gc', 'memory-gc-or-why-agent-memory-needs-a-garbage-collector'],
         ['flaky-test-finder', 'testing', 'Reruns a test suite several times and reports which tests fail intermittently, with the failure rate per test.', 'skills add flaky-test-finder', 'flaky-test-finder-stop-rerunning-ci-by-hand'],
         ['deploy-rollback', 'deploy', "Finds the last known-good deploy for a service and prepares the rollback command — it stages the fix, it doesn't run it.", 'skills add deploy-rollback', 'deploy-rollback-why-the-agent-should-stage-not-execute'],
         ['changelog-draft', 'writing', 'Turns a range of commits into a changelog entry, grouped by the kind of change rather than by commit message.', 'skills add changelog-draft', 'changelog-draft-grouping-by-change-not-by-message'],
