@@ -108,3 +108,30 @@ function slugify(string $text): string
     $slug = trim($slug, '-');
     return $slug !== '' ? substr($slug, 0, 80) : 'post';
 }
+
+/** A copyable command block. */
+function code_block(string $code): string
+{
+    $c = h($code);
+    return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
+        . '<button type="button" class="sk-copy sm" data-copy-text="' . $c . '">Copy</button></div>';
+}
+
+/**
+ * Renders a post body: plain paragraphs, plus fenced ``` blocks as copyable
+ * command blocks. Everything is escaped.
+ */
+function render_body(string $body): string
+{
+    $body  = str_replace("\r\n", "\n", $body);
+    $parts = preg_split('/^```[^\n]*\n(.*?)^```[ \t]*$/ms', $body, -1, PREG_SPLIT_DELIM_CAPTURE);
+    $out   = '';
+    foreach ($parts as $i => $part) {
+        if ($i % 2 === 1) {
+            $out .= code_block(rtrim($part, "\n"));
+        } elseif (trim($part) !== '') {
+            $out .= '<div class="prose-text">' . nl2br(h(trim($part, "\n"))) . '</div>';
+        }
+    }
+    return $out;
+}

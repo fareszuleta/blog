@@ -64,6 +64,17 @@ switch ($route) {
         }
         break;
 
+    case 'skill':
+        $skill = get_skill_by_name((string) ($_GET['name'] ?? ''));
+        if ($skill === null) {
+            http_response_code(404);
+            page_not_found();
+            break;
+        }
+        $skillPost = !empty($skill['post_slug']) ? get_post_by_slug((string) $skill['post_slug']) : null;
+        page_skill($skill, $skillPost);
+        break;
+
     case 'skills':
         page_skills(get_skills(), flash());
         break;

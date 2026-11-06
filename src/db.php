@@ -67,8 +67,17 @@ function db(): PDO
         $pdo->exec("UPDATE posts SET cover = 'img/phone.svg' WHERE slug = 'cold-call-script' AND cover IS NULL");
     }
 
+    // Migration: richer skill records for the install guides.
+    $skillCols = array_column($pdo->query('PRAGMA table_info(skills)')->fetchAll(), 'name');
+    foreach (['about', 'use_when', 'example'] as $col) {
+        if (!in_array($col, $skillCols, true)) {
+            $pdo->exec("ALTER TABLE skills ADD COLUMN $col TEXT");
+        }
+    }
+
     seed_if_empty($pdo);
     seed_skills_if_empty($pdo);
+    sync_skill_catalog($pdo);
     return $pdo;
 }
 
@@ -125,20 +134,20 @@ function seed_if_empty(PDO $pdo): void
             'A skill is a folder with a SKILL.md file. Here is where it goes, how to install one, and how to check that Codex actually sees it.',
             "OpenAI's Codex supports the same skill idea this blog has been covering: a folder with a SKILL.md file that the agent loads when your request matches it. Adding one takes about five minutes. Here is the whole path.\n\n" .
             "Step 1. Create the folder and the file. Each skill is a directory with a SKILL.md inside. The file starts with frontmatter containing a name and a description, followed by the instructions:\n\n" .
-            "---\n" .
+            "```\n---\n" .
             "name: changelog-draft\n" .
             "description: Use when the user asks for a changelog or release notes from a range of commits. Do not use for commit message cleanup.\n" .
             "---\n\n" .
-            "Group the commits by the kind of change, not by message. Output one section per group.\n\n" .
+            "Group the commits by the kind of change, not by message. Output one section per group.\n```\n\n" .
             "The description is the part that matters most. Codex reads it to decide whether to use the skill, so say when it should trigger and when it should not. A folder can also hold scripts/, references/, assets/ and an agents/openai.yaml file, all optional.\n\n" .
             "Step 2. Put it where Codex looks. For a single project, use .agents/skills inside the repo, for example .agents/skills/changelog-draft/SKILL.md. Codex also checks parent folders up to the repo root, so a skill at the root is shared by the whole repo. For a skill you want in every project, use ~/.agents/skills. Machine-wide defaults live in /etc/codex/skills. Codex follows symlinks, so you can keep one copy of a skill and link it into several places.\n\n" .
             "Step 3. Or install a ready-made one. Codex ships with a built-in skill called skill-installer. Inside Codex, type:\n\n" .
-            "\$skill-installer linear\n\n" .
+            "```\n\$skill-installer linear\n```\n\n" .
             "to install a curated skill by name. You can also ask it to pull a skill from another repository. If you would rather not write the file by hand, the built-in skill-creator (\$skill-creator) will draft one with you.\n\n" .
             "Step 4. Check that it shows up. Codex picks up new skills automatically. If yours does not appear, restart Codex. Run /skills, or type \$ and the skill name, to see it listed and to call it directly.\n\n" .
             "Step 5. Decide how it gets triggered. By default Codex can choose the skill on its own when your task matches the description. If you want it to run only when you name it, add an agents/openai.yaml next to SKILL.md:\n\n" .
-            "policy:\n" .
-            "  allow_implicit_invocation: false\n\n" .
+            "```\npolicy:\n" .
+            "  allow_implicit_invocation: false\n```\n\n" .
             "The skill still works with \$changelog-draft, but Codex will not reach for it by itself. To switch a skill off entirely, add an entry to ~/.codex/config.toml with [[skills.config]], the path to its SKILL.md, and enabled = false.\n\n" .
             "Two things to keep in mind. Skills with the same name are not merged, so both will show up and you will have to tell them apart. And everything in 'Inside a skill' still applies: a skill you did not write can ship scripts, so read the folder before you install it.\n\n" .
             "Finally, test it the way a real person would. Open a fresh session, ask for the task in plain words without naming the skill, and see whether Codex loads it. If it does not, rewrite the description, not the instructions.",
@@ -310,4 +319,46 @@ function seed_skills_if_empty(PDO $pdo): void
     foreach ($rows as $row) {
         $stmt->execute($row);
     }
+}
+
+/**
+ * One-time sync (tracked with PRAGMA user_version): fills the guide fields of
+ * existing skills and adds catalog skills that are missing. Fields already
+ * edited from the admin dashboard are never overwritten.
+ */
+function sync_skill_catalog(PDO $pdo): void
+{
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() >= 2) {
+        return;
+    }
+    require_once __DIR__ . '/skills_catalog.php';
+
+    $find   = $pdo->prepare('SELECT id FROM skills WHERE name = ?');
+    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?) WHERE id = ?");
+    $insert = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+
+    foreach (skills_catalog() as [$name, $category, $desc, $about, $useWhen, $example, $postSlug]) {
+        $find->execute([$name]);
+        $id = $find->fetchColumn();
+        if ($id !== false) {
+            $fill->execute([$about, $useWhen, $example, $id]);
+        } else {
+            $insert->execute([$name, $category, $desc, 'skills add ' . $name, $postSlug, $about, $useWhen, $example]);
+        }
+    }
+    $pdo->exec('PRAGMA user_version = 2');
+}
+
+function get_skill_by_name(string $name): ?array
+{
+    $st = db()->prepare('SELECT * FROM skills WHERE name = ?');
+    $st->execute([$name]);
+    return $st->fetch() ?: null;
+}
+
+function get_skill_by_post_slug(string $slug): ?array
+{
+    $st = db()->prepare('SELECT * FROM skills WHERE post_slug = ? LIMIT 1');
+    $st->execute([$slug]);
+    return $st->fetch() ?: null;
 }
