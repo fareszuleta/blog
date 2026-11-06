@@ -22,42 +22,67 @@
   <section class="hero" style="padding-bottom: 8px;">
     <p class="masthead">a reference page, not a catalog</p>
     <h1>A few example skills.</h1>
-    <p class="lead">Sketches of the shape a good skill takes — narrow enough to trust, named for what they do, upfront about what they read or run. None of these install from here; they're worked examples for <a href="index.php?r=post&amp;slug=writing-a-skill-your-agent-will-actually-use">the</a> <a href="index.php?r=post&amp;slug=inside-a-skill-what-you-re-actually-installing">two</a> notes on writing and installing skills.</p>
+    <p class="lead">Eight skills from the personal registry referenced in <a href="index.php?r=post&amp;slug=writing-a-skill-your-agent-will-actually-use">the</a> <a href="index.php?r=post&amp;slug=inside-a-skill-what-you-re-actually-installing">two</a> notes on writing and installing skills — narrow enough to trust, named for what they do, upfront about what they read or run. Each one installs the same way:</p>
+    <code class="cmd" style="max-width: 30rem; margin: 4px 0 0;"><span class="prompt">$</span> skills add &lt;name&gt;</code>
   </section>
 
   <section class="skills-index" aria-label="Example skills">
     <dl>
       <div>
         <dt>documents</dt>
-        <dd><strong>pdf-tables.</strong> Pulls structured tables out of a PDF and returns them as CSV, instead of a wall of OCR'd text.</dd>
+        <dd>
+          <strong>pdf-tables.</strong> Pulls structured tables out of a PDF and returns them as CSV, instead of a wall of OCR'd text.
+          <code class="cmd"><span class="prompt">$</span> skills add pdf-tables</code>
+        </dd>
       </div>
       <div>
         <dt>web performance</dt>
-        <dd><strong>lcp-audit.</strong> Runs a Lighthouse pass against a URL and returns the changes with the best time-to-fix ratio, ranked by effort.</dd>
+        <dd>
+          <strong>lcp-audit.</strong> Runs a Lighthouse pass against a URL and returns the changes with the best time-to-fix ratio, ranked by effort.
+          <code class="cmd"><span class="prompt">$</span> skills add lcp-audit</code>
+        </dd>
       </div>
       <div>
         <dt>agent memory</dt>
-        <dd><strong>memory-gc.</strong> Walks a long-lived memory file and flags entries past their stated expiry, so stale facts don't silently persist.</dd>
+        <dd>
+          <strong>memory-gc.</strong> Walks a long-lived memory file and flags entries past their stated expiry, so stale facts don't silently persist.
+          <code class="cmd"><span class="prompt">$</span> skills add memory-gc</code>
+        </dd>
       </div>
       <div>
         <dt>testing</dt>
-        <dd><strong>flaky-test-finder.</strong> Reruns a test suite several times and reports which tests fail intermittently, with the failure rate per test.</dd>
+        <dd>
+          <strong>flaky-test-finder.</strong> Reruns a test suite several times and reports which tests fail intermittently, with the failure rate per test.
+          <code class="cmd"><span class="prompt">$</span> skills add flaky-test-finder</code>
+        </dd>
       </div>
       <div>
         <dt>deploy</dt>
-        <dd><strong>deploy-rollback.</strong> Finds the last known-good deploy for a service and prepares the rollback command — it stages the fix, it doesn't run it.</dd>
+        <dd>
+          <strong>deploy-rollback.</strong> Finds the last known-good deploy for a service and prepares the rollback command — it stages the fix, it doesn't run it.
+          <code class="cmd"><span class="prompt">$</span> skills add deploy-rollback</code>
+        </dd>
       </div>
       <div>
         <dt>writing</dt>
-        <dd><strong>changelog-draft.</strong> Turns a range of commits into a changelog entry, grouped by the kind of change rather than by commit message.</dd>
+        <dd>
+          <strong>changelog-draft.</strong> Turns a range of commits into a changelog entry, grouped by the kind of change rather than by commit message.
+          <code class="cmd"><span class="prompt">$</span> skills add changelog-draft</code>
+        </dd>
       </div>
       <div>
         <dt>data</dt>
-        <dd><strong>schema-diff.</strong> Compares two database schemas and lists every column that changed type or went missing, before a migration runs.</dd>
+        <dd>
+          <strong>schema-diff.</strong> Compares two database schemas and lists every column that changed type or went missing, before a migration runs.
+          <code class="cmd"><span class="prompt">$</span> skills add schema-diff</code>
+        </dd>
       </div>
       <div>
         <dt>research</dt>
-        <dd><strong>citation-check.</strong> Checks that every claim in a draft that cites a source actually matches what that source says.</dd>
+        <dd>
+          <strong>citation-check.</strong> Checks that every claim in a draft that cites a source actually matches what that source says.
+          <code class="cmd"><span class="prompt">$</span> skills add citation-check</code>
+        </dd>
       </div>
     </dl>
   </section>
