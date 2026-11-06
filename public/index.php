@@ -212,13 +212,18 @@ function handle_action(string $action): void
             $desc     = trim((string) ($_POST['description'] ?? ''));
             $command  = trim((string) ($_POST['command'] ?? ''));
             $postSlug = trim((string) ($_POST['post_slug'] ?? ''));
+            $about    = trim((string) ($_POST['about'] ?? ''));
+            $useWhen  = trim((string) ($_POST['use_when'] ?? ''));
+            $example  = trim((string) ($_POST['example'] ?? ''));
+            $extra    = trim((string) ($_POST['extra'] ?? ''));
 
             if ($name === '' || $category === '' || $desc === '' || $command === ''
                 || mb_strlen($name) > 80 || mb_strlen($category) > 40
-                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150) {
+                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150
+                || mb_strlen($about) > 1000 || mb_strlen($useWhen) > 400 || mb_strlen($example) > 400 || mb_strlen($extra) > 10000) {
                 flash('Fill in every field within the length limits.');
             } else {
-                create_skill($name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null);
+                create_skill($name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null, $about, $useWhen, $example, $extra);
                 flash('Skill added.');
             }
             redirect(url(['r' => 'admin']));
@@ -231,6 +236,10 @@ function handle_action(string $action): void
             $desc     = trim((string) ($_POST['description'] ?? ''));
             $command  = trim((string) ($_POST['command'] ?? ''));
             $postSlug = trim((string) ($_POST['post_slug'] ?? ''));
+            $about    = trim((string) ($_POST['about'] ?? ''));
+            $useWhen  = trim((string) ($_POST['use_when'] ?? ''));
+            $example  = trim((string) ($_POST['example'] ?? ''));
+            $extra    = trim((string) ($_POST['extra'] ?? ''));
 
             if ($id <= 0 || get_skill_by_id($id) === null) {
                 flash('That skill no longer exists.');
@@ -238,11 +247,12 @@ function handle_action(string $action): void
             }
             if ($name === '' || $category === '' || $desc === '' || $command === ''
                 || mb_strlen($name) > 80 || mb_strlen($category) > 40
-                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150) {
+                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150
+                || mb_strlen($about) > 1000 || mb_strlen($useWhen) > 400 || mb_strlen($example) > 400 || mb_strlen($extra) > 10000) {
                 flash('Fill in every field within the length limits.');
                 redirect(url(['r' => 'admin', 'edit_skill' => (string) $id]));
             }
-            update_skill($id, $name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null);
+            update_skill($id, $name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null, $about, $useWhen, $example, $extra);
             flash('Skill updated.');
             redirect(url(['r' => 'admin']));
 

@@ -69,7 +69,7 @@ function db(): PDO
 
     // Migration: richer skill records for the install guides.
     $skillCols = array_column($pdo->query('PRAGMA table_info(skills)')->fetchAll(), 'name');
-    foreach (['about', 'use_when', 'example'] as $col) {
+    foreach (['about', 'use_when', 'example', 'extra'] as $col) {
         if (!in_array($col, $skillCols, true)) {
             $pdo->exec("ALTER TABLE skills ADD COLUMN $col TEXT");
         }
@@ -283,16 +283,16 @@ function get_skill_by_id(int $id): ?array
     return $row ?: null;
 }
 
-function create_skill(string $name, string $category, string $description, string $command, ?string $postSlug): void
+function create_skill(string $name, string $category, string $description, string $command, ?string $postSlug, string $about = '', string $useWhen = '', string $example = '', string $extra = ''): void
 {
-    db()->prepare('INSERT INTO skills (name, category, description, command, post_slug) VALUES (?, ?, ?, ?, ?)')
-        ->execute([$name, $category, $description, $command, $postSlug]);
+    db()->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, extra) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        ->execute([$name, $category, $description, $command, $postSlug, $about, $useWhen, $example, $extra]);
 }
 
-function update_skill(int $id, string $name, string $category, string $description, string $command, ?string $postSlug): void
+function update_skill(int $id, string $name, string $category, string $description, string $command, ?string $postSlug, string $about = '', string $useWhen = '', string $example = '', string $extra = ''): void
 {
-    db()->prepare('UPDATE skills SET name = ?, category = ?, description = ?, command = ?, post_slug = ? WHERE id = ?')
-        ->execute([$name, $category, $description, $command, $postSlug, $id]);
+    db()->prepare('UPDATE skills SET name = ?, category = ?, description = ?, command = ?, post_slug = ?, about = ?, use_when = ?, example = ?, extra = ? WHERE id = ?')
+        ->execute([$name, $category, $description, $command, $postSlug, $about, $useWhen, $example, $extra, $id]);
 }
 
 function delete_skill(int $id): void

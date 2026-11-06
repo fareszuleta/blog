@@ -232,6 +232,10 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
             <label>Description <input type="text" name="description" required maxlength="400"></label>
             <label>Install command <input type="text" name="command" required maxlength="120" placeholder="skills add pdf-tables"></label>
             <label>Linked note slug (optional) <input type="text" name="post_slug" maxlength="150" placeholder="pdf-tables-and-why-ocr-is-the-wrong-tool"></label>
+            <label>What it does <textarea name="about" maxlength="1000" rows="4"></textarea></label>
+            <label>It runs when <input type="text" name="use_when" maxlength="400" value=""></label>
+            <label>Example prompt <input type="text" name="example" maxlength="400" value=""></label>
+            <label>Extra content (optional; supports ``` code blocks and &lt;!-- comments --&gt;) <textarea name="extra" maxlength="10000" rows="8"></textarea></label>
             <button type="submit">Add skill</button>
           </form>
         </section>
@@ -354,6 +358,10 @@ function page_admin_edit_skill(array $skill, string $csrf, ?string $flash): void
             <label>Description <input type="text" name="description" required maxlength="400" value="<?= h($skill['description']) ?>"></label>
             <label>Install command <input type="text" name="command" required maxlength="120" value="<?= h($skill['command']) ?>"></label>
             <label>Linked note slug (optional) <input type="text" name="post_slug" maxlength="150" value="<?= h((string) ($skill['post_slug'] ?? '')) ?>"></label>
+            <label>What it does <textarea name="about" maxlength="1000" rows="4"><?= h((string) ($skill['about'] ?? '')) ?></textarea></label>
+            <label>It runs when <input type="text" name="use_when" maxlength="400" value="<?= h((string) ($skill['use_when'] ?? '')) ?>"></label>
+            <label>Example prompt <input type="text" name="example" maxlength="400" value="<?= h((string) ($skill['example'] ?? '')) ?>"></label>
+            <label>Extra content (optional; supports ``` code blocks and &lt;!-- comments --&gt;) <textarea name="extra" maxlength="10000" rows="8"><?= h((string) ($skill['extra'] ?? '')) ?></textarea></label>
             <button type="submit">Save changes</button>
           </form>
         </section>
@@ -552,6 +560,13 @@ function page_skill(array $s, ?array $post): void
             <?php endif; ?>
 
             <?php skill_guide($s); ?>
+
+            <?php if (!empty($s['extra'])): ?>
+              <section class="about-skill">
+                <h2>More details</h2>
+                <div class="prose"><?= render_body((string) $s['extra']) ?></div>
+              </section>
+            <?php endif; ?>
 
             <?php if ($post !== null): ?>
               <section class="about-skill">
