@@ -524,3 +524,6 @@ body.wide main::before { display: none; }
   .count { margin-left: 0; }
 }
 .detail-head .chip { justify-self: start; }
+
+.hint { display: block; margin: 2px 0 6px; font: 400 0.8rem/1.4 var(--mono); color: var(--muted); }
+.hint code { font-size: 0.95em; }
