@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <rect width="800" height="500" fill="#F7F8F5"/>
+  <g stroke="#C9D6CE" stroke-width="1">
+    <line x1="80" y1="60" x2="80" y2="420"/>
+    <line x1="80" y1="420" x2="740" y2="420"/>
+  </g>
+  <g fill="#5B6B62" font-family="JetBrains Mono, monospace" font-size="13">
+    <text x="60" y="110" text-anchor="end">4.1s</text>
+    <text x="60" y="270" text-anchor="end">2.3s</text>
+    <text x="60" y="400" text-anchor="end">1.6s</text>
+  </g>
+  <g stroke="#C9D6CE" stroke-width="1" stroke-dasharray="2 6">
+    <line x1="80" y1="108" x2="740" y2="108"/>
+    <line x1="80" y1="268" x2="740" y2="268"/>
+  </g>
+  <!-- bar 1: before -->
+  <rect x="140" y="108" width="90" height="312" fill="none" stroke="#14201C" stroke-width="1.5"/>
+  <text x="185" y="440" fill="#14201C" font-family="Space Grotesk, sans-serif" font-size="14" text-anchor="middle">before</text>
+  <!-- bar 2: preload -->
+  <rect x="320" y="268" width="90" height="152" fill="none" stroke="#2F6B4F" stroke-width="1.5"/>
+  <text x="365" y="440" fill="#14201C" font-family="Space Grotesk, sans-serif" font-size="14" text-anchor="middle">+ preload</text>
+  <!-- bar 3: srcset -->
+  <rect x="500" y="330" width="90" height="90" fill="none" stroke="#2F6B4F" stroke-width="1.5"/>
+  <text x="545" y="440" fill="#14201C" font-family="Space Grotesk, sans-serif" font-size="14" text-anchor="middle">+ srcset</text>
+  <!-- bar 4: font-display -->
+  <rect x="610" y="358" width="90" height="62" fill="#2F6B4F" fill-opacity="0.12" stroke="#2F6B4F" stroke-width="1.5"/>
+  <text x="655" y="440" fill="#14201C" font-family="Space Grotesk, sans-serif" font-size="14" text-anchor="middle">+ font-display</text>
+</svg>

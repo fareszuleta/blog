@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <rect width="800" height="500" fill="#F7F8F5"/>
+  <rect x="100" y="90" width="600" height="340" fill="none" stroke="#14201C" stroke-width="1.5"/>
+  <line x1="100" y1="128" x2="700" y2="128" stroke="#14201C" stroke-width="1.5"/>
+  <circle cx="126" cy="109" r="5" fill="none" stroke="#14201C" stroke-width="1.25"/>
+  <circle cx="148" cy="109" r="5" fill="none" stroke="#14201C" stroke-width="1.25"/>
+  <circle cx="170" cy="109" r="5" fill="none" stroke="#14201C" stroke-width="1.25"/>
+  <g font-family="JetBrains Mono, monospace" font-size="15" fill="#14201C">
+    <text x="130" y="168">$ claude skill test pdf-tools</text>
+    <text x="130" y="196" fill="#5B6B62">  loading skills matching "extract the table from this.pdf"</text>
+    <text x="130" y="224" fill="#2F6B4F">  ✓ pdf-tools matched (trigger: .pdf mention)</text>
+    <text x="130" y="252" fill="#5B6B62">  no match: document-productivity-suite</text>
+    <text x="130" y="280" fill="#B5622B">  ✗ name didn't surface on a natural phrasing</text>
+  </g>
+  <rect x="130" y="320" width="10" height="20" fill="#14201C">
+    <animate attributeName="opacity" values="1;0;1" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+</svg>

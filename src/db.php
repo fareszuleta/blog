@@ -69,34 +69,41 @@ function seed_if_empty(PDO $pdo): void
 
     $samples = [
         [
-            'how-to-qualify-leads',
-            'How to Qualify Leads in 5 Steps',
-            'Stop wasting time on prospects who will never buy.',
-            "Qualifying a lead means deciding how much time it deserves. Not every contact is worth the same.\n\n" .
-            "1. Confirm the problem: does the prospect have a real need your product solves?\n" .
-            "2. Confirm the budget: can they afford what you sell?\n" .
-            "3. Confirm authority: who makes the buying decision?\n" .
-            "4. Confirm timing: is there a deadline or a reason to act now?\n" .
-            "5. Confirm the next step: will they accept a meeting or a demo?\n\n" .
-            "If they answer yes to fewer than three of these, nurture them with useful content and check back later.",
+            'cut-your-lcp-in-an-afternoon',
+            'Cut your LCP in an afternoon',
+            'Three changes that moved a real site from 4.1s to 1.6s, in order of effort.',
+            "Largest Contentful Paint measures when the biggest visible thing on the page finishes rendering. Most sites blow this on three things, and you can fix all three without touching your framework.\n\n" .
+            "1. Preload the hero image. A background-image set in CSS is discovered late, after the stylesheet parses. Add a <link rel=\"preload\"> for it in <head> and the browser starts fetching it immediately.\n" .
+            "2. Serve it at the size it's displayed. A 2400px source scaled down by CSS still costs the full download. Generate a srcset at the breakpoints you actually use.\n" .
+            "3. Stop shipping render-blocking fonts. A @font-face with no font-display swaps to a flash of invisible text while it loads. Set font-display: swap and the browser paints with a fallback immediately.\n\n" .
+            "On the site I measured, step 1 alone took LCP from 4.1s to 2.3s. Steps 2 and 3 brought it to 1.6s. None of this required a rebuild.",
         ],
         [
-            'cold-call-script',
-            'A Cold Call Script That Actually Works',
-            'A simple 30-second structure that earns attention without sounding like a catalog salesperson.',
-            "Your goal in the first 30 seconds is not to sell. It is to earn permission to keep talking.\n\n" .
-            "Suggested structure:\n" .
-            "- A short introduction: who you are and which company you work for.\n" .
-            "- A specific reason: mention something concrete about the prospect or their industry.\n" .
-            "- An open question: \"How do you handle customer follow-up today?\"\n" .
-            "- Your value proposition in one sentence, never in a paragraph.\n\n" .
-            "Practice the script out loud. If it sounds natural spoken, it will work on the call.",
+            'give-your-agent-memory-it-can-trust',
+            'Give your agent memory it can trust',
+            'Most agent memory fails quietly. Here is what actually holds up across sessions.',
+            "An agent that forgets everything between sessions re-asks the same questions forever. An agent that remembers everything indiscriminately starts acting on stale facts. The difference between a useful memory system and a liability is what you choose to write down.\n\n" .
+            "Write facts, not transcripts. \"The deploy key rotated on the 3rd\" survives being read six months later. A dump of the conversation where that happened does not — by then the context that made it meaningful is gone.\n\n" .
+            "Timestamp everything, and let old entries expire. A memory system with no decay accumulates contradictions: which email address is current if you wrote two, a year apart, and never deleted either?\n\n" .
+            "Separate what the agent observed from what you told it directly. Self-reported user preferences are usually reliable. Things the agent inferred on its own are not, and conflating the two is where most of the bad surprises come from.\n\n" .
+            "The test that matters: open the memory file cold, with no other context. If a fact doesn't make sense on its own, it will mislead the agent just as easily as it misleads you.",
+        ],
+        [
+            'writing-a-skill-your-agent-will-use',
+            'Writing a skill your agent will actually use',
+            'The failure mode is not that the skill is wrong. It is that the agent never reaches for it.',
+            "A skill is only useful if the agent picks it at the right moment. Most skills that get written and never used have the same problem: the description describes the skill's content, not the situation that should trigger it.\n\n" .
+            "Write the trigger first. Before any instructions, list the concrete phrases and situations where this skill should fire. \"Handles PDF extraction\" is weaker than \"when the user mentions a .pdf, pastes a PDF path, or asks to pull text or tables from a document.\"\n\n" .
+            "Keep the body short enough to actually read. A skill that front-loads five paragraphs of background before the first actionable step gets skimmed, and the step that mattered is paragraph six.\n\n" .
+            "Name it by what it does, not by what it's for. \"pdf-tools\" beats \"document-productivity-suite\" — the agent is matching the name against the task, not browsing a catalog.\n\n" .
+            "Test it the obvious way: start a fresh session, describe the task the way a real person would, and see whether the skill loads without being named directly. If it doesn't, the trigger needs work, not the instructions.",
         ],
     ];
 
     $covers = [
-        'how-to-qualify-leads' => 'img/shelves.svg',
-        'cold-call-script'     => 'img/phone.svg',
+        'cut-your-lcp-in-an-afternoon'             => 'img/waterfall.svg',
+        'give-your-agent-memory-it-can-trust'      => 'img/node-graph.svg',
+        'writing-a-skill-your-agent-will-use'      => 'img/terminal.svg',
     ];
 
     $stmt = $pdo->prepare('INSERT INTO posts (slug, title, excerpt, body, cover) VALUES (?, ?, ?, ?, ?)');
@@ -171,11 +178,11 @@ function get_post_by_id(int $id): ?array
     return $row ?: null;
 }
 
-/** Updates title, excerpt and body. The slug never changes, so existing links keep working. */
-function update_post(int $id, string $title, string $excerpt, string $body): void
+/** Updates title, excerpt, body and cover. The slug never changes, so existing links keep working. */
+function update_post(int $id, string $title, string $excerpt, string $body, ?string $cover): void
 {
-    db()->prepare('UPDATE posts SET title = ?, excerpt = ?, body = ? WHERE id = ?')
-        ->execute([$title, $excerpt, $body, $id]);
+    db()->prepare('UPDATE posts SET title = ?, excerpt = ?, body = ?, cover = ? WHERE id = ?')
+        ->execute([$title, $excerpt, $body, $cover, $id]);
 }
 
 function delete_post(int $id): void

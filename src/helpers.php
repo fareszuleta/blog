@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const SITE_NAME = 'Closing Notes';
+const SITE_NAME = 'Uptime';
 
 /** Approximate reading time in minutes (about 1,000 characters per minute). */
 function reading_minutes(int $chars): int

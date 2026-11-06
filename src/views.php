@@ -13,14 +13,14 @@ function render_page(string $title, ?string $flash, callable $body): void
   <title><?= h($title) ?> · <?= h(SITE_NAME) ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="site">
   <a class="brand" href="<?= h(url()) ?>"><?= h(SITE_NAME) ?></a>
   <nav>
-    <a href="<?= h(url()) ?>#blog">Notes</a>
+    <a href="<?= h(url()) ?>#notes">Notes</a>
     <a href="<?= h(url(['r' => 'admin'])) ?>">Admin</a>
   </nav>
 </header>
@@ -31,8 +31,8 @@ function render_page(string $title, ?string $flash, callable $body): void
   <?php $body(); ?>
 </main>
 <footer class="site">
-  <span><?= h(SITE_NAME) ?> · <?= date('Y') ?></span>
-  <span>B2B sales, in plain English</span>
+  <span><?= h(SITE_NAME) ?> <?= date('Y') ?></span>
+  <span>Field notes on the systems you run</span>
 </footer>
 </body>
 </html>
@@ -55,8 +55,8 @@ function lead_form(string $source, string $slug = ''): void
       </div>
       <label class="sr-only" for="<?= h($id) ?>">Work email</label>
       <input id="<?= h($id) ?>" type="email" name="email" required maxlength="254"
-             placeholder="you@company.com" autocomplete="email">
-      <button type="submit">Get the template</button>
+             placeholder="you@example.com" autocomplete="email">
+      <button type="submit">Subscribe</button>
     </form>
     <?php
 }
@@ -74,7 +74,7 @@ function page_not_found(): void
 function page_post(array $post, array $comments, string $csrf, ?string $flash): void
 {
     render_page($post['title'], $flash, function () use ($post, $comments, $csrf) { ?>
-        <p class="back"><a href="<?= h(url()) ?>#blog">All notes</a></p>
+        <p class="back"><a href="<?= h(url()) ?>#notes">All notes</a></p>
 
         <article class="article">
           <?php if (!empty($post['cover'])): ?>
@@ -94,8 +94,8 @@ function page_post(array $post, array $comments, string $csrf, ?string $flash): 
         </article>
 
         <aside class="inline-cta" aria-labelledby="inline-title">
-          <h2 id="inline-title">Want more on this topic?</h2>
-          <p>Leave your email and we'll let you know when the next note is published.</p>
+          <h2 id="inline-title">New entries by email</h2>
+          <p>One note when something's worth writing down. No spam, unsubscribe any time.</p>
           <?php lead_form('post', (string) $post['slug']); ?>
         </aside>
 
@@ -110,7 +110,7 @@ function page_post(array $post, array $comments, string $csrf, ?string $flash): 
             <div class="comment">
               <div class="note-meta">
                 <strong><?= comment_author($c['author']) ?></strong>
-                <time datetime="<?= h($c['created_at']) ?>"><?= h(date('M j, Y · H:i', strtotime($c['created_at']))) ?></time>
+                <time datetime="<?= h($c['created_at']) ?>"><?= h(date('Y-m-d H:i', strtotime($c['created_at']))) ?></time>
               </div>
               <p><?= comment_text($c['body']) ?></p>
             </div>
@@ -212,7 +212,7 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
               <tr>
                 <td><?= h($l['email']) ?></td>
                 <td><?= h($l['source'] === 'post' ? 'Note' : 'Home page') ?></td>
-                <td><?= h(date('M j, Y · H:i', strtotime($l['created_at']))) ?></td>
+                <td><?= h(date('Y-m-d H:i', strtotime($l['created_at']))) ?></td>
               </tr>
             <?php endforeach; ?>
             </tbody>
@@ -228,7 +228,7 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
               <div class="note-meta">
                 <strong><?= h($c['author']) ?></strong>
                 <span>on <a href="<?= h(url(['r' => 'post', 'slug' => $c['slug']])) ?>"><?= h($c['title']) ?></a></span>
-                <time datetime="<?= h($c['created_at']) ?>"><?= h(date('M j, Y · H:i', strtotime($c['created_at']))) ?></time>
+                <time datetime="<?= h($c['created_at']) ?>"><?= h(date('Y-m-d H:i', strtotime($c['created_at']))) ?></time>
               </div>
               <p><?= nl2br(h($c['body'])) ?></p>
               <form method="post" action="index.php" onsubmit="return confirm('Delete this comment?');">
@@ -259,6 +259,7 @@ function page_admin_edit(array $post, string $csrf, ?string $flash): void
             <label>Title <input type="text" name="title" required maxlength="150" value="<?= h($post['title']) ?>"></label>
             <label>Summary <input type="text" name="excerpt" required maxlength="300" value="<?= h($post['excerpt']) ?>"></label>
             <label>Content <textarea name="body" required maxlength="20000" rows="16"><?= h($post['body']) ?></textarea></label>
+            <label>Cover image path <input type="text" name="cover" maxlength="300" placeholder="img/example.svg" value="<?= h((string) ($post['cover'] ?? '')) ?>"></label>
             <p class="fine">Slug stays <code><?= h($post['slug']) ?></code> — existing links to this note keep working.</p>
             <button type="submit">Save changes</button>
           </form>
