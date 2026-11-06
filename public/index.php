@@ -46,6 +46,15 @@ switch ($route) {
     case 'admin':
         if (!is_admin()) {
             page_login(flash(), csrf_token());
+            break;
+        }
+        $editId = (int) ($_GET['edit'] ?? 0);
+        $editPost = $editId > 0 ? get_post_by_id($editId) : null;
+        if ($editId > 0 && $editPost === null) {
+            http_response_code(404);
+            page_not_found();
+        } elseif ($editPost !== null) {
+            page_admin_edit($editPost, csrf_token(), flash());
         } else {
             page_admin(get_posts(), get_recent_comments(), get_leads(), csrf_token(), flash());
         }
@@ -141,6 +150,26 @@ function handle_action(string $action): void
                 create_post($title, $excerpt, $body);
                 flash('Post published.');
             }
+            redirect(url(['r' => 'admin']));
+
+        case 'post_update':
+            require_admin();
+            $id      = (int) ($_POST['id'] ?? 0);
+            $title   = trim((string) ($_POST['title'] ?? ''));
+            $excerpt = trim((string) ($_POST['excerpt'] ?? ''));
+            $body    = trim((string) ($_POST['body'] ?? ''));
+
+            if ($id <= 0 || get_post_by_id($id) === null) {
+                flash('That note no longer exists.');
+                redirect(url(['r' => 'admin']));
+            }
+            if ($title === '' || $excerpt === '' || $body === ''
+                || mb_strlen($title) > 150 || mb_strlen($excerpt) > 300 || mb_strlen($body) > 20000) {
+                flash('Fill in every field within the length limits.');
+                redirect(url(['r' => 'admin', 'edit' => (string) $id]));
+            }
+            update_post($id, $title, $excerpt, $body);
+            flash('Note updated.');
             redirect(url(['r' => 'admin']));
 
         case 'post_delete':

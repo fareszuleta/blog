@@ -390,6 +390,10 @@ th, td {
 }
 th { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 
+.admin-row-actions { display: flex; align-items: center; gap: 12px; }
+.admin-row-actions a.secondary { color: var(--muted); text-decoration: underline; font-size: 0.9rem; }
+.admin-row-actions form { margin: 0; }
+
 .flash {
   margin: 24px 0 0;
   padding: 14px 18px;

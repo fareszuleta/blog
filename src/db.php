@@ -163,6 +163,21 @@ function create_post(string $title, string $excerpt, string $body): void
         ->execute([$slug, $title, $excerpt, $body]);
 }
 
+function get_post_by_id(int $id): ?array
+{
+    $st = db()->prepare('SELECT * FROM posts WHERE id = ?');
+    $st->execute([$id]);
+    $row = $st->fetch();
+    return $row ?: null;
+}
+
+/** Updates title, excerpt and body. The slug never changes, so existing links keep working. */
+function update_post(int $id, string $title, string $excerpt, string $body): void
+{
+    db()->prepare('UPDATE posts SET title = ?, excerpt = ?, body = ? WHERE id = ?')
+        ->execute([$title, $excerpt, $body, $id]);
+}
+
 function delete_post(int $id): void
 {
     db()->prepare('DELETE FROM posts WHERE id = ?')->execute([$id]);

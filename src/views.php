@@ -186,7 +186,8 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
               <tr>
                 <td><a href="<?= h(url(['r' => 'post', 'slug' => $p['slug']])) ?>"><?= h($p['title']) ?></a></td>
                 <td><?= h(fmt_date($p['created_at'])) ?></td>
-                <td>
+                <td class="admin-row-actions">
+                  <a class="secondary" href="<?= h(url(['r' => 'admin', 'edit' => (string) $p['id']])) ?>">Edit</a>
                   <form method="post" action="index.php" onsubmit="return confirm('Delete this note and its comments?');">
                     <input type="hidden" name="action" value="post_delete">
                     <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
@@ -238,6 +239,29 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
               </form>
             </div>
           <?php endforeach; ?>
+        </section>
+    <?php });
+}
+
+function page_admin_edit(array $post, string $csrf, ?string $flash): void
+{
+    render_page('Edit · ' . $post['title'], $flash, function () use ($post, $csrf) { ?>
+        <div class="admin-top">
+          <h1>Edit note</h1>
+          <a class="secondary" href="<?= h(url(['r' => 'admin'])) ?>">Back to dashboard</a>
+        </div>
+
+        <section class="admin-block">
+          <form method="post" action="index.php" class="form">
+            <input type="hidden" name="action" value="post_update">
+            <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+            <input type="hidden" name="id" value="<?= (int) $post['id'] ?>">
+            <label>Title <input type="text" name="title" required maxlength="150" value="<?= h($post['title']) ?>"></label>
+            <label>Summary <input type="text" name="excerpt" required maxlength="300" value="<?= h($post['excerpt']) ?>"></label>
+            <label>Content <textarea name="body" required maxlength="20000" rows="16"><?= h($post['body']) ?></textarea></label>
+            <p class="fine">Slug stays <code><?= h($post['slug']) ?></code> — existing links to this note keep working.</p>
+            <button type="submit">Save changes</button>
+          </form>
         </section>
     <?php });
 }
