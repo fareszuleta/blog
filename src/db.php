@@ -328,7 +328,8 @@ function seed_skills_if_empty(PDO $pdo): void
  */
 function sync_skill_catalog(PDO $pdo): void
 {
-    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() >= 2) {
+    $version = (int) $pdo->query('PRAGMA user_version')->fetchColumn();
+    if ($version >= 3) {
         return;
     }
     require_once __DIR__ . '/skills_catalog.php';
@@ -343,10 +344,16 @@ function sync_skill_catalog(PDO $pdo): void
         if ($id !== false) {
             $fill->execute([$about, $useWhen, $example, $id]);
         } else {
-            $insert->execute([$name, $category, $desc, 'skills add ' . $name, $postSlug, $about, $useWhen, $example]);
+            $insert->execute([$name, $category, $desc, skill_install_command($name), $postSlug, $about, $useWhen, $example]);
         }
     }
-    $pdo->exec('PRAGMA user_version = 2');
+    // v3: replace the placeholder registry command with the real install command.
+    $old = $pdo->query("SELECT id, name FROM skills WHERE command LIKE 'skills add %'")->fetchAll();
+    $upd = $pdo->prepare('UPDATE skills SET command = ? WHERE id = ?');
+    foreach ($old as $row) {
+        $upd->execute([skill_install_command((string) $row['name']), $row['id']]);
+    }
+    $pdo->exec('PRAGMA user_version = 3');
 }
 
 function get_skill_by_name(string $name): ?array

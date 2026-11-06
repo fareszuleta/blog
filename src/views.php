@@ -386,19 +386,19 @@ function skill_guide(array $s): void
         <!-- step 2: three ways to install; the registry command is the default -->
         <li>
           <h3>Install the skill</h3>
-          <p>Pick one way. Use the first command to install from the registry.</p>
-          <p class="step-label">From the registry</p>
-          <?= code_block((string) $s['command']) ?>
-          <p class="step-label">From inside Codex</p>
-          <?= code_block('$skill-installer ' . $n) ?>
-          <p class="step-label">By hand, for every project</p>
-          <?= code_block("mkdir -p ~/.agents/skills\ncp -r " . $n . " ~/.agents/skills/") ?>
-          <p class="step-note">To install it for one repo only, copy the folder into <code>.agents/skills</code> inside that repo instead.</p>
+          <p>The skill is a real folder in the blog's repository (<a href="<?= h(skill_repo_url($n)) ?>">view it on GitHub</a>). Pick one way.</p>
+          <p class="step-label">Codex, from GitHub</p>
+          <?= code_block('$skill-installer install ' . skill_repo_url($n)) ?>
+          <p class="step-label">By hand, for Codex</p>
+          <?= code_block(skill_install_command($n)) ?>
+          <p class="step-label">By hand, for Claude Code</p>
+          <?= code_block(str_replace('~/.agents/skills', '~/.claude/skills', skill_install_command($n))) ?>
+          <p class="step-note">To install it for one repo only, use <code>.agents/skills</code> (Codex) or <code>.claude/skills</code> (Claude Code) inside that repo instead of the home folder.</p>
         </li>
         <!-- step 3: /skills lists every skill Codex found -->
         <li>
           <h3>Check that it loaded</h3>
-          <p>Type this in Codex. <?= h($n) ?> should be in the list. If it is not, restart Codex.</p>
+          <p>Type this in Codex (in Claude Code, type <code>/</code> and look for the name). <?= h($n) ?> should be in the list. If it is not, restart the app.</p>
           <?= code_block('/skills') ?>
         </li>
         <!-- step 4: test the trigger without naming the skill -->
@@ -584,6 +584,7 @@ function page_skill(array $s, ?array $post): void
               <h2>Example prompt</h2>
               <?= code_block((string) $s['example']) ?>
             <?php endif; ?>
+            <p><a href="<?= h(skill_repo_url((string) $s['name'])) ?>">Open the folder on GitHub</a></p>
             <p><a href="<?= h(url(['r' => 'skills'])) ?>">Back to all skills</a></p>
           </aside>
         </div>

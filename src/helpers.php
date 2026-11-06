@@ -157,3 +157,17 @@ function render_text_with_comments(string $text): string
     }
     return $out;
 }
+
+const SKILLS_REPO = 'fareszuleta/blog';
+
+/** GitHub page of the skill folder in the blog's repository. */
+function skill_repo_url(string $name): string
+{
+    return 'https://github.com/' . SKILLS_REPO . '/tree/main/skills/' . rawurlencode($name);
+}
+
+/** Real one-line install for Codex: clone the repo to a temp dir and copy the skill folder. */
+function skill_install_command(string $name): string
+{
+    return 'd=$(mktemp -d) && git clone --depth 1 https://github.com/' . SKILLS_REPO . '.git "$d" && mkdir -p ~/.agents/skills && cp -r "$d/skills/' . $name . '" ~/.agents/skills/';
+}
