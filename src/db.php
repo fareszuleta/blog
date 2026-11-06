@@ -69,14 +69,13 @@ function db(): PDO
 
     // Migration: richer skill records for the install guides.
     $skillCols = array_column($pdo->query('PRAGMA table_info(skills)')->fetchAll(), 'name');
-    foreach (['about', 'use_when', 'example', 'extra'] as $col) {
+    foreach (['about', 'use_when', 'example', 'extra', 'author', 'license', 'source_url'] as $col) {
         if (!in_array($col, $skillCols, true)) {
             $pdo->exec("ALTER TABLE skills ADD COLUMN $col TEXT");
         }
     }
 
     seed_if_empty($pdo);
-    seed_skills_if_empty($pdo);
     sync_skill_catalog($pdo);
     return $pdo;
 }
@@ -300,60 +299,38 @@ function delete_skill(int $id): void
     db()->prepare('DELETE FROM skills WHERE id = ?')->execute([$id]);
 }
 
-function seed_skills_if_empty(PDO $pdo): void
-{
-    if ((int) $pdo->query('SELECT COUNT(*) FROM skills')->fetchColumn() > 0) {
-        return;
-    }
-    $rows = [
-        ['pdf-tables', 'documents', "Pulls structured tables out of a PDF and returns them as CSV, instead of a wall of OCR'd text.", 'skills add pdf-tables', 'pdf-tables-and-why-ocr-is-the-wrong-tool'],
-        ['lcp-audit', 'web performance', 'Runs a Lighthouse pass against a URL and returns the changes with the best time-to-fix ratio, ranked by effort.', 'skills add lcp-audit', 'lcp-audit-ranking-fixes-by-effort'],
-        ['memory-gc', 'agent memory', "Walks a long-lived memory file and flags entries past their stated expiry, so stale facts don't silently persist.", 'skills add memory-gc', 'memory-gc-or-why-agent-memory-needs-a-garbage-collector'],
-        ['flaky-test-finder', 'testing', 'Reruns a test suite several times and reports which tests fail intermittently, with the failure rate per test.', 'skills add flaky-test-finder', 'flaky-test-finder-stop-rerunning-ci-by-hand'],
-        ['deploy-rollback', 'deploy', "Finds the last known-good deploy for a service and prepares the rollback command — it stages the fix, it doesn't run it.", 'skills add deploy-rollback', 'deploy-rollback-why-the-agent-should-stage-not-execute'],
-        ['changelog-draft', 'writing', 'Turns a range of commits into a changelog entry, grouped by the kind of change rather than by commit message.', 'skills add changelog-draft', 'changelog-draft-grouping-by-change-not-by-message'],
-        ['schema-diff', 'data', 'Compares two database schemas and lists every column that changed type or went missing, before a migration runs.', 'skills add schema-diff', 'schema-diff-the-migration-check-everyone-skips'],
-        ['citation-check', 'research', 'Checks that every claim in a draft that cites a source actually matches what that source says.', 'skills add citation-check', 'citation-check-does-the-source-actually-say-that'],
-    ];
-    $stmt = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug) VALUES (?, ?, ?, ?, ?)');
-    foreach ($rows as $row) {
-        $stmt->execute($row);
-    }
-}
-
 /**
- * One-time sync (tracked with PRAGMA user_version): fills the guide fields of
- * existing skills and adds catalog skills that are missing. Fields already
- * edited from the admin dashboard are never overwritten.
+ * One-time sync (tracked with PRAGMA user_version = 4): removes the placeholder skills
+ * that earlier versions seeded and adds the real skills from the catalog. Text already
+ * edited from the admin dashboard is never overwritten.
  */
 function sync_skill_catalog(PDO $pdo): void
 {
-    $version = (int) $pdo->query('PRAGMA user_version')->fetchColumn();
-    if ($version >= 3) {
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() >= 4) {
         return;
     }
     require_once __DIR__ . '/skills_catalog.php';
 
-    $find   = $pdo->prepare('SELECT id FROM skills WHERE name = ?');
-    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?) WHERE id = ?");
-    $insert = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    $del = $pdo->prepare('DELETE FROM skills WHERE name = ?');
+    foreach (legacy_skill_names() as $legacy) {
+        $del->execute([$legacy]);
+    }
 
-    foreach (skills_catalog() as [$name, $category, $desc, $about, $useWhen, $example, $postSlug]) {
-        $find->execute([$name]);
+    $find   = $pdo->prepare('SELECT id FROM skills WHERE name = ?');
+    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?), author = ?, license = ?, source_url = ? WHERE id = ?");
+    $insert = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, author, license, source_url) VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?)');
+
+    foreach (skills_catalog() as $s) {
+        $find->execute([$s['name']]);
         $id = $find->fetchColumn();
         if ($id !== false) {
-            $fill->execute([$about, $useWhen, $example, $id]);
+            $fill->execute([$s['about'], $s['use_when'], $s['example'], $s['author'], $s['license'], $s['source'], $id]);
         } else {
-            $insert->execute([$name, $category, $desc, skill_install_command($name), $postSlug, $about, $useWhen, $example]);
+            $insert->execute([$s['name'], $s['category'], $s['description'], skill_install_command($s['name']),
+                $s['about'], $s['use_when'], $s['example'], $s['author'], $s['license'], $s['source']]);
         }
     }
-    // v3: replace the placeholder registry command with the real install command.
-    $old = $pdo->query("SELECT id, name FROM skills WHERE command LIKE 'skills add %'")->fetchAll();
-    $upd = $pdo->prepare('UPDATE skills SET command = ? WHERE id = ?');
-    foreach ($old as $row) {
-        $upd->execute([skill_install_command((string) $row['name']), $row['id']]);
-    }
-    $pdo->exec('PRAGMA user_version = 3');
+    $pdo->exec('PRAGMA user_version = 4');
 }
 
 function get_skill_by_name(string $name): ?array

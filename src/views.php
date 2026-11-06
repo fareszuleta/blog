@@ -379,9 +379,12 @@ function skill_guide(array $s): void
       <ol class="steps">
         <!-- step 1: make sure Codex is installed -->
         <li>
-          <h3>Check that Codex is installed</h3>
-          <p>You need the Codex CLI or the IDE extension, and a project folder open.</p>
+          <h3>Check that your agent is installed</h3>
+          <p>Skills are folders with a SKILL.md. They work in Codex and in Claude Code. Open a project folder first.</p>
+          <p class="step-label">Codex</p>
           <?= code_block('codex --version') ?>
+          <p class="step-label">Claude Code</p>
+          <?= code_block('claude --version') ?>
         </li>
         <!-- step 2: three ways to install; the registry command is the default -->
         <li>
@@ -485,7 +488,7 @@ function page_skills(array $skills, ?string $flash): void
                     <span class="skc-desc"><?= h($s['description']) ?></span>
                     <span class="skc-tags">
                       <span class="chip"><?= h($s['category']) ?></span>
-                      <span class="skc-go">Install steps</span>
+                      <span class="skc-by"><?= h((string) ($s['author'] ?? '')) ?></span>
                     </span>
                   </span>
                 </a>
@@ -584,7 +587,12 @@ function page_skill(array $s, ?array $post): void
               <h2>Example prompt</h2>
               <?= code_block((string) $s['example']) ?>
             <?php endif; ?>
-            <p><a href="<?= h(skill_repo_url((string) $s['name'])) ?>">Open the folder on GitHub</a></p>
+            <?php if (!empty($s['source_url'])): ?>
+              <h2>Original source</h2>
+              <p class="src-line">By <?= h((string) $s['author']) ?> &middot; <?= h((string) $s['license']) ?> license</p>
+              <p><a href="<?= h((string) $s['source_url']) ?>">View the original on GitHub</a></p>
+            <?php endif; ?>
+            <p><a href="<?= h(skill_repo_url((string) $s['name'])) ?>">Open this copy on GitHub</a></p>
             <p><a href="<?= h(url(['r' => 'skills'])) ?>">Back to all skills</a></p>
           </aside>
         </div>

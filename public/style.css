@@ -527,3 +527,6 @@ body.wide main::before { display: none; }
 
 .hint { display: block; margin: 2px 0 6px; font: 400 0.8rem/1.4 var(--mono); color: var(--muted); }
 .hint code { font-size: 0.95em; }
+
+.skc-by { font: 400 0.76rem var(--mono); color: var(--muted); }
+.src-line { margin: 0 0 4px; color: var(--muted); font-size: 0.9rem; }
