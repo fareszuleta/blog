@@ -42,9 +42,10 @@ function comment_author(string $s): string
     return ctf_mode() ? $s : h($s);
 }
 
+/** The home page is static (public/index.html), served at "/". Every other page is index.php. */
 function url(array $params = []): string
 {
-    return 'index.php' . ($params ? '?' . http_build_query($params) : '');
+    return $params ? ('index.php?' . http_build_query($params)) : '/';
 }
 
 function redirect(string $location): never

@@ -17,11 +17,15 @@ header('Referrer-Policy: same-origin');
 
 // ---------- Actions (POST): always end with a redirect ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!csrf_valid()) {
+    $action = (string) ($_POST['action'] ?? '');
+    // The home page is static HTML (public/index.html) and has no session, so it
+    // cannot carry a CSRF token. The lead form there relies on the honeypot field
+    // instead. Every other action still requires a valid CSRF token.
+    if ($action !== 'lead' && !csrf_valid()) {
         http_response_code(403);
         exit('Invalid or expired form. Reload the page and try again.');
     }
-    handle_action((string) ($_POST['action'] ?? ''));
+    handle_action($action);
     redirect(url());
 }
 
