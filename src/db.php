@@ -98,12 +98,23 @@ function seed_if_empty(PDO $pdo): void
             "Name it by what it does, not by what it's for. \"pdf-tools\" beats \"document-productivity-suite\" — the agent is matching the name against the task, not browsing a catalog.\n\n" .
             "Test it the obvious way: start a fresh session, describe the task the way a real person would, and see whether the skill loads without being named directly. If it doesn't, the trigger needs work, not the instructions.",
         ],
+        [
+            'inside-a-skill-what-youre-actually-installing',
+            "Inside a skill: what you're actually installing",
+            'A catalog makes adding a skill feel like a package install. The file you get is closer to a small program with instructions attached.',
+            "A skill, in the agent-tooling sense, is usually three things bundled together: a short trigger description, a body of instructions, and sometimes scripts or reference files the agent can run or read. The trigger is metadata the agent matches against your request before it reads anything else, which is why a vague one (\"handles document processing\") gets skipped in favor of a specific one (\"fires when the user mentions a .pdf or asks to pull a table from a document\").\n\n" .
+            "Catalogs make this easy to forget. A directory that lists hundreds of ready-made skills, agents, and slash commands for a given tool, installable with one CLI command, turns adding a skill into something that feels like adding a package. That convenience is exactly what makes it worth slowing down for: you are pulling in a file written by someone else, that an agent will read and sometimes act on, directly into a session where it already has your permissions.\n\n" .
+            "Three things worth checking before installing a skill you did not write. Read the actual file, not just the catalog's description of it, since the description is marketing copy and the file is the thing that runs. Look inside any scripts folder the skill ships with: a skill that includes a script can execute code, and the skill's own summary of what that script does is not the same as reading it. Check whether the instructions tell the agent to fetch a URL or send data anywhere external, the same way you would check what a new dependency phones home to.\n\n" .
+            "None of this is an exotic risk. It is the ordinary trust question you already apply to a library before you add it to a project: a skill is close enough to code that it runs with your agent's access, and being listed in a public catalog is not, by itself, a trust signal.\n\n" .
+            "If you are the one publishing a skill, the two things worth getting right are the same two from writing a skill your agent will actually use: a trigger specific enough that it only fires on the task it is actually for, and a body that is upfront, near the top, about anything it asks the agent to fetch, run, or send. Someone deciding whether to install it should be able to tell at a glance, without reading every line.",
+        ],
     ];
 
     $covers = [
-        'cut-your-lcp-in-an-afternoon'             => 'img/waterfall.svg',
-        'give-your-agent-memory-it-can-trust'      => 'img/node-graph.svg',
-        'writing-a-skill-your-agent-will-use'      => 'img/terminal.svg',
+        'cut-your-lcp-in-an-afternoon'                    => 'img/waterfall.svg',
+        'give-your-agent-memory-it-can-trust'             => 'img/node-graph.svg',
+        'writing-a-skill-your-agent-will-use'             => 'img/terminal.svg',
+        'inside-a-skill-what-youre-actually-installing'   => 'img/package.svg',
     ];
 
     $stmt = $pdo->prepare('INSERT INTO posts (slug, title, excerpt, body, cover) VALUES (?, ?, ?, ?, ?)');
