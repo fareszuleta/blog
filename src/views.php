@@ -389,19 +389,28 @@ function skill_guide(array $s): void
         <!-- step 2: three ways to install; the registry command is the default -->
         <li>
           <h3>Install the skill</h3>
-          <p>The skill is a real folder in the blog's repository (<a href="<?= h(skill_repo_url($n)) ?>">view it on GitHub</a>). Pick one way.</p>
-          <p class="step-label">Codex, from GitHub</p>
-          <?= code_block('$skill-installer install ' . skill_repo_url($n)) ?>
-          <p class="step-label">By hand, for Codex</p>
-          <?= code_block(skill_install_command($n)) ?>
-          <p class="step-label">By hand, for Claude Code</p>
-          <?= code_block(str_replace('~/.agents/skills', '~/.claude/skills', skill_install_command($n))) ?>
-          <p class="step-note">To install it for one repo only, use <code>.agents/skills</code> (Codex) or <code>.claude/skills</code> (Claude Code) inside that repo instead of the home folder.</p>
+          <p>This skill is published by <?= h((string) ($s['author'] ?? 'its author')) ?> in its original repository<?php if (!empty($s['source_url'])): ?> (<a href="<?= h((string) $s['source_url']) ?>">open it on GitHub</a>)<?php endif; ?>. Pick one way.</p>
+          <?php $srcUrl = (string) ($s['source_url'] ?? ''); ?>
+          <?php if ($srcUrl !== ''): ?>
+            <p class="step-label">With the skills CLI, for Codex</p>
+            <?= code_block(skill_cli_command($n, $srcUrl, 'codex')) ?>
+            <p class="step-label">With the skills CLI, for Claude Code</p>
+            <?= code_block(skill_cli_command($n, $srcUrl, 'claude-code')) ?>
+            <p class="step-label">Inside Codex</p>
+            <?= code_block('$skill-installer install ' . $srcUrl) ?>
+            <p class="step-label">By hand, for Codex</p>
+            <?= code_block(skill_manual_command($srcUrl, '~/.agents/skills')) ?>
+            <p class="step-label">By hand, for Claude Code</p>
+            <?= code_block(skill_manual_command($srcUrl, '~/.claude/skills')) ?>
+          <?php else: ?>
+            <?= code_block((string) $s['command']) ?>
+          <?php endif; ?>
+          <p class="step-note">The skills CLI installs for every project (<code>-g</code>). Leave out <code>-g</code> to install into the current project only.</p>
         </li>
         <!-- step 3: /skills lists every skill Codex found -->
         <li>
           <h3>Check that it loaded</h3>
-          <p>Type this in Codex (in Claude Code, type <code>/</code> and look for the name). <?= h($n) ?> should be in the list. If it is not, restart the app.</p>
+          <p>Type this in Codex (in Claude Code, type <code>/</code> and look for the name). <?= h($n) ?> should be in the list. If it is not, restart the app. Installed files go to <code>~/.agents/skills</code> (Codex) or <code>~/.claude/skills</code> (Claude Code).</p>
           <?= code_block('/skills') ?>
         </li>
         <!-- step 4: test the trigger without naming the skill -->
@@ -592,7 +601,6 @@ function page_skill(array $s, ?array $post): void
               <p class="src-line">By <?= h((string) $s['author']) ?> &middot; <?= h((string) $s['license']) ?> license</p>
               <p><a href="<?= h((string) $s['source_url']) ?>">View the original on GitHub</a></p>
             <?php endif; ?>
-            <p><a href="<?= h(skill_repo_url((string) $s['name'])) ?>">Open this copy on GitHub</a></p>
             <p><a href="<?= h(url(['r' => 'skills'])) ?>">Back to all skills</a></p>
           </aside>
         </div>

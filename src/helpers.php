@@ -158,16 +158,33 @@ function render_text_with_comments(string $text): string
     return $out;
 }
 
-const SKILLS_REPO = 'fareszuleta/blog';
-
-/** GitHub page of the skill folder in the blog's repository. */
-function skill_repo_url(string $name): string
+/** Splits a GitHub tree URL into owner/repo and the folder path inside it. */
+function skill_source_parts(string $url): ?array
 {
-    return 'https://github.com/' . SKILLS_REPO . '/tree/main/skills/' . rawurlencode($name);
+    if (preg_match('~^https://github\.com/([^/]+/[^/]+)/tree/[^/]+/(.+)$~', $url, $m)) {
+        return ['repo' => $m[1], 'path' => $m[2]];
+    }
+    return null;
 }
 
-/** Real one-line install for Codex: clone the repo to a temp dir and copy the skill folder. */
-function skill_install_command(string $name): string
+/** Real install with the skills CLI, straight from the skill's original repository. */
+function skill_cli_command(string $name, string $sourceUrl, ?string $agent = null): string
 {
-    return 'd=$(mktemp -d) && git clone --depth 1 https://github.com/' . SKILLS_REPO . '.git "$d" && mkdir -p ~/.agents/skills && cp -r "$d/skills/' . $name . '" ~/.agents/skills/';
+    $parts = skill_source_parts($sourceUrl);
+    if ($parts === null) {
+        return '';
+    }
+    return 'npx skills add ' . $parts['repo'] . ' --skill ' . $name . ' -g' . ($agent !== null ? ' -a ' . $agent : '');
+}
+
+/** By hand: clone the original repository and copy the skill folder. $dest is the skills folder. */
+function skill_manual_command(string $sourceUrl, string $dest): string
+{
+    $parts = skill_source_parts($sourceUrl);
+    if ($parts === null) {
+        return '';
+    }
+    return 'd=$(mktemp -d) && git clone --depth 1 https://github.com/' . $parts['repo'] . '.git "$d"' . "\n"
+        . 'mkdir -p ' . $dest . "\n"
+        . 'cp -r "$d/' . $parts['path'] . '" ' . $dest . '/';
 }

@@ -300,13 +300,13 @@ function delete_skill(int $id): void
 }
 
 /**
- * One-time sync (tracked with PRAGMA user_version = 4): removes the placeholder skills
+ * One-time sync (tracked with PRAGMA user_version = 5): removes the placeholder skills
  * that earlier versions seeded and adds the real skills from the catalog. Text already
  * edited from the admin dashboard is never overwritten.
  */
 function sync_skill_catalog(PDO $pdo): void
 {
-    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() >= 4) {
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() >= 5) {
         return;
     }
     require_once __DIR__ . '/skills_catalog.php';
@@ -317,20 +317,20 @@ function sync_skill_catalog(PDO $pdo): void
     }
 
     $find   = $pdo->prepare('SELECT id FROM skills WHERE name = ?');
-    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?), author = ?, license = ?, source_url = ? WHERE id = ?");
+    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?), author = ?, license = ?, source_url = ?, command = CASE WHEN command LIKE '%fareszuleta%' OR command LIKE 'skills add %' OR command = '' THEN ? ELSE command END WHERE id = ?");
     $insert = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, author, license, source_url) VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?)');
 
     foreach (skills_catalog() as $s) {
         $find->execute([$s['name']]);
         $id = $find->fetchColumn();
         if ($id !== false) {
-            $fill->execute([$s['about'], $s['use_when'], $s['example'], $s['author'], $s['license'], $s['source'], $id]);
+            $fill->execute([$s['about'], $s['use_when'], $s['example'], $s['author'], $s['license'], $s['source'], skill_cli_command($s['name'], $s['source']), $id]);
         } else {
-            $insert->execute([$s['name'], $s['category'], $s['description'], skill_install_command($s['name']),
+            $insert->execute([$s['name'], $s['category'], $s['description'], skill_cli_command($s['name'], $s['source']),
                 $s['about'], $s['use_when'], $s['example'], $s['author'], $s['license'], $s['source']]);
         }
     }
-    $pdo->exec('PRAGMA user_version = 4');
+    $pdo->exec('PRAGMA user_version = 5');
 }
 
 function get_skill_by_name(string $name): ?array
