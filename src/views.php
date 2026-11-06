@@ -45,7 +45,7 @@ function lead_form(string $source, string $slug = ''): void
     static $n = 0;
     $id = 'email-' . (++$n);
     ?>
-    <form method="post" action="<?= h(url()) ?>" class="lead-form">
+    <form method="post" action="index.php" class="lead-form">
       <input type="hidden" name="action" value="lead">
       <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
       <input type="hidden" name="source" value="<?= h($source) ?>">
@@ -116,7 +116,7 @@ function page_post(array $post, array $comments, string $csrf, ?string $flash): 
             </div>
           <?php endforeach; ?>
 
-          <form method="post" action="<?= h(url()) ?>" class="form comment-form">
+          <form method="post" action="index.php" class="form comment-form">
             <h3>Leave a comment</h3>
             <input type="hidden" name="action" value="comment">
             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
@@ -141,7 +141,7 @@ function page_login(?string $flash, string $csrf): void
     render_page('Admin', $flash, function () use ($csrf) { ?>
         <section class="narrow">
           <h1>Sign in to the dashboard</h1>
-          <form method="post" action="<?= h(url()) ?>" class="form">
+          <form method="post" action="index.php" class="form">
             <input type="hidden" name="action" value="login">
             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
             <label>Password
@@ -158,7 +158,7 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
     render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $csrf) { ?>
         <div class="admin-top">
           <h1>Dashboard</h1>
-          <form method="post" action="<?= h(url()) ?>">
+          <form method="post" action="index.php">
             <input type="hidden" name="action" value="logout">
             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
             <button type="submit" class="secondary">Sign out</button>
@@ -167,7 +167,7 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
 
         <section class="admin-block">
           <h2>New note</h2>
-          <form method="post" action="<?= h(url()) ?>" class="form">
+          <form method="post" action="index.php" class="form">
             <input type="hidden" name="action" value="post_create">
             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
             <label>Title <input type="text" name="title" required maxlength="150"></label>
@@ -187,7 +187,7 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
                 <td><a href="<?= h(url(['r' => 'post', 'slug' => $p['slug']])) ?>"><?= h($p['title']) ?></a></td>
                 <td><?= h(fmt_date($p['created_at'])) ?></td>
                 <td>
-                  <form method="post" action="<?= h(url()) ?>" onsubmit="return confirm('Delete this note and its comments?');">
+                  <form method="post" action="index.php" onsubmit="return confirm('Delete this note and its comments?');">
                     <input type="hidden" name="action" value="post_delete">
                     <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
                     <input type="hidden" name="id" value="<?= (int) $p['id'] ?>">
@@ -230,7 +230,7 @@ function page_admin(array $posts, array $comments, array $leads, string $csrf, ?
                 <time datetime="<?= h($c['created_at']) ?>"><?= h(date('M j, Y · H:i', strtotime($c['created_at']))) ?></time>
               </div>
               <p><?= nl2br(h($c['body'])) ?></p>
-              <form method="post" action="<?= h(url()) ?>" onsubmit="return confirm('Delete this comment?');">
+              <form method="post" action="index.php" onsubmit="return confirm('Delete this comment?');">
                 <input type="hidden" name="action" value="comment_delete">
                 <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
                 <input type="hidden" name="id" value="<?= (int) $c['id'] ?>">
