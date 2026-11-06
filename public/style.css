@@ -1,6 +1,7 @@
 /* Uptime — design tokens: an engineer's field notebook, not a SaaS landing page. */
 :root {
-  --paper:   #F7F8F5;
+  color-scheme: light;
+  --paper:   #FFFFFF;
   --surface: #FFFFFF;
   --ink:     #14201C;
   --muted:   #4C5C53;
@@ -15,20 +16,6 @@
   --mono:    "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper:   #10160F;
-    --surface: #171F17;
-    --ink:     #E7ECE5;
-    --muted:   #9AAB9F;
-    --line:    #2A3A2C;
-    --signal:  #6FC79A;
-    --signal-hi: #94DAB8;
-    --warn:    #E08A52;
-    --danger:  #F97066;
-  }
-}
-
 *, *::before, *::after { box-sizing: border-box; }
 
 body {
@@ -36,22 +23,11 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 28px,
-    var(--paper);
-  background-attachment: local;
+  background: var(--paper);
   color: var(--ink);
   font: 400 1.0625rem/1.6 var(--reading);
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) body {
-    background:
-      linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 100% 28px,
-      var(--paper);
-    background-image: linear-gradient(color-mix(in srgb, var(--line) 35%, transparent) 1px, transparent 1px);
-  }
 }
 
 a { color: var(--signal); text-underline-offset: 3px; transition: color 180ms ease; }
@@ -449,3 +425,54 @@ th { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); font-weig
   .closing { padding: 40px max(20px, calc((100vw - 760px) / 2 + 24px)); }
   .note-title { font-size: 1.2rem; }
 }
+
+/* ---------- Skills directory page ---------- */
+.crumbs { display: flex; gap: 8px; flex-wrap: wrap; padding: 24px 0 8px; font: 400 0.82rem var(--mono); color: var(--muted); }
+.crumbs a { color: var(--muted); text-decoration: none; }
+.crumbs a:hover { color: var(--signal); }
+.crumbs b { color: var(--ink); font-weight: 500; }
+.chip { display: inline-block; padding: 2px 9px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--signal) 8%, var(--surface)); color: var(--signal); font: 500 0.72rem var(--mono); letter-spacing: 0.03em; }
+
+.sk-hero { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 32px; align-items: start; padding: 32px; margin: 8px 0 40px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; }
+.sk-hero h1 { margin: 10px 0 4px; font: 700 clamp(2rem, 5vw, 2.8rem)/1.1 var(--display); letter-spacing: -0.02em; }
+.sk-meta { margin: 0; font: 400 0.82rem var(--mono); color: var(--muted); }
+.sk-sub { margin: 0 0 16px; font: 400 0.9rem var(--mono); color: var(--muted); }
+.sk-desc { margin: 0; color: var(--muted); font-size: 1rem; }
+
+.sk-install { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper); }
+.sk-tabs { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.sk-tabs button { padding: 5px 12px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font: 500 0.78rem var(--mono); cursor: pointer; }
+.sk-tabs button[aria-selected="true"] { background: var(--paper); color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
+.sk-cmdrow { display: flex; gap: 10px; margin-top: 12px; }
+.sk-cmdrow code { flex: 1; min-width: 0; padding: 11px 14px; border-radius: 10px; background: #F3F5F2; color: var(--signal-hi); border: 1px solid var(--line); font: 400 0.82rem var(--mono); overflow-x: auto; white-space: nowrap; }
+.sk-copy { padding: 0 16px; border: 0; border-radius: 10px; background: var(--signal); color: #fff; font: 600 0.8rem var(--mono); cursor: pointer; transition: background 180ms ease; }
+.sk-copy:hover { background: var(--signal-hi); }
+.sk-copy.sm { padding: 4px 10px; border-radius: 8px; font-size: 0.72rem; }
+.sk-more { display: inline-block; margin-top: 12px; font: 500 0.82rem var(--mono); }
+
+.sk-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+.sk-head h2 { margin: 0; font: 600 1.35rem var(--display); }
+.sk-head span { font: 400 0.78rem var(--mono); color: var(--muted); }
+.sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; padding-bottom: 48px; }
+.sk-card { display: flex; flex-direction: column; gap: 8px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; transition: border-color 180ms ease, transform 180ms ease; }
+.sk-card:hover { border-color: var(--signal); transform: translateY(-2px); }
+.sk-card h3 { margin: 4px 0 0; font: 600 1.1rem var(--display); }
+.sk-card p { margin: 0; flex: 1; color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+.sk-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+.sk-foot code { min-width: 0; overflow-x: auto; white-space: nowrap; font: 400 0.78rem var(--mono); color: var(--ink); }
+.sk-card .sk-more { margin: 0; font-size: 0.78rem; }
+
+.sk-faq { margin-bottom: 56px; padding: 24px 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; }
+.sk-faq h2 { margin: 0 0 8px; font: 600 1.3rem var(--display); }
+.sk-faq details { border-top: 1px solid var(--line); padding: 14px 0; }
+.sk-faq summary { cursor: pointer; font: 600 0.98rem var(--display); list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.sk-faq summary::-webkit-details-marker { display: none; }
+.sk-faq summary::after { content: "\25BE"; color: var(--muted); }
+.sk-faq details[open] summary::after { content: "\25B4"; }
+.sk-faq details p { margin: 10px 0 0; padding-left: 12px; border-left: 2px solid var(--signal); color: var(--muted); font-size: 0.95rem; }
+.sk-faq code { font-family: var(--mono); font-size: 0.85em; }
+
+@media (max-width: 760px) {
+  .sk-hero { grid-template-columns: 1fr; padding: 20px; }
+}
+.sk-card .chip { align-self: flex-start; }
