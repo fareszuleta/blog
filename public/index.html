@@ -18,6 +18,7 @@
   </nav>
 </header>
 <main>
+  <p id="lead-flash" class="flash" role="status" hidden></p>
   <section class="hero">
     <div class="hero-copy">
       <h1>Close more deals with fewer pointless follow-ups.</h1>
@@ -153,5 +154,25 @@
   <span>Closing Notes · 2026</span>
   <span>B2B sales, in plain English</span>
 </footer>
+<script>
+(function () {
+  // After a lead-form submit, index.php redirects here with ?lead=ok|bad.
+  // This page is static and has no session, so it can't render the usual
+  // PHP flash message — show it client-side instead, then clean the URL.
+  var params = new URLSearchParams(location.search);
+  var lead = params.get('lead');
+  if (lead !== 'ok' && lead !== 'bad') return;
+  var el = document.getElementById('lead-flash');
+  if (el) {
+    el.textContent = lead === 'ok'
+      ? 'Done. Your email is registered.'
+      : 'Enter a valid email, for example you@company.com.';
+    el.hidden = false;
+  }
+  params.delete('lead');
+  var query = params.toString();
+  history.replaceState(null, '', location.pathname + (query ? '?' + query : '') + location.hash);
+})();
+</script>
 </body>
 </html>
