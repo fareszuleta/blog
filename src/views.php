@@ -369,11 +369,13 @@ function skill_guide(array $s): void
     <section class="guide" aria-labelledby="guide-title-<?= h($n) ?>">
       <h2 id="guide-title-<?= h($n) ?>">Follow these steps to install <?= h($n) ?></h2>
       <ol class="steps">
+        <!-- step 1: make sure Codex is installed -->
         <li>
           <h3>Check that Codex is installed</h3>
           <p>You need the Codex CLI or the IDE extension, and a project folder open.</p>
           <?= code_block('codex --version') ?>
         </li>
+        <!-- step 2: three ways to install; the registry command is the default -->
         <li>
           <h3>Install the skill</h3>
           <p>Pick one way. Use the first command to install from the registry.</p>
@@ -385,16 +387,19 @@ function skill_guide(array $s): void
           <?= code_block("mkdir -p ~/.agents/skills\ncp -r " . $n . " ~/.agents/skills/") ?>
           <p class="step-note">To install it for one repo only, copy the folder into <code>.agents/skills</code> inside that repo instead.</p>
         </li>
+        <!-- step 3: /skills lists every skill Codex found -->
         <li>
           <h3>Check that it loaded</h3>
           <p>Type this in Codex. <?= h($n) ?> should be in the list. If it is not, restart Codex.</p>
           <?= code_block('/skills') ?>
         </li>
+        <!-- step 4: test the trigger without naming the skill -->
         <li>
           <h3>Try it</h3>
           <p>Describe the task in plain words, without naming the skill. If Codex loads it, the trigger works.</p>
           <?php if ($example !== ''): ?><?= code_block($example) ?><?php endif; ?>
         </li>
+        <!-- step 5: read SKILL.md and scripts/ before trusting it -->
         <li>
           <h3>Read it before you trust it</h3>
           <p>A skill can ship scripts and can tell the agent to fetch a URL. Look at what you installed.</p>

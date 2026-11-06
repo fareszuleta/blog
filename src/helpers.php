@@ -130,7 +130,29 @@ function render_body(string $body): string
         if ($i % 2 === 1) {
             $out .= code_block(rtrim($part, "\n"));
         } elseif (trim($part) !== '') {
-            $out .= '<div class="prose-text">' . nl2br(h(trim($part, "\n"))) . '</div>';
+            $out .= '<div class="prose-text">' . render_text_with_comments(trim($part, "\n")) . '</div>';
+        }
+    }
+    return $out;
+}
+
+/**
+ * Escapes text, but turns <!-- note --> into a real HTML comment: invisible on
+ * the page, visible in "view source". The note is sanitised so it can never
+ * close the comment early or inject markup.
+ */
+function render_text_with_comments(string $text): string
+{
+    $parts = preg_split('/<!--(.*?)-->/s', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+    $out   = '';
+    foreach ($parts as $i => $part) {
+        if ($i % 2 === 1) {
+            $note = trim(str_replace(['--', '>', '<'], ['- -', '', ''], $part));
+            if ($note !== '') {
+                $out .= '<!-- ' . $note . ' -->';
+            }
+        } else {
+            $out .= nl2br(h($part));
         }
     }
     return $out;
