@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <rect width="800" height="500" fill="#F7F8F5"/>
+  <rect x="120" y="90" width="300" height="320" fill="none" stroke="#14201C" stroke-width="1.5"/>
+  <line x1="120" y1="130" x2="420" y2="130" stroke="#14201C" stroke-width="1.5"/>
+  <g font-family="JetBrains Mono, monospace" font-size="15" fill="#14201C">
+    <text x="140" y="116">SKILL.md</text>
+  </g>
+  <g font-family="JetBrains Mono, monospace" font-size="13" fill="#5B6B62">
+    <text x="140" y="160">trigger: "when the user</text>
+    <text x="140" y="178">mentions a .pdf..."</text>
+    <text x="140" y="214">instructions</text>
+    <text x="140" y="232">----------------</text>
+    <text x="140" y="250">----------</text>
+    <text x="140" y="268">--------------</text>
+  </g>
+  <line x1="140" y1="290" x2="400" y2="290" stroke="#C9D6CE" stroke-width="1"/>
+  <g font-family="JetBrains Mono, monospace" font-size="13" fill="#2F6B4F">
+    <text x="140" y="320">scripts/extract.py</text>
+  </g>
+  <g font-family="JetBrains Mono, monospace" font-size="13" fill="#B5622B">
+    <text x="140" y="350">references/schema.json</text>
+  </g>
+  <!-- arrow from the scripts line to a magnifying flag, implying "read before trusting" -->
+  <g stroke="#B5622B" stroke-width="1.5" fill="none">
+    <circle cx="610" cy="330" r="34"/>
+    <line x1="634" y1="354" x2="668" y2="388"/>
+  </g>
+  <text x="610" y="400" font-family="Space Grotesk, sans-serif" font-size="14" fill="#14201C" text-anchor="middle">read before</text>
+  <text x="610" y="420" font-family="Space Grotesk, sans-serif" font-size="14" fill="#14201C" text-anchor="middle">you install</text>
+</svg>
