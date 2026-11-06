@@ -52,8 +52,8 @@ switch ($route) {
         break;
 
     case 'home':
-        page_home(get_posts(), flash());
-        break;
+        // The home page is public/index.html now; index.php never renders it.
+        redirect('/');
 
     default:
         http_response_code(404);
