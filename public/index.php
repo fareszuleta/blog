@@ -71,7 +71,7 @@ function handle_action(string $action): void
                 redirect(url());
             }
             // If the honeypot field has content, it's a bot: discard silently.
-            if (trim((string) ($_POST['website'] ?? '')) !== '') {
+            if (trim((string) ($_POST['hp_field'] ?? '')) !== '') {
                 redirect(url(['r' => 'post', 'slug' => $slug]));
             }
 
@@ -88,7 +88,7 @@ function handle_action(string $action): void
 
         case 'lead':
             // Email capture (home and posts). Same honeypot as comments.
-            if (trim((string) ($_POST['website'] ?? '')) !== '') {
+            if (trim((string) ($_POST['hp_field'] ?? '')) !== '') {
                 redirect(url());
             }
             $email  = strtolower(trim((string) ($_POST['email'] ?? '')));

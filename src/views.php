@@ -51,7 +51,7 @@ function lead_form(string $source, string $slug = ''): void
       <input type="hidden" name="source" value="<?= h($source) ?>">
       <input type="hidden" name="slug" value="<?= h($slug) ?>">
       <div class="hp" aria-hidden="true">
-        <label>Leave this field empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <label>Leave this field empty <input type="text" name="hp_field" tabindex="-1" autocomplete="off"></label>
       </div>
       <label class="sr-only" for="<?= h($id) ?>">Work email</label>
       <input id="<?= h($id) ?>" type="email" name="email" required maxlength="254"
@@ -122,7 +122,7 @@ function page_post(array $post, array $comments, string $csrf, ?string $flash): 
             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
             <input type="hidden" name="slug" value="<?= h($post['slug']) ?>">
             <div class="hp" aria-hidden="true">
-              <label>Leave this field empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+              <label>Leave this field empty <input type="text" name="hp_field" tabindex="-1" autocomplete="off"></label>
             </div>
             <label>Name
               <input type="text" name="author" required maxlength="80">
