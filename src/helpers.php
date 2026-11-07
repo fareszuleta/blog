@@ -158,6 +158,14 @@ function render_text_with_comments(string $text): string
     return $out;
 }
 
+const SKILLS_REPO = 'fareszuleta/blog';
+
+/** GitHub page of the skill folder in this blog's own repository. */
+function skill_repo_url(string $name): string
+{
+    return 'https://github.com/' . SKILLS_REPO . '/tree/main/skills/' . rawurlencode($name);
+}
+
 /** Splits a GitHub tree URL into owner/repo and the folder path inside it. */
 function skill_source_parts(string $url): ?array
 {

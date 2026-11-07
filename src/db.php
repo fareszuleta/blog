@@ -306,31 +306,36 @@ function delete_skill(int $id): void
  */
 function sync_skill_catalog(PDO $pdo): void
 {
-    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() >= 5) {
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() >= 6) {
         return;
     }
     require_once __DIR__ . '/skills_catalog.php';
 
-    $del = $pdo->prepare('DELETE FROM skills WHERE name = ?');
-    foreach (legacy_skill_names() as $legacy) {
-        $del->execute([$legacy]);
-    }
+    $catalog = skills_catalog();
+    $names   = array_column($catalog, 0);
+
+    // Drop anything not in the current catalog: earlier placeholder examples and the
+    // externally-hosted skills from a previous version of this page.
+    $placeholders = implode(',', array_fill(0, count($names), '?'));
+    $pdo->prepare("DELETE FROM skills WHERE name NOT IN ($placeholders)")->execute($names);
 
     $find   = $pdo->prepare('SELECT id FROM skills WHERE name = ?');
-    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?), author = ?, license = ?, source_url = ?, command = CASE WHEN command LIKE '%fareszuleta%' OR command LIKE 'skills add %' OR command = '' THEN ? ELSE command END WHERE id = ?");
-    $insert = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, author, license, source_url) VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?)');
+    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?), author = NULL, license = NULL, source_url = ?, command = ? WHERE id = ?");
+    $insert = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, source_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
-    foreach (skills_catalog() as $s) {
-        $find->execute([$s['name']]);
+    foreach ($catalog as [$name, $category, $desc, $about, $useWhen, $example, $postSlug]) {
+        $source  = skill_repo_url($name);
+        $command = skill_cli_command($name, $source, 'codex');
+
+        $find->execute([$name]);
         $id = $find->fetchColumn();
         if ($id !== false) {
-            $fill->execute([$s['about'], $s['use_when'], $s['example'], $s['author'], $s['license'], $s['source'], skill_cli_command($s['name'], $s['source']), $id]);
+            $fill->execute([$about, $useWhen, $example, $source, $command, $id]);
         } else {
-            $insert->execute([$s['name'], $s['category'], $s['description'], skill_cli_command($s['name'], $s['source']),
-                $s['about'], $s['use_when'], $s['example'], $s['author'], $s['license'], $s['source']]);
+            $insert->execute([$name, $category, $desc, $command, $postSlug, $about, $useWhen, $example, $source]);
         }
     }
-    $pdo->exec('PRAGMA user_version = 5');
+    $pdo->exec('PRAGMA user_version = 6');
 }
 
 function get_skill_by_name(string $name): ?array

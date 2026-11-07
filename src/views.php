@@ -389,7 +389,7 @@ function skill_guide(array $s): void
         <!-- step 2: three ways to install; the registry command is the default -->
         <li>
           <h3>Install the skill</h3>
-          <p>This skill is published by <?= h((string) ($s['author'] ?? 'its author')) ?> in its original repository<?php if (!empty($s['source_url'])): ?> (<a href="<?= h((string) $s['source_url']) ?>">open it on GitHub</a>)<?php endif; ?>. Pick one way.</p>
+          <p>The skill is a real folder in this blog's own repository<?php if (!empty($s['source_url'])): ?> (<a href="<?= h((string) $s['source_url']) ?>">view it on GitHub</a>)<?php endif; ?>. Pick one way.</p>
           <?php $srcUrl = (string) ($s['source_url'] ?? ''); ?>
           <?php if ($srcUrl !== ''): ?>
             <p class="step-label">With the skills CLI, for Codex</p>
@@ -497,7 +497,7 @@ function page_skills(array $skills, ?string $flash): void
                     <span class="skc-desc"><?= h($s['description']) ?></span>
                     <span class="skc-tags">
                       <span class="chip"><?= h($s['category']) ?></span>
-                      <span class="skc-by"><?= h((string) ($s['author'] ?? '')) ?></span>
+                      <span class="skc-go">Install steps</span>
                     </span>
                   </span>
                 </a>
@@ -597,9 +597,8 @@ function page_skill(array $s, ?array $post): void
               <?= code_block((string) $s['example']) ?>
             <?php endif; ?>
             <?php if (!empty($s['source_url'])): ?>
-              <h2>Original source</h2>
-              <p class="src-line">By <?= h((string) $s['author']) ?> &middot; <?= h((string) $s['license']) ?> license</p>
-              <p><a href="<?= h((string) $s['source_url']) ?>">View the original on GitHub</a></p>
+              <h2>Source</h2>
+              <p><a href="<?= h((string) $s['source_url']) ?>">View this skill on GitHub</a></p>
             <?php endif; ?>
             <p><a href="<?= h(url(['r' => 'skills'])) ?>">Back to all skills</a></p>
           </aside>
