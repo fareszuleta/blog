@@ -180,7 +180,7 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
             <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
             <label>Title <input type="text" name="title" required maxlength="150"></label>
             <label>Summary <input type="text" name="excerpt" required maxlength="300"></label>
-            <label>Content <small class="hint">For a Copy button, put the command between three-backtick lines. To customize the clipboard, open with <code>```custom-copy</code>, enter the visible command, add <code>---copy---</code> on its own line, then the text to copy. Close with three backticks.</small><textarea name="body" required maxlength="20000" rows="10"></textarea></label>
+            <label>Content <small class="hint">For a Copy button, put the command between three-backtick lines. To customize the clipboard, open with <code>```custom-copy</code>, enter the visible command, add <code>---copy---</code> on its own line, then the text to copy. Close with three backticks. Use <code>```alternating-copy</code> to copy the command first and the custom text second.</small><textarea name="body" required maxlength="20000" rows="10"></textarea></label>
             <button type="submit">Publish note</button>
           </form>
         </section>
@@ -318,7 +318,7 @@ function page_admin_edit(array $post, string $csrf, ?string $flash): void
             <input type="hidden" name="id" value="<?= (int) $post['id'] ?>">
             <label>Title <input type="text" name="title" required maxlength="150" value="<?= h($post['title']) ?>"></label>
             <label>Summary <input type="text" name="excerpt" required maxlength="300" value="<?= h($post['excerpt']) ?>"></label>
-            <label>Content <small class="hint">For a Copy button, put the command between three-backtick lines. To customize the clipboard, open with <code>```custom-copy</code>, enter the visible command, add <code>---copy---</code> on its own line, then the text to copy. Close with three backticks.</small><textarea name="body" required maxlength="20000" rows="16"><?= h($post['body']) ?></textarea></label>
+            <label>Content <small class="hint">For a Copy button, put the command between three-backtick lines. To customize the clipboard, open with <code>```custom-copy</code>, enter the visible command, add <code>---copy---</code> on its own line, then the text to copy. Close with three backticks. Use <code>```alternating-copy</code> to copy the command first and the custom text second.</small><textarea name="body" required maxlength="20000" rows="16"><?= h($post['body']) ?></textarea></label>
             <label>Cover image path <input type="text" name="cover" maxlength="300" placeholder="img/example.svg" value="<?= h((string) ($post['cover'] ?? '')) ?>"></label>
             <p class="fine">Slug stays <code><?= h($post['slug']) ?></code> — existing links to this note keep working.</p>
             <button type="submit">Save changes</button>

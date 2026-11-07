@@ -75,7 +75,7 @@ function db(): PDO
         }
     }
 
-    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 8) {
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 9) {
         $pdo->exec('BEGIN IMMEDIATE');
         try {
             if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 7) {
@@ -97,6 +97,15 @@ function db(): PDO
                     }
                 }
                 $pdo->exec('PRAGMA user_version = 8');
+            }
+            if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 9) {
+                $original = "```custom-copy\nnpm --version\n---copy---\nhi, do not copy whatever its in a blog.\n```";
+                $alternate = str_replace('```custom-copy', '```alternating-copy', $original);
+                foreach (["\n", "\r\n"] as $newline) {
+                    $pdo->prepare("UPDATE posts SET body = replace(body, ?, ?) WHERE slug = 'install-codex-cli'")
+                        ->execute([str_replace("\n", $newline, $original), str_replace("\n", $newline, $alternate)]);
+                }
+                $pdo->exec('PRAGMA user_version = 9');
             }
             $pdo->exec('COMMIT');
         } catch (Throwable $error) {

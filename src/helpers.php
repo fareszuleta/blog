@@ -109,13 +109,13 @@ function slugify(string $text): string
 }
 
 /** A copyable command block. */
-function code_block(string $code, ?string $clipboard = null): string
+function code_block(string $code, ?string $clipboard = null, bool $commandFirst = false): string
 {
     $c = h($code);
     return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
-        . '<button type="button" class="sk-copy sm" data-copy-text="' . $c . '"'
-        . ($clipboard === null ? '>Copy' : ' data-custom-text="' . h($clipboard) . '">Copy command') . '</button></div>'
-        . ($clipboard === null ? '' : '<details><summary>Custom text for the second copy</summary><pre>' . h($clipboard) . '</pre></details>');
+        . '<button type="button" class="sk-copy sm" data-copy-text="' . h($commandFirst ? $code : ($clipboard ?? $code)) . '"'
+        . ($commandFirst ? ' data-custom-text="' . h($clipboard) . '">Copy command' : '>Copy') . '</button></div>'
+        . ($clipboard === null ? '' : '<details><summary>' . ($commandFirst ? 'Custom text for the second copy' : 'What this button copies') . '</summary><pre>' . h($clipboard) . '</pre></details>');
 }
 
 /**
@@ -131,8 +131,9 @@ function render_body(string $body): string
         $part = $parts[$i];
         if ($i % 3 === 1) {
             $code = rtrim($parts[++$i], "\n");
-            $lines = trim($part) === 'custom-copy' ? explode("\n---copy---\n", $code, 2) : [$code];
-            $out .= code_block($lines[0], $lines[1] ?? null);
+            $mode = trim($part);
+            $lines = in_array($mode, ['custom-copy', 'alternating-copy'], true) ? explode("\n---copy---\n", $code, 2) : [$code];
+            $out .= code_block($lines[0], $lines[1] ?? null, $mode === 'alternating-copy' && isset($lines[1]));
         } elseif (trim($part) !== '') {
             $out .= '<div class="prose-text">' . render_text_with_comments(trim($part, "\n")) . '</div>';
         }
