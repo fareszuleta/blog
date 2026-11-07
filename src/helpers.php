@@ -113,8 +113,9 @@ function code_block(string $code, ?string $clipboard = null): string
 {
     $c = h($code);
     return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
-        . '<button type="button" class="sk-copy sm" data-copy-text="' . h($clipboard ?? $code) . '">Copy</button></div>'
-        . ($clipboard === null ? '' : '<details><summary>What this button copies</summary><pre>' . h($clipboard) . '</pre></details>');
+        . '<button type="button" class="sk-copy sm" data-copy-text="' . $c . '"'
+        . ($clipboard === null ? '>Copy' : ' data-custom-text="' . h($clipboard) . '">Copy command') . '</button></div>'
+        . ($clipboard === null ? '' : '<details><summary>Custom text for the second copy</summary><pre>' . h($clipboard) . '</pre></details>');
 }
 
 /**
