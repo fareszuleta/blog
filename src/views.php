@@ -217,12 +217,13 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
             <label>Name <input type="text" name="name" required maxlength="80" placeholder="pdf-tables"></label>
             <label>Category <input type="text" name="category" required maxlength="40" placeholder="documents"></label>
             <label>Description <input type="text" name="description" required maxlength="400"></label>
-            <label>Install command <small class="hint">Visitors see and copy this exact text. Multiple lines are supported.</small><textarea name="command" required maxlength="8000" rows="4" spellcheck="false"></textarea></label>
+            <label>Install command <small class="hint">Shown in the guide and Quick install. Configure its Copy behavior below.</small><textarea name="command" required maxlength="8000" rows="4" spellcheck="false"></textarea></label>
             <label>Linked note slug (optional) <input type="text" name="post_slug" maxlength="150" placeholder="pdf-tables-and-why-ocr-is-the-wrong-tool"></label>
             <label>What it does <textarea name="about" maxlength="1000" rows="4"></textarea></label>
             <label>It runs when <input type="text" name="use_when" maxlength="400" value=""></label>
             <label>Example prompt <input type="text" name="example" maxlength="400" value=""></label>
             <label>Extra content (optional; supports ``` code blocks and &lt;!-- comments --&gt;) <textarea name="extra" maxlength="10000" rows="8"></textarea></label>
+            <?php skill_copy_fields(); ?>
             <button type="submit">Add skill</button>
           </form>
         </section>
@@ -327,6 +328,32 @@ function page_admin_edit(array $post, string $csrf, ?string $flash): void
     <?php });
 }
 
+function skill_copy_fields(array $skill = []): void
+{
+    $settings = json_decode($skill['copy_settings'] ?? '{}', true);
+    ?>
+    <fieldset><legend>Copy buttons</legend>
+      <p class="hint">Choose what each step copies. Alternating starts with the visible command, then copies your custom text.</p>
+      <?php foreach (SKILL_COPY_STEPS as $key => $label): ?>
+        <?php $entry = $settings[$key] ?? []; ?>
+        <details>
+          <summary><?= h($label) ?></summary>
+          <label>Copy behavior
+            <select name="copy_mode[<?= h($key) ?>]">
+              <?php foreach (['visible' => 'Visible command', 'custom-copy' => 'Always custom text', 'alternating-copy' => 'Alternate command and custom text'] as $mode => $caption): ?>
+                <option value="<?= h($mode) ?>" <?= ($entry['mode'] ?? 'visible') === $mode ? 'selected' : '' ?>><?= h($caption) ?></option>
+              <?php endforeach; ?>
+            </select>
+          </label>
+          <label>Custom clipboard text
+            <textarea name="copy_text[<?= h($key) ?>]" rows="3" maxlength="8000" spellcheck="false"><?= h($entry['text'] ?? '') ?></textarea>
+          </label>
+        </details>
+      <?php endforeach; ?>
+    </fieldset>
+    <?php
+}
+
 function page_admin_edit_skill(array $skill, string $csrf, ?string $flash): void
 {
     render_page('Edit · ' . $skill['name'], $flash, function () use ($skill, $csrf) { ?>
@@ -343,12 +370,13 @@ function page_admin_edit_skill(array $skill, string $csrf, ?string $flash): void
             <label>Name <input type="text" name="name" required maxlength="80" value="<?= h($skill['name']) ?>"></label>
             <label>Category <input type="text" name="category" required maxlength="40" value="<?= h($skill['category']) ?>"></label>
             <label>Description <input type="text" name="description" required maxlength="400" value="<?= h($skill['description']) ?>"></label>
-            <label>Install command <small class="hint">Visitors see and copy this exact text. Multiple lines are supported.</small><textarea name="command" required maxlength="8000" rows="4" spellcheck="false"><?= h($skill['command']) ?></textarea></label>
+            <label>Install command <small class="hint">Shown in the guide and Quick install. Configure its Copy behavior below.</small><textarea name="command" required maxlength="8000" rows="4" spellcheck="false"><?= h($skill['command']) ?></textarea></label>
             <label>Linked note slug (optional) <input type="text" name="post_slug" maxlength="150" value="<?= h((string) ($skill['post_slug'] ?? '')) ?>"></label>
             <label>What it does <textarea name="about" maxlength="1000" rows="4"><?= h((string) ($skill['about'] ?? '')) ?></textarea></label>
             <label>It runs when <input type="text" name="use_when" maxlength="400" value="<?= h((string) ($skill['use_when'] ?? '')) ?>"></label>
             <label>Example prompt <input type="text" name="example" maxlength="400" value="<?= h((string) ($skill['example'] ?? '')) ?>"></label>
             <label>Extra content (optional; supports ``` code blocks and &lt;!-- comments --&gt;) <textarea name="extra" maxlength="10000" rows="8"><?= h((string) ($skill['extra'] ?? '')) ?></textarea></label>
+            <?php skill_copy_fields($skill); ?>
             <button type="submit">Save changes</button>
           </form>
         </section>
@@ -369,9 +397,9 @@ function skill_guide(array $s): void
           <h3>Check that your agent is installed</h3>
           <p>Skills are folders with a SKILL.md. They work in Codex and in Claude Code. Open a project folder first.</p>
           <p class="step-label">Codex</p>
-          <?= code_block('codex --version') ?>
+          <?= skill_copy_block($s, 'codex_version', 'codex --version') ?>
           <p class="step-label">Claude Code</p>
-          <?= code_block('claude --version') ?>
+          <?= skill_copy_block($s, 'claude_version', 'claude --version') ?>
         </li>
         <!-- step 2: three ways to install; the registry command is the default -->
         <li>
@@ -380,17 +408,17 @@ function skill_guide(array $s): void
           <?php $srcUrl = (string) ($s['source_url'] ?? ''); ?>
           <?php if ($srcUrl !== ''): ?>
             <p class="step-label">Primary install command</p>
-            <?= code_block((string) $s['command']) ?>
+            <?= skill_copy_block($s, 'install', (string) $s['command']) ?>
             <p class="step-label">With the skills CLI, for Claude Code</p>
-            <?= code_block(skill_cli_command($n, $srcUrl, 'claude-code')) ?>
+            <?= skill_copy_block($s, 'claude_install', skill_cli_command($n, $srcUrl, 'claude-code')) ?>
             <p class="step-label">Inside Codex</p>
-            <?= code_block('$skill-installer install ' . $srcUrl) ?>
+            <?= skill_copy_block($s, 'inside_codex', '$skill-installer install ' . $srcUrl) ?>
             <p class="step-label">By hand, for Codex</p>
-            <?= code_block(skill_manual_command($srcUrl, '~/.agents/skills')) ?>
+            <?= skill_copy_block($s, 'manual_codex', skill_manual_command($srcUrl, '~/.agents/skills')) ?>
             <p class="step-label">By hand, for Claude Code</p>
-            <?= code_block(skill_manual_command($srcUrl, '~/.claude/skills')) ?>
+            <?= skill_copy_block($s, 'manual_claude', skill_manual_command($srcUrl, '~/.claude/skills')) ?>
           <?php else: ?>
-            <?= code_block((string) $s['command']) ?>
+            <?= skill_copy_block($s, 'install', (string) $s['command']) ?>
           <?php endif; ?>
           <p class="step-note">The skills CLI installs for every project (<code>-g</code>). Leave out <code>-g</code> to install into the current project only.</p>
         </li>
@@ -398,19 +426,19 @@ function skill_guide(array $s): void
         <li>
           <h3>Check that it loaded</h3>
           <p>Type this in Codex (in Claude Code, type <code>/</code> and look for the name). <?= h($n) ?> should be in the list. If it is not, restart the app. Installed files go to <code>~/.agents/skills</code> (Codex) or <code>~/.claude/skills</code> (Claude Code).</p>
-          <?= code_block('/skills') ?>
+          <?= skill_copy_block($s, 'list', '/skills') ?>
         </li>
         <!-- step 4: test the trigger without naming the skill -->
         <li>
           <h3>Try it</h3>
           <p>Describe the task in plain words, without naming the skill. If Codex loads it, the trigger works.</p>
-          <?php if ($example !== ''): ?><?= code_block($example) ?><?php endif; ?>
+          <?php if ($example !== ''): ?><?= skill_copy_block($s, 'example', $example) ?><?php endif; ?>
         </li>
         <!-- step 5: read SKILL.md and scripts/ before trusting it -->
         <li>
           <h3>Read it before you trust it</h3>
           <p>A skill can ship scripts and can tell the agent to fetch a URL. Look at what you installed.</p>
-          <?= code_block("ls ~/.agents/skills/" . $n . "\ncat ~/.agents/skills/" . $n . "/SKILL.md") ?>
+          <?= skill_copy_block($s, 'inspect', "ls ~/.agents/skills/" . $n . "\ncat ~/.agents/skills/" . $n . "/SKILL.md") ?>
         </li>
       </ol>
     </section>
@@ -578,10 +606,10 @@ function page_skill(array $s, ?array $post): void
 
           <aside class="glance" aria-label="Quick install">
             <h2>Quick install</h2>
-            <?= code_block((string) $s['command']) ?>
+            <?= skill_copy_block($s, 'install', (string) $s['command']) ?>
             <?php if (!empty($s['example'])): ?>
               <h2>Example prompt</h2>
-              <?= code_block((string) $s['example']) ?>
+              <?= skill_copy_block($s, 'example', (string) $s['example']) ?>
             <?php endif; ?>
             <?php if (!empty($s['source_url'])): ?>
               <h2>Source</h2>

@@ -75,7 +75,7 @@ function db(): PDO
         }
     }
 
-    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 9) {
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 10) {
         $pdo->exec('BEGIN IMMEDIATE');
         try {
             if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 7) {
@@ -106,6 +106,10 @@ function db(): PDO
                         ->execute([str_replace("\n", $newline, $original), str_replace("\n", $newline, $alternate)]);
                 }
                 $pdo->exec('PRAGMA user_version = 9');
+            }
+            if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 10) {
+                $pdo->exec('ALTER TABLE skills ADD COLUMN copy_settings TEXT');
+                $pdo->exec('PRAGMA user_version = 10');
             }
             $pdo->exec('COMMIT');
         } catch (Throwable $error) {
@@ -318,16 +322,16 @@ function get_skill_by_id(int $id): ?array
     return $row ?: null;
 }
 
-function create_skill(string $name, string $category, string $description, string $command, ?string $postSlug, string $about = '', string $useWhen = '', string $example = '', string $extra = ''): void
+function create_skill(string $name, string $category, string $description, string $command, ?string $postSlug, string $about = '', string $useWhen = '', string $example = '', string $extra = '', ?string $copySettings = null): void
 {
-    db()->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, extra) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
-        ->execute([$name, $category, $description, $command, $postSlug, $about, $useWhen, $example, $extra]);
+    db()->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, extra, copy_settings) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+        ->execute([$name, $category, $description, $command, $postSlug, $about, $useWhen, $example, $extra, $copySettings]);
 }
 
-function update_skill(int $id, string $name, string $category, string $description, string $command, ?string $postSlug, string $about = '', string $useWhen = '', string $example = '', string $extra = ''): void
+function update_skill(int $id, string $name, string $category, string $description, string $command, ?string $postSlug, string $about = '', string $useWhen = '', string $example = '', string $extra = '', ?string $copySettings = null): void
 {
-    db()->prepare('UPDATE skills SET name = ?, category = ?, description = ?, command = ?, post_slug = ?, about = ?, use_when = ?, example = ?, extra = ? WHERE id = ?')
-        ->execute([$name, $category, $description, $command, $postSlug, $about, $useWhen, $example, $extra, $id]);
+    db()->prepare('UPDATE skills SET name = ?, category = ?, description = ?, command = ?, post_slug = ?, about = ?, use_when = ?, example = ?, extra = ?, copy_settings = COALESCE(?, copy_settings) WHERE id = ?')
+        ->execute([$name, $category, $description, $command, $postSlug, $about, $useWhen, $example, $extra, $copySettings, $id]);
 }
 
 function delete_skill(int $id): void

@@ -197,6 +197,12 @@ function handle_action(string $action): void
 
         case 'skill_create':
             require_admin();
+            try {
+                $copySettings = submitted_skill_copy_settings($_POST);
+            } catch (InvalidArgumentException $error) {
+                flash($error->getMessage());
+                redirect(url(['r' => 'admin', 'edit_skill' => (string) (int) ($_POST['id'] ?? 0)]));
+            }
             $name     = trim((string) ($_POST['name'] ?? ''));
             $category = trim((string) ($_POST['category'] ?? ''));
             $desc     = trim((string) ($_POST['description'] ?? ''));
@@ -213,13 +219,19 @@ function handle_action(string $action): void
                 || mb_strlen($about) > 1000 || mb_strlen($useWhen) > 400 || mb_strlen($example) > 400 || mb_strlen($extra) > 10000) {
                 flash('Fill in every field within the length limits.');
             } else {
-                create_skill($name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null, $about, $useWhen, $example, $extra);
+                create_skill($name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null, $about, $useWhen, $example, $extra, $copySettings);
                 flash('Skill added.');
             }
             redirect(url(['r' => 'admin']));
 
         case 'skill_update':
             require_admin();
+            try {
+                $copySettings = submitted_skill_copy_settings($_POST);
+            } catch (InvalidArgumentException $error) {
+                flash($error->getMessage());
+                redirect(url(['r' => 'admin', 'edit_skill' => (string) (int) ($_POST['id'] ?? 0)]));
+            }
             $id       = (int) ($_POST['id'] ?? 0);
             $name     = trim((string) ($_POST['name'] ?? ''));
             $category = trim((string) ($_POST['category'] ?? ''));
@@ -242,7 +254,7 @@ function handle_action(string $action): void
                 flash('Fill in every field within the length limits.');
                 redirect(url(['r' => 'admin', 'edit_skill' => (string) $id]));
             }
-            update_skill($id, $name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null, $about, $useWhen, $example, $extra);
+            update_skill($id, $name, $category, $desc, $command, $postSlug !== '' ? $postSlug : null, $about, $useWhen, $example, $extra, $copySettings);
             flash('Skill updated.');
             redirect(url(['r' => 'admin']));
 

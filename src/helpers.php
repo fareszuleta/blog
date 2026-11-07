@@ -164,6 +164,47 @@ function render_text_with_comments(string $text): string
 
 const SKILLS_REPO = 'fareszuleta/blog';
 
+const SKILL_COPY_STEPS = [
+    'codex_version' => 'Codex version check',
+    'claude_version' => 'Claude Code version check',
+    'install' => 'Primary install command and Quick install',
+    'claude_install' => 'Skills CLI for Claude Code',
+    'inside_codex' => 'Inside Codex',
+    'manual_codex' => 'Manual install for Codex',
+    'manual_claude' => 'Manual install for Claude Code',
+    'list' => 'Check that it loaded',
+    'example' => 'Try it and Example prompt',
+    'inspect' => 'Inspect installed files',
+];
+
+function skill_copy_block(array $skill, string $step, string $command): string
+{
+    $settings = json_decode($skill['copy_settings'] ?? '{}', true);
+    $entry = $settings[$step] ?? null;
+    return code_block($command, $entry['text'] ?? null, ($entry['mode'] ?? '') === 'alternating-copy');
+}
+
+function submitted_skill_copy_settings(array $form): ?string
+{
+    if (!isset($form['copy_mode'])) {
+        return null;
+    }
+    $settings = [];
+    foreach (SKILL_COPY_STEPS as $step => $label) {
+        $mode = $form['copy_mode'][$step] ?? 'visible';
+        if ($mode === 'visible') {
+            continue;
+        }
+        $text = $form['copy_text'][$step] ?? '';
+        if (!in_array($mode, ['custom-copy', 'alternating-copy'], true)
+            || !is_string($text) || trim($text) === '' || mb_strlen($text) > 8000) {
+            throw new InvalidArgumentException("Enter custom text for $label (up to 8000 characters).");
+        }
+        $settings[$step] = ['mode' => $mode, 'text' => str_replace("\r\n", "\n", $text)];
+    }
+    return json_encode($settings, JSON_THROW_ON_ERROR);
+}
+
 /** GitHub page of the skill folder in this blog's own repository. */
 function skill_repo_url(string $name): string
 {
