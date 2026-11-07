@@ -18,10 +18,7 @@ header('Referrer-Policy: same-origin');
 // ---------- Actions (POST): always end with a redirect ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = (string) ($_POST['action'] ?? '');
-    // The home page is static HTML (public/index.html) and has no session, so it
-    // cannot carry a CSRF token. The lead form there relies on the honeypot field
-    // instead. Every other action still requires a valid CSRF token.
-    if ($action !== 'lead' && !csrf_valid()) {
+    if (!csrf_valid()) {
         http_response_code(403);
         exit('Invalid or expired form. Reload the page and try again.');
     }
@@ -80,8 +77,8 @@ switch ($route) {
         break;
 
     case 'home':
-        // The home page is public/index.html now; index.php never renders it.
-        redirect('/');
+        page_home(get_posts(), flash());
+        break;
 
     default:
         http_response_code(404);
@@ -122,33 +119,26 @@ function handle_action(string $action): void
             $email  = strtolower(trim((string) ($_POST['email'] ?? '')));
             $source = ($_POST['source'] ?? '') === 'post' ? 'post' : 'home';
             if ($email === '' || mb_strlen($email) > 254 || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-                $ok = false;
                 flash('Enter a valid email, for example you@company.com.');
             } else {
                 add_lead($email, $source);
-                $ok = true;
                 flash('Done. Your email is registered.');
             }
             $slug = (string) ($_POST['slug'] ?? '');
             if ($source === 'post' && $slug !== '') {
                 redirect(url(['r' => 'post', 'slug' => $slug]));
             }
-            // The home page is static HTML and has no session, so it can't render
-            // the flash message above. Pass the result as a query param instead;
-            // a small script on the static page reads it and shows the message.
-            redirect('/?lead=' . ($ok ? 'ok' : 'bad'));
+            redirect('/');
 
         case 'login':
-            if (check_password((string) ($_POST['password'] ?? ''))) {
+            if (editor_login((string) ($_POST['email'] ?? ''), (string) ($_POST['password'] ?? ''))) {
                 session_regenerate_id(true);
                 $_SESSION['admin'] = true;
                 flash('Logged in.');
                 redirect(url(['r' => 'admin']));
             }
             sleep(1); // slows down brute-force attempts
-            flash(getenv('ADMIN_PASSWORD')
-                ? 'Wrong password.'
-                : 'Login is disabled: set the ADMIN_PASSWORD variable.');
+            flash('Sign-in failed. Check your editor credentials.');
             redirect(url(['r' => 'admin']));
 
         case 'logout':
@@ -219,7 +209,7 @@ function handle_action(string $action): void
 
             if ($name === '' || $category === '' || $desc === '' || $command === ''
                 || mb_strlen($name) > 80 || mb_strlen($category) > 40
-                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150
+                || mb_strlen($desc) > 400 || mb_strlen($command) > 8000 || mb_strlen($postSlug) > 150
                 || mb_strlen($about) > 1000 || mb_strlen($useWhen) > 400 || mb_strlen($example) > 400 || mb_strlen($extra) > 10000) {
                 flash('Fill in every field within the length limits.');
             } else {
@@ -247,7 +237,7 @@ function handle_action(string $action): void
             }
             if ($name === '' || $category === '' || $desc === '' || $command === ''
                 || mb_strlen($name) > 80 || mb_strlen($category) > 40
-                || mb_strlen($desc) > 400 || mb_strlen($command) > 120 || mb_strlen($postSlug) > 150
+                || mb_strlen($desc) > 400 || mb_strlen($command) > 8000 || mb_strlen($postSlug) > 150
                 || mb_strlen($about) > 1000 || mb_strlen($useWhen) > 400 || mb_strlen($example) > 400 || mb_strlen($extra) > 10000) {
                 flash('Fill in every field within the length limits.');
                 redirect(url(['r' => 'admin', 'edit_skill' => (string) $id]));

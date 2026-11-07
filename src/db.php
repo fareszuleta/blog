@@ -75,8 +75,21 @@ function db(): PDO
         }
     }
 
-    seed_if_empty($pdo);
-    sync_skill_catalog($pdo);
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 7) {
+        $pdo->exec('BEGIN IMMEDIATE');
+        try {
+            if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 7) {
+                seed_if_empty($pdo);
+                sync_skill_catalog($pdo);
+                require __DIR__ . '/tool_guides.php';
+                $pdo->exec('PRAGMA user_version = 7');
+            }
+            $pdo->exec('COMMIT');
+        } catch (Throwable $error) {
+            $pdo->exec('ROLLBACK');
+            throw $error;
+        }
+    }
     return $pdo;
 }
 
@@ -312,15 +325,8 @@ function sync_skill_catalog(PDO $pdo): void
     require_once __DIR__ . '/skills_catalog.php';
 
     $catalog = skills_catalog();
-    $names   = array_column($catalog, 0);
-
-    // Drop anything not in the current catalog: earlier placeholder examples and the
-    // externally-hosted skills from a previous version of this page.
-    $placeholders = implode(',', array_fill(0, count($names), '?'));
-    $pdo->prepare("DELETE FROM skills WHERE name NOT IN ($placeholders)")->execute($names);
-
     $find   = $pdo->prepare('SELECT id FROM skills WHERE name = ?');
-    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?), author = NULL, license = NULL, source_url = ?, command = ? WHERE id = ?");
+    $fill   = $pdo->prepare("UPDATE skills SET about = COALESCE(NULLIF(about, ''), ?), use_when = COALESCE(NULLIF(use_when, ''), ?), example = COALESCE(NULLIF(example, ''), ?), author = NULL, license = NULL, source_url = ?, command = COALESCE(NULLIF(command, ''), ?) WHERE id = ?");
     $insert = $pdo->prepare('INSERT INTO skills (name, category, description, command, post_slug, about, use_when, example, source_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
     foreach ($catalog as [$name, $category, $desc, $about, $useWhen, $example, $postSlug]) {

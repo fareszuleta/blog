@@ -21,28 +21,27 @@ function h(?string $s): string
     return htmlspecialchars((string) $s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-/**
- * CTF_MODE=1 enables an INTENTIONAL stored XSS in comments (author and body are
- * printed without escaping). Training use only: never enable it on a public site.
- */
-function ctf_mode(): bool
-{
-    return getenv('CTF_MODE') === '1';
-}
-
-/** Comment body: escaped normally, raw HTML when CTF_MODE is on. */
 function comment_text(string $s): string
 {
-    return nl2br(ctf_mode() ? $s : h($s));
+    return nl2br(h($s));
 }
 
-/** Comment author: escaped normally, raw HTML when CTF_MODE is on. */
 function comment_author(string $s): string
 {
-    return ctf_mode() ? $s : h($s);
+    return h($s);
 }
 
-/** The home page is static (public/index.html), served at "/". Every other page is index.php. */
+function editor_login(string $email, string $password): bool
+{
+    $email = strtolower(trim($email));
+    if ($email === '') {
+        return check_password($password);
+    }
+    $editors = json_decode(getenv('EDITOR_ACCOUNTS') ?: '{}', true);
+    $hash = $editors[$email] ?? null;
+    return is_string($hash) && password_verify($password, $hash);
+}
+
 function url(array $params = []): string
 {
     return $params ? ('index.php?' . http_build_query($params)) : '/';

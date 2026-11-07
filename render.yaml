@@ -9,8 +9,6 @@ services:
     plan: starter            # persistent disks require a paid plan
     healthCheckPath: /index.php
     envVars:
-      - key: CTF_MODE
-        value: "1"           # public CTF target: intentional stored XSS in public comments
       - key: ADMIN_PASSWORD
         sync: false          # secret: set in the Render dashboard
     disk:

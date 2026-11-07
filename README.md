@@ -1,64 +1,27 @@
-# Closing Notes
+# Uptime installation library
 
-A dynamic sales landing page with a blog, built with PHP 8.3 + SQLite. Includes notes, comments, email capture and an admin dashboard.
+Uptime runs on PHP 8.3, Apache and SQLite. Readers can browse guides and skills without signing in. Editors can publish and edit posts, manage skills, moderate comments and view email registrations.
 
-## Structure
+## Change a Copy button
 
+Open **Editor login**, sign in, then find the skill under **Skills** on the dashboard. Choose **Edit**, change **Install command**, and save. The primary install step and Quick install both display and copy the saved command. For tool guides, edit the note and put each command between its own pair of triple-backtick lines. Each block gets a Copy button. Multi-line commands are supported.
+
+## Editor access
+
+The existing shared login uses the Render secret `ADMIN_PASSWORD` and a blank email field. For individual editors, set `EDITOR_ACCOUNTS` as a secret JSON object mapping lowercase email addresses to PHP password hashes. Generate each hash with PHP's `password_hash($password, PASSWORD_DEFAULT)`. Each configured editor has full dashboard access. Store credentials only in your service environment.
+
+## Update the existing Render service
+
+Merge these source changes into the branch connected to the current service, then deploy that commit in Render. Retain the existing persistent disk mounted at `/var/www/data` and the service environment. The upgrade reads the existing SQLite database in place. It adds Python and Codex CLI starter posts once, preserving any post that already uses either slug.
+
+## Run locally with Docker
+
+Copy `.env.example` to `.env` and set your local admin password. From the repository root run:
+
+```sh
+docker build -t uptime-library .
+docker run --rm -p 8080:80 --env-file .env -v uptime-data:/var/www/data uptime-library
 ```
-public/     web root: index.php (controller), style.css
-src/        db.php (SQLite and queries), helpers.php (CSRF, session, utilities), views.php (HTML)
-data/       SQLite database (created automatically)
-Dockerfile  PHP + Apache image
-```
 
-## Run with Docker
+Open http://localhost:8080. Registration emails are stored in the database. The application does not send a newsletter.
 
-```bash
-cd ~/Projects/blog-ventas
-docker build -t blog-ventas .
-docker volume create blog-data
-docker run -d --name blog-ventas -p 8080:80 \
-  --env-file .env \
-  -v blog-data:/var/www/data \
-  --restart unless-stopped \
-  blog-ventas
-```
-
-Open http://localhost:8080
-
-- **Public:** landing page, notes, comments and email capture.
-- **Admin:** http://localhost:8080/index.php?r=admin. Sign in with `ADMIN_PASSWORD` to publish and delete notes, delete comments and view captured emails.
-
-Copy `.env.example` to `.env` and set `ADMIN_PASSWORD`. If it is not set, login is disabled. `.env` is git-ignored and must never be committed.
-
-## Deploy on Render
-
-1. In Render: **New → Blueprint**, then select this GitHub repo. Render reads `render.yaml`.
-2. In the service's **Environment** tab, set `ADMIN_PASSWORD` to a strong password.
-3. Deploy. The SQLite database lives on the persistent disk at `/var/www/data`.
-
-`render.yaml` deploys with `CTF_MODE=1` for the public CTF target. For a plain sales site, change that value to `0` before deploying.
-
-## CTF mode (intentionally vulnerable)
-
-Setting `CTF_MODE=1` turns on a **deliberate stored XSS** in comments (author and body are printed without escaping, on post pages and in the admin dashboard). It exists for security training and CTF exercises.
-
-- Keep `CTF_MODE=0` (the default) on any real or public deployment.
-- Only run `CTF_MODE=1` on a local machine or an isolated lab network.
-
-## Security included
-
-- Prepared statements (PDO) against SQL injection.
-- Output escaping (`h()`) against XSS. User content is never printed unescaped.
-- CSRF token on every POST form.
-- Honeypot field on comment and email forms.
-- One-second delay on wrong passwords.
-- `X-Frame-Options`, `X-Content-Type-Options` and `Referrer-Policy` headers.
-
-## Before going live on the internet
-
-- Serve over **HTTPS** (a reverse proxy such as Caddy or Nginx, or your hosting provider's).
-- Rate-limit comments and email sign-ups per IP if you get spam.
-- Add moderation: comments currently publish immediately.
-- Replace the testimonial placeholder on the home page with a real one.
-- Connect an email provider: captured emails are stored, but no welcome email or template is sent yet.
