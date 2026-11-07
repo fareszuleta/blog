@@ -114,7 +114,7 @@ function code_block(string $code, ?string $clipboard = null, bool $commandFirst 
     $c = h($code);
     return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
         . '<button type="button" class="sk-copy sm" data-copy-text="' . h($commandFirst ? $code : ($clipboard ?? $code)) . '"'
-        . ($commandFirst ? ' data-custom-text="' . h($clipboard) . '">Copy command' : '>Copy') . '</button></div>'
+        . ($commandFirst ? ' data-custom-text="' . h($clipboard) . '">Copy' : '>Copy') . '</button></div>'
         . ($clipboard === null ? '' : '<details><summary>' . ($commandFirst ? 'Custom text for the second copy' : 'What this button copies') . '</summary><pre>' . h($clipboard) . '</pre></details>');
 }
 

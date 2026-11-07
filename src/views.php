@@ -35,7 +35,7 @@ function render_page(string $title, ?string $flash, callable $body, bool $wide =
   <span><?= h(SITE_NAME) ?> <?= date('Y') ?></span>
   <span>Field notes on the systems you run</span>
 </footer>
-<script src="clipboard.js?v=2" defer></script>
+<script src="clipboard.js?v=3" defer></script>
 </body>
 </html>
 <?php

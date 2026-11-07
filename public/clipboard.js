@@ -26,12 +26,12 @@ document.addEventListener('click', async event => {
   }
   delete button.dataset.copying;
   if (copied && hasCustom) button.dataset.nextCopy = useCustom ? 'command' : 'custom';
-  const nextLabel = hasCustom
-    ? (button.dataset.nextCopy === 'custom' ? 'Copy custom text' : 'Copy command')
-    : 'Copy';
-  button.textContent = copied ? (hasCustom ? nextLabel : 'Copied ✓') : 'Copy failed';
-  button.setAttribute('aria-live', 'polite');
-  clearTimeout(Number(button.dataset.timer));
-  button.dataset.timer = setTimeout(() => { button.textContent = nextLabel; }, 2200);
+  let status = button.parentElement.querySelector('[role="status"]');
+  if (!status) {
+    status = document.createElement('span');
+    status.className = 'sr-only';
+    status.setAttribute('role', 'status');
+    button.after(status);
+  }
+  status.textContent = copied ? 'Copied' : 'Copy failed';
 });
-
