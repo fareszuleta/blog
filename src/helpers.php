@@ -109,11 +109,12 @@ function slugify(string $text): string
 }
 
 /** A copyable command block. */
-function code_block(string $code): string
+function code_block(string $code, ?string $clipboard = null): string
 {
     $c = h($code);
     return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
-        . '<button type="button" class="sk-copy sm" data-copy-text="' . $c . '">Copy</button></div>';
+        . '<button type="button" class="sk-copy sm" data-copy-text="' . h($clipboard ?? $code) . '">Copy</button></div>'
+        . ($clipboard === null ? '' : '<details><summary>What this button copies</summary><pre>' . h($clipboard) . '</pre></details>');
 }
 
 /**
@@ -123,11 +124,14 @@ function code_block(string $code): string
 function render_body(string $body): string
 {
     $body  = str_replace("\r\n", "\n", $body);
-    $parts = preg_split('/^```[^\n]*\n(.*?)^```[ \t]*$/ms', $body, -1, PREG_SPLIT_DELIM_CAPTURE);
+    $parts = preg_split('/^```([^\n]*)\n(.*?)^```[ \t]*$/ms', $body, -1, PREG_SPLIT_DELIM_CAPTURE);
     $out   = '';
-    foreach ($parts as $i => $part) {
-        if ($i % 2 === 1) {
-            $out .= code_block(rtrim($part, "\n"));
+    for ($i = 0; $i < count($parts); $i++) {
+        $part = $parts[$i];
+        if ($i % 3 === 1) {
+            $code = rtrim($parts[++$i], "\n");
+            $lines = trim($part) === 'custom-copy' ? explode("\n---copy---\n", $code, 2) : [$code];
+            $out .= code_block($lines[0], $lines[1] ?? null);
         } elseif (trim($part) !== '') {
             $out .= '<div class="prose-text">' . render_text_with_comments(trim($part, "\n")) . '</div>';
         }
