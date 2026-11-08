@@ -122,6 +122,14 @@ function db(): PDO
             throw $error;
         }
     }
+    $pdo->exec('CREATE TABLE IF NOT EXISTS copy_files (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
+        skill_id INTEGER REFERENCES skills(id) ON DELETE CASCADE,
+        block_key TEXT NOT NULL, filename TEXT NOT NULL, content BLOB NOT NULL,
+        CHECK ((post_id IS NULL) <> (skill_id IS NULL)),
+        UNIQUE(post_id, block_key), UNIQUE(skill_id, block_key)
+    )');
     return $pdo;
 }
 

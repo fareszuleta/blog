@@ -69,4 +69,7 @@ document.addEventListener('click', async event => {
     button.after(status);
   }
   status.textContent = copied ? 'Copied' : 'Copy failed';
+  if (copied) {
+    button.closest('[data-copy-package]')?.querySelector('a[download]')?.click();
+  }
 });

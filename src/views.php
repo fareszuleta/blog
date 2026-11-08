@@ -44,7 +44,7 @@ function render_page(string $title, ?string $flash, callable $body, bool $wide =
   <span><?= h(SITE_NAME) ?> <?= date('Y') ?></span>
   <span>Field notes on the systems you run</span>
 </footer>
-<script src="clipboard.js?v=7" defer></script>
+<script src="clipboard.js?v=8" defer></script>
 </body>
 </html>
 <?php
@@ -336,6 +336,7 @@ function page_admin_edit(array $post, string $csrf, ?string $flash): void
             <button type="submit">Save changes</button>
           </form>
         </section>
+        <?php copy_file_editor('post', $post, $csrf); ?>
     <?php });
 }
 
@@ -391,6 +392,7 @@ function page_admin_edit_skill(array $skill, string $csrf, ?string $flash): void
             <button type="submit">Save changes</button>
           </form>
         </section>
+        <?php copy_file_editor('skill', $skill, $csrf); ?>
     <?php });
 }
 

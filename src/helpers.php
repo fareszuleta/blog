@@ -143,13 +143,17 @@ function body_parts(string $body): array
     $body  = str_replace("\r\n", "\n", $body);
     $parts = preg_split('/^```([^\n]*)\n(.*?)^```[ \t]*$/ms', $body, -1, PREG_SPLIT_DELIM_CAPTURE);
     $blocks = [];
+    $occurrences = [];
     for ($i = 0; $i < count($parts); $i++) {
         $part = $parts[$i];
         if ($i % 3 === 1) {
             $code = rtrim($parts[++$i], "\n");
             $mode = trim($part);
             $lines = in_array($mode, ['custom-copy', 'alternating-copy'], true) ? explode("\n---copy---\n", $code, 2) : [$code];
-            $blocks[] = ['code' => $lines[0], 'custom' => $lines[1] ?? null, 'mode' => $mode];
+            $hash = hash('sha256', $lines[0]);
+            $occurrences[$hash] = ($occurrences[$hash] ?? 0) + 1;
+            $blocks[] = ['code' => $lines[0], 'custom' => $lines[1] ?? null, 'mode' => $mode,
+                'file_key' => 'code-' . $hash . '-' . $occurrences[$hash]];
         } elseif (trim($part) !== '') {
             $blocks[] = ['prose' => trim($part, "\n")];
         }
@@ -160,19 +164,24 @@ function body_parts(string $body): array
 function render_body(string $body, string $scope, bool $copyOnly = false): string
 {
     $html = '';
+    [$kind, $id] = explode('/', $scope);
+    $files = copy_files($kind, (int) $id);
     foreach (body_parts($body) as $index => $block) {
         if (isset($block['prose'])) {
             $html .= '<div class="prose-text">' . render_text_with_comments($block['prose']) . '</div>';
-        } elseif ($copyOnly) {
+            continue;
+        }
+        if ($copyOnly) {
             $ref = $scope . '/' . $index;
             $mode = isset($block['custom']) ? $block['mode'] : 'command';
-            $html .= '<div class="codeblock"><pre class="button-copy-preview"><code>' . h($block['code']) . '</code></pre>'
+            $command = '<div class="codeblock"><pre class="button-copy-preview"><code>' . h($block['code']) . '</code></pre>'
                 . '<button type="button" class="sk-copy sm" data-copy-only data-copy-mode="' . h($mode)
                 . '" data-copy-ref="' . h($ref) . '" data-copy-ticket="' . h(clipboard_ticket($ref)) . '">Copy</button></div>';
         } else {
             $ref = isset($block['custom']) ? $scope . '/' . $index : '';
-            $html .= code_block($block['code'], $block['mode'], $ref);
+            $command = code_block($block['code'], $block['mode'], $ref);
         }
+        $html .= with_copy_file($command, $files[$block['file_key']] ?? null);
     }
     return $html;
 }
@@ -219,7 +228,8 @@ function skill_copy_block(array $skill, string $step, string $command): string
     $settings = json_decode($skill['copy_settings'] ?? '{}', true);
     $entry = $settings[$step] ?? null;
     $ref = 'skill/' . $skill['id'] . '/' . $step;
-    return code_block($command, $entry['mode'] ?? '', isset($entry['text']) ? $ref : '', $ref);
+    $html = code_block($command, $entry['mode'] ?? '', isset($entry['text']) ? $ref : '', $ref);
+    return with_copy_file($html, copy_files('skill', (int) $skill['id'])[$step] ?? null);
 }
 
 function submitted_skill_copy_settings(array $form): ?string

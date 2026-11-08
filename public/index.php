@@ -9,6 +9,7 @@ session_start();
 
 require __DIR__ . '/../src/db.php';
 require __DIR__ . '/../src/helpers.php';
+require __DIR__ . '/../src/copy_files.php';
 require __DIR__ . '/../src/views.php';
 require __DIR__ . '/../src/readers.php';
 
@@ -30,6 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $route !== 'clipboard') {
 
 // ---------- Views (GET) ----------
 switch ($route) {
+    case 'copy_file':
+        serve_copy_file((int) ($_GET['id'] ?? 0));
+        break;
     case 'clipboard':
         header('Content-Type: application/json; charset=utf-8');
         header('Cache-Control: private, no-store');
@@ -129,6 +133,9 @@ switch ($route) {
 function handle_action(string $action): void
 {
     switch ($action) {
+        case 'copy_file_update':
+            update_copy_file();
+            break;
         case 'reader_register':
         case 'reader_login':
         case 'reader_logout':
