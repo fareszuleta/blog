@@ -434,6 +434,7 @@ th { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); font-weig
 .sk-copy.sm { padding: 5px 11px; font-size: 0.72rem; }
 .codeblock { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0 14px; padding: 10px 10px 10px 14px; background: var(--code-bg); border: 1px solid var(--line-soft); border-radius: 10px; }
 .codeblock pre { flex: 1; min-width: 0; margin: 0; overflow-x: auto; }
+.button-copy-preview { -webkit-user-select: none; user-select: none; }
 .codeblock code { font: 400 0.84rem/1.6 var(--mono); color: var(--ink); white-space: pre; background: none; border: 0; padding: 0; }
 .prose-text { margin: 0 0 14px; }
 .crumbs { display: flex; gap: 8px; flex-wrap: wrap; padding: 24px 0 8px; font: 400 0.82rem var(--mono); color: var(--muted); }

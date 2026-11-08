@@ -166,7 +166,8 @@ function render_body(string $body, string $scope, bool $copyOnly = false): strin
         } elseif ($copyOnly) {
             $ref = $scope . '/' . $index;
             $mode = isset($block['custom']) ? $block['mode'] : 'command';
-            $html .= '<div class="codeblock"><button type="button" class="sk-copy sm" data-copy-only data-copy-mode="' . h($mode)
+            $html .= '<div class="codeblock"><pre class="button-copy-preview"><code>' . h($block['code']) . '</code></pre>'
+                . '<button type="button" class="sk-copy sm" data-copy-only data-copy-mode="' . h($mode)
                 . '" data-copy-ref="' . h($ref) . '" data-copy-ticket="' . h(clipboard_ticket($ref)) . '">Copy</button></div>';
         } else {
             $ref = isset($block['custom']) ? $scope . '/' . $index : '';
