@@ -16,12 +16,21 @@ function render_page(string $title, ?string $flash, callable $body, bool $wide =
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
-<body<?= $wide ? ' class="wide"' : '' ?>>
+<body data-reader="<?= h((string) (reader_id() ?? (is_admin() ? 'editor' : 'guest'))) ?>"<?= $wide ? ' class="wide"' : '' ?>>
 <header class="site">
   <a class="brand" href="<?= h(url()) ?>"><?= h(SITE_NAME) ?></a>
   <nav>
     <a href="<?= h(url()) ?>#notes">Notes</a>
     <a href="<?= h(url(['r' => 'skills'])) ?>">Skills</a>
+    <?php if (reader_id() !== null): ?>
+      <form method="post" action="index.php">
+        <input type="hidden" name="action" value="reader_logout">
+        <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
+        <button type="submit" class="secondary">Sign out</button>
+      </form>
+    <?php elseif (!is_admin()): ?>
+      <a href="<?= h(url(['r' => 'reader'])) ?>">Reader sign in</a>
+    <?php endif; ?>
     <a href="<?= h(url(['r' => 'admin'])) ?>"><?= is_admin() ? 'Dashboard' : 'Editor login' ?></a>
   </nav>
 </header>
@@ -35,7 +44,7 @@ function render_page(string $title, ?string $flash, callable $body, bool $wide =
   <span><?= h(SITE_NAME) ?> <?= date('Y') ?></span>
   <span>Field notes on the systems you run</span>
 </footer>
-<script src="clipboard.js?v=3" defer></script>
+<script src="clipboard.js?v=4" defer></script>
 </body>
 </html>
 <?php
@@ -93,9 +102,11 @@ function page_post(array $post, array $comments, string $csrf, ?string $flash): 
             </p>
           </header>
           <?php $linkedSkill = get_skill_by_post_slug((string) $post['slug']); ?>
-          <?php if ($linkedSkill !== null): ?>
+          <?php if ($linkedSkill !== null && (reader_id() !== null || is_admin())): ?>
             <?php skill_guide($linkedSkill); ?>
             <h2 class="guide-sub">About this skill</h2>
+          <?php elseif ($linkedSkill !== null): ?>
+            <p><a href="<?= h(url(['r' => 'skill', 'name' => $linkedSkill['name']])) ?>">Sign in to see the install steps</a></p>
           <?php endif; ?>
           <div class="prose"><?= render_body((string) $post['body']) ?></div>
         </article>

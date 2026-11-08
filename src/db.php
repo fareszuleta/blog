@@ -75,7 +75,7 @@ function db(): PDO
         }
     }
 
-    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 10) {
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 11) {
         $pdo->exec('BEGIN IMMEDIATE');
         try {
             if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 7) {
@@ -110,6 +110,11 @@ function db(): PDO
             if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 10) {
                 $pdo->exec('ALTER TABLE skills ADD COLUMN copy_settings TEXT');
                 $pdo->exec('PRAGMA user_version = 10');
+            }
+            if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 11) {
+                $pdo->exec('CREATE TABLE readers (id INTEGER PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL)');
+                $pdo->exec('CREATE TABLE reader_sessions (digest TEXT PRIMARY KEY, reader_id INTEGER NOT NULL REFERENCES readers(id) ON DELETE CASCADE, expires INTEGER NOT NULL)');
+                $pdo->exec('PRAGMA user_version = 11');
             }
             $pdo->exec('COMMIT');
         } catch (Throwable $error) {

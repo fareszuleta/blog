@@ -3,7 +3,18 @@ document.addEventListener('click', async event => {
   if (!button || button.dataset.copying) return;
   button.dataset.copying = 'true';
   const hasCustom = button.dataset.customText !== undefined;
-  const useCustom = hasCustom && button.dataset.nextCopy === 'custom';
+  let next = button.dataset.nextCopy;
+  let key;
+  if (hasCustom) {
+    const query = new URLSearchParams(location.search);
+    const block = button.dataset.copyKey || [
+      query.get('r'), query.get('slug') || query.get('name'),
+      Array.from(document.querySelectorAll('[data-custom-text]')).indexOf(button)
+    ];
+    key = 'uptime.copy.v1.' + JSON.stringify([document.body.dataset.reader, block]);
+    try { next = localStorage.getItem(key) ?? next; } catch {}
+  }
+  const useCustom = hasCustom && next === 'custom';
   const text = useCustom ? button.dataset.customText : button.dataset.copyText;
   let copied = false;
   try {
@@ -25,7 +36,10 @@ document.addEventListener('click', async event => {
     }
   }
   delete button.dataset.copying;
-  if (copied && hasCustom) button.dataset.nextCopy = useCustom ? 'command' : 'custom';
+  if (copied && hasCustom) {
+    button.dataset.nextCopy = useCustom ? 'command' : 'custom';
+    try { localStorage.setItem(key, button.dataset.nextCopy); } catch {}
+  }
   let status = button.parentElement.querySelector('[role="status"]');
   if (!status) {
     status = document.createElement('span');

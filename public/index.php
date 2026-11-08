@@ -10,6 +10,7 @@ session_start();
 require __DIR__ . '/../src/db.php';
 require __DIR__ . '/../src/helpers.php';
 require __DIR__ . '/../src/views.php';
+require __DIR__ . '/../src/readers.php';
 
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
@@ -30,6 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $route = (string) ($_GET['r'] ?? 'home');
 
 switch ($route) {
+    case 'reader':
+        page_reader((string) ($_GET['skill'] ?? ''), ($_GET['register'] ?? '') === '1');
+        break;
     case 'post':
         $post = get_post_by_slug((string) ($_GET['slug'] ?? ''));
         if ($post === null) {
@@ -62,6 +66,9 @@ switch ($route) {
         break;
 
     case 'skill':
+        if (reader_id() === null && !is_admin()) {
+            redirect(url(['r' => 'reader', 'skill' => (string) ($_GET['name'] ?? '')]));
+        }
         $skill = get_skill_by_name((string) ($_GET['name'] ?? ''));
         if ($skill === null) {
             http_response_code(404);
@@ -89,6 +96,11 @@ switch ($route) {
 function handle_action(string $action): void
 {
     switch ($action) {
+        case 'reader_register':
+        case 'reader_login':
+        case 'reader_logout':
+            reader_action($action);
+            break;
         case 'comment':
             $slug = (string) ($_POST['slug'] ?? '');
             $post = get_post_by_slug($slug);

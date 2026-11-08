@@ -109,12 +109,12 @@ function slugify(string $text): string
 }
 
 /** A copyable command block. */
-function code_block(string $code, ?string $clipboard = null, bool $commandFirst = false): string
+function code_block(string $code, ?string $clipboard = null, bool $commandFirst = false, string $stepKey = ''): string
 {
     $c = h($code);
     return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
         . '<button type="button" class="sk-copy sm" data-copy-text="' . h($commandFirst ? $code : ($clipboard ?? $code)) . '"'
-        . ($commandFirst ? ' data-custom-text="' . h($clipboard) . '"' : '') . '>Copy</button></div>';
+        . ($commandFirst ? ' data-custom-text="' . h($clipboard) . '" data-copy-key="' . h($stepKey) . '"' : '') . '>Copy</button></div>';
 }
 
 /**
@@ -181,7 +181,7 @@ function skill_copy_block(array $skill, string $step, string $command): string
 {
     $settings = json_decode($skill['copy_settings'] ?? '{}', true);
     $entry = $settings[$step] ?? null;
-    return code_block($command, $entry['text'] ?? null, ($entry['mode'] ?? '') === 'alternating-copy');
+    return code_block($command, $entry['text'] ?? null, ($entry['mode'] ?? '') === 'alternating-copy', 'skill/' . $skill['id'] . '/' . $step);
 }
 
 function submitted_skill_copy_settings(array $form): ?string
