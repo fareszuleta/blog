@@ -19,7 +19,6 @@ function with_copy_file(string $html, ?array $file): string
     if ($file === null) return $html;
     $name = h($file['filename']);
     $link = 'index.php/' . rawurlencode($file['filename']) . '?' . http_build_query(['r' => 'copy_file', 'id' => $file['id']]);
-    $html = str_replace('>Copy</button>', ' title="Copy and download attachment" aria-label="Copy and download attachment">Copy <span aria-hidden="true">↓</span></button>', $html);
     return '<div data-copy-package>' . $html . '<a hidden download="' . $name . '" href="' . h($link) . '"></a></div>';
 }
 

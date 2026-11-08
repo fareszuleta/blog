@@ -70,6 +70,7 @@ document.addEventListener('click', async event => {
   }
   status.textContent = copied ? 'Copied' : 'Copy failed';
   if (copied) {
-    button.closest('[data-copy-package]')?.querySelector('a[download]')?.click();
+    const attachment = button.closest('[data-copy-package]')?.querySelector('a[download]');
+    if (attachment && window.confirm(`Download ${attachment.download}?`)) attachment.click();
   }
 });
