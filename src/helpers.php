@@ -109,35 +109,50 @@ function slugify(string $text): string
 }
 
 /** A copyable command block. */
-function code_block(string $code, ?string $clipboard = null, bool $commandFirst = false, string $stepKey = ''): string
+function code_block(string $code, string $mode = '', string $ref = '', string $stepKey = ''): string
 {
     $c = h($code);
     return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
-        . '<button type="button" class="sk-copy sm" data-copy-text="' . h($commandFirst ? $code : ($clipboard ?? $code)) . '"'
-        . ($commandFirst ? ' data-custom-text="' . h($clipboard) . '" data-copy-key="' . h($stepKey) . '"' : '') . '>Copy</button></div>';
+        . '<button type="button" class="sk-copy sm" data-copy-text="' . $c . '"'
+        . ($ref === '' ? '' : ' data-copy-mode="' . h($mode) . '" data-copy-ref="' . h($ref) . '" data-copy-key="' . h($stepKey) . '"')
+        . '>Copy</button></div>';
 }
 
 /**
  * Renders a post body: plain paragraphs, plus fenced ``` blocks as copyable
  * command blocks. Everything is escaped.
  */
-function render_body(string $body): string
+function body_parts(string $body): array
 {
     $body  = str_replace("\r\n", "\n", $body);
     $parts = preg_split('/^```([^\n]*)\n(.*?)^```[ \t]*$/ms', $body, -1, PREG_SPLIT_DELIM_CAPTURE);
-    $out   = '';
+    $blocks = [];
     for ($i = 0; $i < count($parts); $i++) {
         $part = $parts[$i];
         if ($i % 3 === 1) {
             $code = rtrim($parts[++$i], "\n");
             $mode = trim($part);
             $lines = in_array($mode, ['custom-copy', 'alternating-copy'], true) ? explode("\n---copy---\n", $code, 2) : [$code];
-            $out .= code_block($lines[0], $lines[1] ?? null, $mode === 'alternating-copy' && isset($lines[1]));
+            $blocks[] = ['code' => $lines[0], 'custom' => $lines[1] ?? null, 'mode' => $mode];
         } elseif (trim($part) !== '') {
-            $out .= '<div class="prose-text">' . render_text_with_comments(trim($part, "\n")) . '</div>';
+            $blocks[] = ['prose' => trim($part, "\n")];
         }
     }
-    return $out;
+    return $blocks;
+}
+
+function render_body(string $body, string $scope): string
+{
+    $html = '';
+    foreach (body_parts($body) as $index => $block) {
+        if (isset($block['prose'])) {
+            $html .= '<div class="prose-text">' . render_text_with_comments($block['prose']) . '</div>';
+        } else {
+            $ref = isset($block['custom']) ? $scope . '/' . $index : '';
+            $html .= code_block($block['code'], $block['mode'], $ref);
+        }
+    }
+    return $html;
 }
 
 /**
@@ -181,7 +196,8 @@ function skill_copy_block(array $skill, string $step, string $command): string
 {
     $settings = json_decode($skill['copy_settings'] ?? '{}', true);
     $entry = $settings[$step] ?? null;
-    return code_block($command, $entry['text'] ?? null, ($entry['mode'] ?? '') === 'alternating-copy', 'skill/' . $skill['id'] . '/' . $step);
+    $ref = 'skill/' . $skill['id'] . '/' . $step;
+    return code_block($command, $entry['mode'] ?? '', isset($entry['text']) ? $ref : '', $ref);
 }
 
 function submitted_skill_copy_settings(array $form): ?string

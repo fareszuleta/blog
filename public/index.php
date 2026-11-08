@@ -31,6 +31,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $route = (string) ($_GET['r'] ?? 'home');
 
 switch ($route) {
+    case 'clipboard':
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: private, no-store');
+        $ref = (string) ($_GET['ref'] ?? '');
+        $text = null;
+        if (preg_match('~^(post|extra|skill)/([1-9][0-9]*)/([a-z_0-9]+)$~D', $ref, $parts)) {
+            [, $kind, $id, $key] = $parts;
+            if ($kind !== 'post' && reader_id() === null && !is_admin()) {
+                http_response_code(401);
+                exit('null');
+            }
+            if ($kind === 'skill') {
+                $skill = get_skill_by_id((int) $id);
+                $settings = json_decode($skill['copy_settings'] ?? '{}', true);
+                $text = $settings[$key]['text'] ?? null;
+            } elseif (ctype_digit($key)) {
+                $body = $kind === 'post' ? (get_post_by_id((int) $id)['body'] ?? '') : (get_skill_by_id((int) $id)['extra'] ?? '');
+                $text = body_parts($body)[(int) $key]['custom'] ?? null;
+            }
+        }
+        if ($text === null) http_response_code(404);
+        echo json_encode($text, JSON_THROW_ON_ERROR);
+        break;
     case 'reader':
         page_reader((string) ($_GET['skill'] ?? ''), ($_GET['register'] ?? '') === '1');
         break;

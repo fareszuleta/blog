@@ -44,7 +44,7 @@ function render_page(string $title, ?string $flash, callable $body, bool $wide =
   <span><?= h(SITE_NAME) ?> <?= date('Y') ?></span>
   <span>Field notes on the systems you run</span>
 </footer>
-<script src="clipboard.js?v=4" defer></script>
+<script src="clipboard.js?v=5" defer></script>
 </body>
 </html>
 <?php
@@ -108,7 +108,7 @@ function page_post(array $post, array $comments, string $csrf, ?string $flash): 
           <?php elseif ($linkedSkill !== null): ?>
             <p><a href="<?= h(url(['r' => 'skill', 'name' => $linkedSkill['name']])) ?>">Sign in to see the install steps</a></p>
           <?php endif; ?>
-          <div class="prose"><?= render_body((string) $post['body']) ?></div>
+          <div class="prose"><?= render_body((string) $post['body'], 'post/' . $post['id']) ?></div>
         </article>
 
         <aside class="inline-cta" aria-labelledby="inline-title">
@@ -602,7 +602,7 @@ function page_skill(array $s, ?array $post): void
             <?php if (!empty($s['extra'])): ?>
               <section class="about-skill">
                 <h2>More details</h2>
-                <div class="prose"><?= render_body((string) $s['extra']) ?></div>
+                <div class="prose"><?= render_body((string) $s['extra'], 'extra/' . $s['id']) ?></div>
               </section>
             <?php endif; ?>
 
