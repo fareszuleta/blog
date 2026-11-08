@@ -418,7 +418,7 @@ function skill_guide(array $s): void
         <!-- step 2: three ways to install; the registry command is the default -->
         <li>
           <h3>Install the skill</h3>
-          <p>The skill is a real folder in this blog's own repository<?php if (!empty($s['source_url'])): ?> (<a href="<?= h((string) $s['source_url']) ?>">view it on GitHub</a>)<?php endif; ?>. Pick one way.</p>
+          <p>The skill is a real folder in this blog's own repository<?php if (!empty($s['source_url']) && $n !== 'pdf-tables'): ?> (<a href="<?= h((string) $s['source_url']) ?>">view it on GitHub</a>)<?php endif; ?>. Pick one way.</p>
           <?php $srcUrl = (string) ($s['source_url'] ?? ''); ?>
           <?php if ($srcUrl !== ''): ?>
             <p class="step-label">Primary install command</p>
@@ -626,7 +626,7 @@ function page_skill(array $s, ?array $post): void
               <h2>Example prompt</h2>
               <?= skill_copy_block($s, 'example', (string) $s['example']) ?>
             <?php endif; ?>
-            <?php if (!empty($s['source_url'])): ?>
+            <?php if (!empty($s['source_url']) && (string) $s['name'] !== 'pdf-tables'): ?>
               <h2>Source</h2>
               <p><a href="<?= h((string) $s['source_url']) ?>">View this skill on GitHub</a></p>
             <?php endif; ?>
