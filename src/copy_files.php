@@ -17,9 +17,10 @@ function copy_files(string $kind, int $id): array
 function with_copy_file(string $html, ?array $file): string
 {
     if ($file === null) return $html;
-    $link = url(['r' => 'copy_file', 'id' => $file['id']]);
-    return '<div data-copy-package>' . $html . '<small>Copy also downloads <a download href="' . h($link)
-        . '">' . h($file['filename']) . '</a></small></div>';
+    $name = h($file['filename']);
+    $link = 'index.php/' . rawurlencode($file['filename']) . '?' . http_build_query(['r' => 'copy_file', 'id' => $file['id']]);
+    $html = str_replace('>Copy</button>', ' title="Copy and download attachment" aria-label="Copy and download attachment">Copy <span aria-hidden="true">↓</span></button>', $html);
+    return '<div data-copy-package>' . $html . '<a hidden download="' . $name . '" href="' . h($link) . '"></a></div>';
 }
 
 function copy_file_choices(string $kind, array $owner): array
@@ -113,6 +114,7 @@ function serve_copy_file(int $id): void
     if (!$file) { http_response_code(404); return; }
     header('Cache-Control: private, no-store');
     header('Content-Type: application/octet-stream');
-    header("Content-Disposition: attachment; filename*=UTF-8''" . rawurlencode($file['filename']));
+    $fallback = preg_replace('/[^A-Za-z0-9._ -]/', '_', $file['filename']);
+    header('Content-Disposition: attachment; filename="' . $fallback . '"; filename*=UTF-8\'\'' . rawurlencode($file['filename']));
     echo $file['content'];
 }
