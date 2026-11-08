@@ -102,9 +102,6 @@ function page_post(array $post, array $comments, string $csrf, ?string $flash): 
             </p>
           </header>
           <?php $linkedSkill = get_skill_by_post_slug((string) $post['slug']); ?>
-          <?php if (copy_files('post', (int) $post['id']) || ($linkedSkill && (reader_id() !== null || is_admin()) && copy_files('skill', (int) $linkedSkill['id']))): ?>
-            <p>Copy also downloads an attachment when one is included.</p>
-          <?php endif; ?>
           <?php if ($linkedSkill !== null && (reader_id() !== null || is_admin())): ?>
             <?php skill_guide($linkedSkill); ?>
             <h2 class="guide-sub">About this skill</h2>
@@ -592,9 +589,6 @@ function page_skill(array $s, ?array $post): void
               <span class="chip"><?= h($s['category']) ?></span>
               <h1><?= h($s['name']) ?></h1>
               <p class="dek"><?= h($s['description']) ?></p>
-              <?php if (copy_files('skill', (int) $s['id'])): ?>
-                <p>Copy also downloads an attachment when one is included.</p>
-              <?php endif; ?>
             </header>
 
             <?php if (!empty($s['about'])): ?>
