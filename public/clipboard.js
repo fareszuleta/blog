@@ -71,6 +71,6 @@ document.addEventListener('click', async event => {
   status.textContent = copied ? 'Copied' : 'Copy failed';
   if (copied) {
     const attachment = button.closest('[data-copy-package]')?.querySelector('a[download]');
-    if (attachment && window.confirm(`Download ${attachment.download}?`)) attachment.click();
+    attachment?.click();
   }
 });
