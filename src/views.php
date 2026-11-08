@@ -402,7 +402,7 @@ function skill_guide(array $s): void
     ?>
     <section class="guide" aria-labelledby="guide-title-<?= h($n) ?>">
       <h2 id="guide-title-<?= h($n) ?>">Follow these steps to install <?= h($n) ?></h2>
-      <p>For terminal commands, click <strong>Copy</strong> beside the command you need. Some buttons copy custom text or alternate between two values. Paste into a text editor to check what you copied. Once you recognize the command, paste it into your terminal and press Enter.</p>
+      <p>For terminal commands, click <strong>Copy</strong> and paste the copied text into your terminal.</p>
       <ol class="steps">
         <!-- step 1: make sure Codex is installed -->
         <li>
@@ -437,13 +437,13 @@ function skill_guide(array $s): void
         <!-- step 3: /skills lists every skill Codex found -->
         <li>
           <h3>Check that it loaded</h3>
-          <p>In Codex, click <strong>Copy</strong> below, paste into the Codex prompt and check that it says <code>/skills</code> before pressing Enter. In Claude Code, type <code>/</code>. Look for <?= h($n) ?> in the list. If it is missing, restart the app. Installed files go to <code>~/.agents/skills</code> (Codex) or <code>~/.claude/skills</code> (Claude Code).</p>
+          <p>In Codex, click <strong>Copy</strong> below, paste into the Codex prompt and press Enter. In Claude Code, type <code>/</code>. Look for <?= h($n) ?> in the list. If it is missing, restart the app. Installed files go to <code>~/.agents/skills</code> (Codex) or <code>~/.claude/skills</code> (Claude Code).</p>
           <?= skill_copy_block($s, 'list', '/skills') ?>
         </li>
         <!-- step 4: test the trigger without naming the skill -->
         <li>
           <h3>Try it</h3>
-          <?php if ($example !== ''): ?><p>Click <strong>Copy</strong> beside the example below, paste it into your agent’s chat and review it before sending.</p><?php endif; ?>
+          <?php if ($example !== ''): ?><p>Click <strong>Copy</strong> beside the example below and paste it into your agent’s chat.</p><?php endif; ?>
           <p>Describe the task in plain words, without naming the skill. If Codex loads it, the trigger works.</p>
           <?php if ($example !== ''): ?><?= skill_copy_block($s, 'example', $example) ?><?php endif; ?>
         </li>
