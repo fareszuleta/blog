@@ -15,9 +15,11 @@ document.addEventListener('click', async event => {
     try { next = localStorage.getItem(key) ?? next; } catch {}
   }
   const useCustom = button.dataset.copyMode === 'custom-copy' || (hasCustom && next === 'custom');
-  const payload = useCustom ? fetch('index.php?' + new URLSearchParams({
-    r: 'clipboard', ref: button.dataset.copyRef
-  }), { cache: 'no-store' }).then(async response => {
+  const payload = useCustom ? fetch('index.php?r=clipboard', {
+    method: 'POST',
+    cache: 'no-store',
+    body: new URLSearchParams({ref: button.dataset.copyRef, ticket: button.dataset.copyTicket})
+  }).then(async response => {
     if (!response.ok) throw new Error('Clipboard text unavailable');
     const text = await response.json();
     if (typeof text !== 'string') throw new Error('Invalid clipboard text');

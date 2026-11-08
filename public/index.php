@@ -17,7 +17,8 @@ header('X-Frame-Options: DENY');
 header('Referrer-Policy: same-origin');
 
 // ---------- Actions (POST): always end with a redirect ----------
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$route = (string) ($_GET['r'] ?? 'home');
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $route !== 'clipboard') {
     $action = (string) ($_POST['action'] ?? '');
     if (!csrf_valid()) {
         http_response_code(403);
@@ -28,13 +29,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // ---------- Views (GET) ----------
-$route = (string) ($_GET['r'] ?? 'home');
-
 switch ($route) {
     case 'clipboard':
         header('Content-Type: application/json; charset=utf-8');
         header('Cache-Control: private, no-store');
-        $ref = (string) ($_GET['ref'] ?? '');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Allow: POST');
+            http_response_code(405);
+            exit('null');
+        }
+        $ref = $_POST['ref'] ?? '';
+        $ticket = $_POST['ticket'] ?? '';
+        if (!is_string($ref) || !is_string($ticket) || !valid_clipboard_ticket($ref, $ticket)) {
+            http_response_code(403);
+            exit('null');
+        }
         $text = null;
         if (preg_match('~^(post|extra|skill)/([1-9][0-9]*)/([a-z_0-9]+)$~D', $ref, $parts)) {
             [, $kind, $id, $key] = $parts;

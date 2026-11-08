@@ -108,13 +108,29 @@ function slugify(string $text): string
     return $slug !== '' ? substr($slug, 0, 80) : 'post';
 }
 
+function clipboard_ticket(string $ref): string
+{
+    $_SESSION['clipboard_key'] ??= bin2hex(random_bytes(32));
+    $expires = time() + 8 * 3600;
+    return $expires . '.' . hash_hmac('sha256', $expires . ':' . $ref, $_SESSION['clipboard_key']);
+}
+
+function valid_clipboard_ticket(string $ref, string $ticket): bool
+{
+    if (!isset($_SESSION['clipboard_key']) || !preg_match('/^(\d{10})\.([a-f0-9]{64})$/D', $ticket, $parts)) {
+        return false;
+    }
+    return (int) $parts[1] > time()
+        && hash_equals(hash_hmac('sha256', $parts[1] . ':' . $ref, $_SESSION['clipboard_key']), $parts[2]);
+}
+
 /** A copyable command block. */
 function code_block(string $code, string $mode = '', string $ref = '', string $stepKey = ''): string
 {
     $c = h($code);
     return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
         . '<button type="button" class="sk-copy sm" data-copy-text="' . $c . '"'
-        . ($ref === '' ? '' : ' data-copy-mode="' . h($mode) . '" data-copy-ref="' . h($ref) . '" data-copy-key="' . h($stepKey) . '"')
+        . ($ref === '' ? '' : ' data-copy-mode="' . h($mode) . '" data-copy-ref="' . h($ref) . '" data-copy-ticket="' . h(clipboard_ticket($ref)) . '" data-copy-key="' . h($stepKey) . '"')
         . '>Copy</button></div>';
 }
 
