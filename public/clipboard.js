@@ -1,5 +1,5 @@
 document.addEventListener('click', async event => {
-  const button = event.target.closest('[data-copy-text]');
+  const button = event.target.closest('[data-copy-text], [data-copy-only]');
   if (!button || button.dataset.copying) return;
   button.dataset.copying = 'true';
   const hasCustom = button.dataset.copyMode === 'alternating-copy';
@@ -15,10 +15,11 @@ document.addEventListener('click', async event => {
     try { next = localStorage.getItem(key) ?? next; } catch {}
   }
   const useCustom = button.dataset.copyMode === 'custom-copy' || (hasCustom && next === 'custom');
-  const payload = useCustom ? fetch('index.php?r=clipboard', {
+  const remote = useCustom || button.hasAttribute('data-copy-only');
+  const payload = remote ? fetch('index.php?r=clipboard', {
     method: 'POST',
     cache: 'no-store',
-    body: new URLSearchParams({ref: button.dataset.copyRef, ticket: button.dataset.copyTicket})
+    body: new URLSearchParams({ref: button.dataset.copyRef, ticket: button.dataset.copyTicket, part: useCustom ? 'custom' : 'command'})
   }).then(async response => {
     if (!response.ok) throw new Error('Clipboard text unavailable');
     const text = await response.json();
@@ -27,7 +28,7 @@ document.addEventListener('click', async event => {
   }) : Promise.resolve(button.dataset.copyText);
   let copied = false;
   try {
-    if (useCustom && window.ClipboardItem && navigator.clipboard?.write) {
+    if (remote && window.ClipboardItem && navigator.clipboard?.write) {
       const blob = payload.then(text => new Blob([text], { type: 'text/plain' }));
       await navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })]);
     } else {

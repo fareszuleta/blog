@@ -57,7 +57,8 @@ switch ($route) {
                 $text = $settings[$key]['text'] ?? null;
             } elseif (ctype_digit($key)) {
                 $body = $kind === 'post' ? (get_post_by_id((int) $id)['body'] ?? '') : (get_skill_by_id((int) $id)['extra'] ?? '');
-                $text = body_parts($body)[(int) $key]['custom'] ?? null;
+                $block = body_parts($body)[(int) $key] ?? [];
+                $text = ($_POST['part'] ?? 'custom') === 'command' ? ($block['code'] ?? null) : ($block['custom'] ?? null);
             }
         }
         if ($text === null) http_response_code(404);

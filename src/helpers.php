@@ -157,12 +157,17 @@ function body_parts(string $body): array
     return $blocks;
 }
 
-function render_body(string $body, string $scope): string
+function render_body(string $body, string $scope, bool $copyOnly = false): string
 {
     $html = '';
     foreach (body_parts($body) as $index => $block) {
         if (isset($block['prose'])) {
             $html .= '<div class="prose-text">' . render_text_with_comments($block['prose']) . '</div>';
+        } elseif ($copyOnly) {
+            $ref = $scope . '/' . $index;
+            $mode = isset($block['custom']) ? $block['mode'] : 'command';
+            $html .= '<div class="codeblock"><button type="button" class="sk-copy sm" data-copy-only data-copy-mode="' . h($mode)
+                . '" data-copy-ref="' . h($ref) . '" data-copy-ticket="' . h(clipboard_ticket($ref)) . '">Copy</button></div>';
         } else {
             $ref = isset($block['custom']) ? $scope . '/' . $index : '';
             $html .= code_block($block['code'], $block['mode'], $ref);
