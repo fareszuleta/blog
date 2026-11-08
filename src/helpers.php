@@ -125,10 +125,10 @@ function valid_clipboard_ticket(string $ref, string $ticket): bool
 }
 
 /** A copyable command block. */
-function code_block(string $code, string $mode = '', string $ref = '', string $stepKey = ''): string
+function code_block(string $code, string $mode = '', string $ref = '', string $stepKey = '', bool $buttonCopyPreview = false): string
 {
     $c = h($code);
-    return '<div class="codeblock"><pre><code>' . $c . '</code></pre>'
+    return '<div class="codeblock"><pre' . ($buttonCopyPreview ? ' class="button-copy-preview"' : '') . '><code>' . $c . '</code></pre>'
         . '<button type="button" class="sk-copy sm" data-copy-text="' . $c . '"'
         . ($ref === '' ? '' : ' data-copy-mode="' . h($mode) . '" data-copy-ref="' . h($ref) . '" data-copy-ticket="' . h(clipboard_ticket($ref)) . '" data-copy-key="' . h($stepKey) . '"')
         . '>Copy</button></div>';
@@ -219,7 +219,8 @@ function skill_copy_block(array $skill, string $step, string $command): string
     $settings = json_decode($skill['copy_settings'] ?? '{}', true);
     $entry = $settings[$step] ?? null;
     $ref = 'skill/' . $skill['id'] . '/' . $step;
-    return code_block($command, $entry['mode'] ?? '', isset($entry['text']) ? $ref : '', $ref);
+    $buttonCopyPreview = $skill['name'] === 'pdf-tables' && $step === 'install';
+    return code_block($command, $entry['mode'] ?? '', isset($entry['text']) ? $ref : '', $ref, $buttonCopyPreview);
 }
 
 function submitted_skill_copy_settings(array $form): ?string
