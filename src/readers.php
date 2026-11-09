@@ -29,14 +29,13 @@ function reader_action(string $action): void
 {
     $skill = (string) ($_POST['skill'] ?? '');
     if ($action === 'reader_logout') {
-        unset($_SESSION['google_link'], $_SESSION['google_flow']);
         db()->prepare('DELETE FROM reader_sessions WHERE digest = ?')
             ->execute([hash('sha256', (string) ($_COOKIE['reader_session'] ?? ''))]);
         reader_cookie('', 1);
         redirect(url(['r' => 'skills']));
     }
     $register = $action === 'reader_register';
-    $back = url(['r' => 'reader', 'skill' => $skill, 'register' => $register ? '1' : '0']);
+    $back = url(['r' => 'reader', 'skill' => $skill, 'register' => $register ? '1' : '0', 'window' => '1']);
     $email = strtolower(trim((string) ($_POST['email'] ?? '')));
     $password = (string) ($_POST['password'] ?? '');
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254 || strlen($password) > 72
@@ -62,25 +61,7 @@ function reader_action(string $action): void
             redirect($back);
         }
         $id = (int) $reader['id'];
-        $link = $_SESSION['google_link'] ?? [];
-        if (($link['expires'] ?? 0) > time() && $link['id'] === $id) {
-            $insert = db()->prepare('INSERT INTO reader_google(subject, reader_id) VALUES (?, ?) ON CONFLICT DO NOTHING');
-            $insert->execute([$link['sub'], $id]);
-            if (!$insert->rowCount()) flash('Signed in with your password. A Google account is already connected.');
-        }
     }
-    unset($_SESSION['google_link'], $_SESSION['google_flow']);
-    start_reader_session($id);
-    redirect(reader_destination($skill));
-}
-
-function reader_destination(string $skill): string
-{
-    return $skill === '' ? url(['r' => 'skills']) : url(['r' => 'skill', 'name' => $skill]);
-}
-
-function start_reader_session(int $id): void
-{
     $token = bin2hex(random_bytes(32));
     $expires = time() + 30 * 86400;
     db()->prepare('DELETE FROM reader_sessions WHERE expires <= ?')->execute([time()]);
@@ -88,37 +69,46 @@ function start_reader_session(int $id): void
         ->execute([hash('sha256', $token), $id, $expires]);
     session_regenerate_id(true);
     reader_cookie($token, $expires);
+    $destination = $skill === '' ? url(['r' => 'skills']) : url(['r' => 'skill', 'name' => $skill]);
+    if (($_POST['window'] ?? '') === '1') {
+        header('Cache-Control: no-store');
+        echo '<!doctype html><html lang="en"><title>Signed in to Uptime</title><p>Signed in to Uptime.</p><a data-reader-done href="' . h($destination) . '">Continue</a><script src="reader-window.js"></script></html>';
+        exit;
+    }
+    redirect($destination);
 }
 
 function page_reader(string $skill, bool $register): void
 {
-    $title = $register ? 'Create your account' : 'Sign in';
+    $title = $register ? 'Create your Uptime account' : 'Sign in to Uptime';
+    if (($_GET['window'] ?? '') !== '1') {
+        render_page($title, flash(), function () use ($title, $skill, $register) { ?>
+            <section class="reader-card">
+              <h1><?= h($title) ?></h1>
+              <?php if ($skill !== ''): ?><p>Sign in to open the <?= h($skill) ?> guide.</p><?php endif; ?>
+              <a class="reader-launch" data-reader-launch href="<?= h(url(['r' => 'reader', 'skill' => $skill, 'register' => (int) $register, 'window' => '1'])) ?>">Continue with email</a>
+            </section>
+            <script src="reader-window.js" defer></script>
+        <?php });
+        return;
+    }
     render_page($title, flash(), function () use ($title, $skill, $register) { ?>
         <section class="reader-card">
           <h1><?= h($title) ?></h1>
-          <p class="reader-destination">Continue to <?= h(SITE_NAME) ?><?= $skill !== '' ? ' · ' . h($skill) : '' ?></p>
-          <?php if (google_enabled()): ?>
-            <form method="post" action="index.php" class="form" data-google-form>
-              <input type="hidden" name="popup" value="">
-              <input type="hidden" name="action" value="google_start">
-              <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-              <input type="hidden" name="skill" value="<?= h($skill) ?>">
-              <button class="secondary" type="submit">Continue with Google</button>
-            </form>
-            <div class="reader-divider">or</div>
-          <?php endif; ?>
+          <?php if ($skill !== ''): ?><p>Sign in to open the <?= h($skill) ?> guide.</p><?php endif; ?>
           <form method="post" action="index.php" class="form" data-reader-email>
+            <input type="hidden" name="window" value="1">
             <input type="hidden" name="action" value="<?= $register ? 'reader_register' : 'reader_login' ?>">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             <input type="hidden" name="skill" value="<?= h($skill) ?>">
             <label>Email <input name="email" type="email" autocomplete="username" maxlength="254" required></label>
-            <label>Password <input name="password" type="password" autocomplete="<?= $register ? 'new-password' : 'current-password' ?>" <?= $register ? 'minlength="12"' : '' ?> required>
+            <label>Uptime password <input name="password" type="password" autocomplete="<?= $register ? 'new-password' : 'current-password' ?>" <?= $register ? 'minlength="12"' : '' ?> required>
               <?php if ($register): ?><small>Use at least 12 characters.</small><?php endif; ?>
             </label>
             <button><?= $register ? 'Create account' : 'Sign in' ?></button>
           </form>
-          <a href="<?= h(url(['r' => 'reader', 'skill' => $skill, 'register' => $register ? '0' : '1'])) ?>"><?= $register ? 'Sign in with an existing account' : 'Create a reader account' ?></a>
+          <a href="<?= h(url(['r' => 'reader', 'skill' => $skill, 'register' => $register ? '0' : '1', 'window' => '1'])) ?>"><?= $register ? 'Sign in with an existing account' : 'Create a reader account' ?></a>
         </section>
-        <script src="reader-login.js?v=3" defer></script>
+        <script src="reader-login.js?v=4" defer></script>
     <?php });
 }
