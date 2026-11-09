@@ -87,29 +87,32 @@ function start_reader_session(int $id, string $skill): never
 
 function page_reader(string $skill, bool $register): void
 {
-    $title = $register ? 'Create a reader account' : 'Reader sign in';
+    $title = $register ? 'Create your account' : 'Sign in';
     render_page($title, flash(), function () use ($title, $skill, $register) { ?>
-        <section class="narrow">
+        <section class="reader-card">
           <h1><?= h($title) ?></h1>
-          <?php if ($skill !== ''): ?><p>Sign in to open the <?= h($skill) ?> guide.</p><?php endif; ?>
+          <p class="reader-destination">Continue to <?= h(SITE_NAME) ?><?= $skill !== '' ? ' · ' . h($skill) : '' ?></p>
           <?php if (google_enabled()): ?>
             <form method="post" action="index.php" class="form">
               <input type="hidden" name="action" value="google_start">
               <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
               <input type="hidden" name="skill" value="<?= h($skill) ?>">
-              <button type="submit">Continue with Google</button>
+              <button class="secondary" type="submit">Continue with Google</button>
             </form>
+            <div class="reader-divider">or</div>
           <?php endif; ?>
-          <form method="post" action="index.php" class="form">
+          <form method="post" action="index.php" class="form" data-reader-email>
             <input type="hidden" name="action" value="<?= $register ? 'reader_register' : 'reader_login' ?>">
             <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
             <input type="hidden" name="skill" value="<?= h($skill) ?>">
             <label>Email <input name="email" type="email" autocomplete="username" maxlength="254" required></label>
-            <label>Password <input name="password" type="password" autocomplete="<?= $register ? 'new-password' : 'current-password' ?>" <?= $register ? 'minlength="12"' : '' ?> required></label>
-            <?php if ($register): ?><small>Use at least 12 characters.</small><?php endif; ?>
+            <label>Password <input name="password" type="password" autocomplete="<?= $register ? 'new-password' : 'current-password' ?>" <?= $register ? 'minlength="12"' : '' ?> required>
+              <?php if ($register): ?><small>Use at least 12 characters.</small><?php endif; ?>
+            </label>
             <button><?= $register ? 'Create account' : 'Sign in' ?></button>
           </form>
           <a href="<?= h(url(['r' => 'reader', 'skill' => $skill, 'register' => $register ? '0' : '1'])) ?>"><?= $register ? 'Sign in with an existing account' : 'Create a reader account' ?></a>
         </section>
+        <script src="reader-login.js" defer></script>
     <?php });
 }

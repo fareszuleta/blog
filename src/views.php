@@ -14,7 +14,7 @@ function render_page(string $title, ?string $flash, callable $body, bool $wide =
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body data-reader="<?= h((string) (reader_id() ?? (is_admin() ? 'editor' : 'guest'))) ?>"<?= $wide ? ' class="wide"' : '' ?>>
 <header class="site">

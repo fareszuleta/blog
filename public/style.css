@@ -572,3 +572,23 @@ body.wide main,body.wide footer.site { max-width:1200px; }
 }
 
 
+
+.reader-card {
+  width: min(100%, 28rem);
+  box-sizing: border-box;
+  margin: clamp(2rem, 9vh, 6rem) auto;
+  padding: clamp(1.25rem, 5vw, 2.5rem);
+  border: 1px solid var(--line-soft);
+  border-radius: 18px;
+  background: white;
+  font-family: var(--display);
+  display: grid;
+  gap: 1.25rem;
+}
+.reader-card h1 { font-size: 2.1rem; margin: 0; }
+.reader-card .reader-destination { margin: -.75rem 0 .25rem; color: var(--muted); }
+.reader-card input, .reader-card button { border-radius: 8px; min-height: 44px; }
+.reader-card .form [hidden] { display: none; }
+.reader-card > a { justify-self: start; font-size: .9rem; }
+.reader-divider { display: flex; align-items: center; gap: .75rem; color: var(--muted); font-size: .85rem; }
+.reader-divider::before, .reader-divider::after { content: ''; flex: 1; border-top: 1px solid var(--line-soft); }
