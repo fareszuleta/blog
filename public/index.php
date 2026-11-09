@@ -140,9 +140,6 @@ switch ($route) {
 function handle_action(string $action): void
 {
     switch ($action) {
-        case 'google_window':
-            page_google_window();
-            exit;
         case 'google_start':
             google_start();
         case 'reader_banner_update':

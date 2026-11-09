@@ -100,7 +100,7 @@ function page_reader(string $skill, bool $register): void
           <?php if (google_enabled()): ?>
             <form method="post" action="index.php" class="form" data-google-form>
               <input type="hidden" name="popup" value="">
-              <input type="hidden" name="action" value="google_window">
+              <input type="hidden" name="action" value="google_start">
               <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
               <input type="hidden" name="skill" value="<?= h($skill) ?>">
               <button class="secondary" type="submit">Continue with Google</button>
@@ -120,5 +120,5 @@ function page_reader(string $skill, bool $register): void
           <a href="<?= h(url(['r' => 'reader', 'skill' => $skill, 'register' => $register ? '0' : '1'])) ?>"><?= $register ? 'Sign in with an existing account' : 'Create a reader account' ?></a>
         </section>
         <script src="reader-login.js?v=5" defer></script>
-    <?php });
+    <?php }, readerWindow: true);
 }

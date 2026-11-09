@@ -8,24 +8,6 @@ function google_enabled(): bool
     return (bool) getenv('GOOGLE_CLIENT_ID') && (bool) getenv('GOOGLE_CLIENT_SECRET');
 }
 
-function page_google_window(): void
-{
-    if (!google_enabled()) { http_response_code(404); return; }
-    render_page('Continue with Google', null, function () { ?>
-        <section class="reader-card">
-          <h1>Connect to <?= h(SITE_NAME) ?></h1>
-          <p>Choose your Google account on the next screen.</p>
-          <form method="post" action="index.php" class="form">
-            <input type="hidden" name="action" value="google_start">
-            <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
-            <input type="hidden" name="popup" value="<?= h((string) ($_POST['popup'] ?? '')) ?>">
-            <input type="hidden" name="skill" value="<?= h((string) ($_POST['skill'] ?? '')) ?>">
-            <button>Choose Google account</button>
-          </form>
-        </section>
-    <?php }, readerWindow: true);
-}
-
 function google_start(): never
 {
     if (!google_enabled()) { http_response_code(404); exit; }
@@ -39,7 +21,7 @@ function google_start(): never
     $_SESSION['google_flow'] = $flow;
     redirect('https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query([
         'client_id' => getenv('GOOGLE_CLIENT_ID'), 'redirect_uri' => getenv('GOOGLE_REDIRECT_URI') ?: GOOGLE_CALLBACK,
-        'response_type' => 'code', 'scope' => 'openid email', 'state' => $flow['state'], 'nonce' => $flow['nonce'],
+        'prompt' => 'select_account', 'response_type' => 'code', 'scope' => 'openid email', 'state' => $flow['state'], 'nonce' => $flow['nonce'],
         'code_challenge_method' => 'S256',
         'code_challenge' => rtrim(strtr(base64_encode(hash('sha256', $flow['verifier'], true)), '+/', '-_'), '='),
     ]));
