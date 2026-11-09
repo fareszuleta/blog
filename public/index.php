@@ -12,7 +12,6 @@ require __DIR__ . '/../src/helpers.php';
 require __DIR__ . '/../src/copy_files.php';
 require __DIR__ . '/../src/views.php';
 require __DIR__ . '/../src/readers.php';
-require __DIR__ . '/../src/google_login.php';
 require __DIR__ . '/../src/reader_banner.php';
 
 header('X-Content-Type-Options: nosniff');
@@ -33,8 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $route !== 'clipboard') {
 
 // ---------- Views (GET) ----------
 switch ($route) {
-    case 'google_callback':
-        google_callback();
     case 'reader_banner':
         serve_reader_banner();
         break;
@@ -140,11 +137,6 @@ switch ($route) {
 function handle_action(string $action): void
 {
     switch ($action) {
-        case 'google_window':
-            page_google_window();
-            exit;
-        case 'google_start':
-            google_start();
         case 'reader_banner_update':
             update_reader_banner();
             break;
