@@ -601,3 +601,8 @@ body.wide main,body.wide footer.site { max-width:1200px; }
   object-position: center;
   flex: none;
 }
+
+.account-list a { display: flex; align-items: center; gap: .8rem; padding: .8rem 0; border-bottom: 1px solid var(--line-soft); text-decoration: none; overflow-wrap: anywhere; }
+.account-list a span { display: grid; place-items: center; flex: 0 0 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--code-bg); color: var(--ink); }
+.reader-card .form .remember-email { display: flex; align-items: center; gap: .6rem; }
+.reader-card .remember-email input { width: auto; min-height: auto; }
