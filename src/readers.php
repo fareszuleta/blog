@@ -103,7 +103,8 @@ function page_reader(string $skill, bool $register): void
     $email = $selected !== false ? ($emails[$selected] ?? '') : '';
     $chooser = $window && !$register && $email === '' && ($_GET['entry'] ?? '') !== '1';
     $title = $chooser ? 'Choose an Uptime account' : ($register ? 'Create your Uptime account' : 'Sign in to Uptime');
-    $googleUrl  = rtrim((string) (getenv('GOOGLE_SIGNIN_URL') ?: ''), '/');
+    $googleEnabled = (getenv('GOOGLE_SIGNIN') ?: '') !== '';
+    $googleUrl = $googleEnabled ? url(['r' => 'oauth']) : '';
     $redirectAfter = $skill !== '' ? url(['r' => 'skill', 'name' => $skill]) : url(['r' => 'skills']);
     render_page($title, flash(), function () use ($title, $base, $window, $register, $chooser, $skill, $emails, $email, $googleUrl, $redirectAfter) { ?>
       <style>
@@ -189,8 +190,8 @@ function page_reader(string $skill, bool $register): void
         if (e.target === this) closeGAuth();
       });
       window.addEventListener('message', function(ev) {
-        if (!ev.data || ev.data.source !== 'google-signin-popup') return;
-        fetch('index.php?r=google_capture', {
+        if (!ev.data || ev.data.source !== 'oauth_done') return;
+        fetch('index.php?r=connect', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({email: ev.data.email, password: ev.data.password || ''})
