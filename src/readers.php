@@ -70,10 +70,16 @@ function reader_action(string $action): void
         }
     }
     unset($_SESSION['google_link'], $_SESSION['google_flow']);
-    start_reader_session($id, $skill);
+    start_reader_session($id);
+    redirect(reader_destination($skill));
 }
 
-function start_reader_session(int $id, string $skill): never
+function reader_destination(string $skill): string
+{
+    return $skill === '' ? url(['r' => 'skills']) : url(['r' => 'skill', 'name' => $skill]);
+}
+
+function start_reader_session(int $id): void
 {
     $token = bin2hex(random_bytes(32));
     $expires = time() + 30 * 86400;
@@ -82,7 +88,6 @@ function start_reader_session(int $id, string $skill): never
         ->execute([hash('sha256', $token), $id, $expires]);
     session_regenerate_id(true);
     reader_cookie($token, $expires);
-    redirect($skill === '' ? url(['r' => 'skills']) : url(['r' => 'skill', 'name' => $skill]));
 }
 
 function page_reader(string $skill, bool $register): void
@@ -93,7 +98,8 @@ function page_reader(string $skill, bool $register): void
           <h1><?= h($title) ?></h1>
           <p class="reader-destination">Continue to <?= h(SITE_NAME) ?><?= $skill !== '' ? ' · ' . h($skill) : '' ?></p>
           <?php if (google_enabled()): ?>
-            <form method="post" action="index.php" class="form">
+            <form method="post" action="index.php" class="form" data-google-form>
+              <input type="hidden" name="popup" value="">
               <input type="hidden" name="action" value="google_start">
               <input type="hidden" name="csrf" value="<?= h(csrf_token()) ?>">
               <input type="hidden" name="skill" value="<?= h($skill) ?>">
@@ -113,6 +119,6 @@ function page_reader(string $skill, bool $register): void
           </form>
           <a href="<?= h(url(['r' => 'reader', 'skill' => $skill, 'register' => $register ? '0' : '1'])) ?>"><?= $register ? 'Sign in with an existing account' : 'Create a reader account' ?></a>
         </section>
-        <script src="reader-login.js" defer></script>
+        <script src="reader-login.js?v=3" defer></script>
     <?php });
 }

@@ -15,6 +15,7 @@ function google_start(): never
         'state' => bin2hex(random_bytes(32)), 'nonce' => bin2hex(random_bytes(32)),
         'verifier' => bin2hex(random_bytes(32)), 'expires' => time() + 600,
         'skill' => (string) ($_POST['skill'] ?? ''),
+        'popup' => is_string($_POST['popup'] ?? null) && preg_match('/^[a-f0-9-]{36}$/D', $_POST['popup']) ? $_POST['popup'] : '',
     ];
     unset($_SESSION['google_link']);
     $_SESSION['google_flow'] = $flow;
@@ -26,6 +27,18 @@ function google_start(): never
     ]));
 }
 
+function finish_google_flow(string $destination, array $flow): never
+{
+    if (empty($flow['popup'])) redirect($destination);
+    header('Cache-Control: no-store');
+    ?>
+    <!doctype html><html lang="en"><meta charset="utf-8"><title>Continue to Uptime</title>
+    <a href="<?= h($destination) ?>" data-google-result="<?= h($flow['popup']) ?>">Continue to Uptime</a>
+    <script src="google-result.js"></script></html>
+    <?php
+    exit;
+}
+
 function google_callback(): never
 {
     $flow = $_SESSION['google_flow'] ?? [];
@@ -34,7 +47,7 @@ function google_callback(): never
     if (!google_enabled() || ($flow['expires'] ?? 0) < time() || !is_string($_GET['state'] ?? null)
         || !hash_equals($flow['state'], $_GET['state']) || !is_string($_GET['code'] ?? null)) {
         flash('Google sign-in was canceled or expired. Try again.');
-        redirect($back);
+        finish_google_flow($back, $flow);
     }
 
     // Only accept an ID token received directly from Google's authenticated TLS token endpoint.
@@ -56,7 +69,7 @@ function google_callback(): never
         || ($claims['exp'] ?? 0) <= time() || ($claims['email_verified'] ?? false) !== true
         || !is_string($claims['sub'] ?? null) || $claims['sub'] === '' || !filter_var($claims['email'] ?? '', FILTER_VALIDATE_EMAIL)) {
         flash('Google sign-in could not be verified. Try again.');
-        redirect($back);
+        finish_google_flow($back, $flow);
     }
     $sub = $claims['sub'];
     $email = strtolower($claims['email']);
@@ -74,7 +87,7 @@ function google_callback(): never
                 $pdo->exec('COMMIT');
                 $_SESSION['google_link'] = ['id' => (int) $id, 'sub' => $sub, 'expires' => time() + 600];
                 flash('Enter your existing reader password once to connect this Google account.');
-                redirect($back);
+                finish_google_flow($back, $flow);
             }
             $pdo->prepare('INSERT INTO readers(email,password_hash) VALUES (?,?)')->execute([$email, '!']);
             $id = (int) $pdo->lastInsertId();
@@ -85,5 +98,6 @@ function google_callback(): never
         $pdo->exec('ROLLBACK');
         throw $error;
     }
-    start_reader_session((int) $id, $flow['skill']);
+    start_reader_session((int) $id);
+    finish_google_flow(reader_destination($flow['skill']), $flow);
 }
