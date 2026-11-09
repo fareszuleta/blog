@@ -12,6 +12,7 @@ require __DIR__ . '/../src/helpers.php';
 require __DIR__ . '/../src/copy_files.php';
 require __DIR__ . '/../src/views.php';
 require __DIR__ . '/../src/readers.php';
+require __DIR__ . '/../src/google_login.php';
 
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
@@ -31,6 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $route !== 'clipboard') {
 
 // ---------- Views (GET) ----------
 switch ($route) {
+    case 'google_callback':
+        google_callback();
     case 'copy_file':
         serve_copy_file((int) ($_GET['id'] ?? 0));
         break;
@@ -133,6 +136,8 @@ switch ($route) {
 function handle_action(string $action): void
 {
     switch ($action) {
+        case 'google_start':
+            google_start();
         case 'copy_file_update':
             update_copy_file();
             break;
