@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /** Wraps a page with header, footer and flash message. $body prints the content. */
-function render_page(string $title, ?string $flash, callable $body, bool $wide = false): void
+function render_page(string $title, ?string $flash, callable $body, bool $wide = false, bool $readerWindow = false): void
 {
     ?>
 <!doctype html>
@@ -14,9 +14,12 @@ function render_page(string $title, ?string $flash, callable $body, bool $wide =
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body data-reader="<?= h((string) (reader_id() ?? (is_admin() ? 'editor' : 'guest'))) ?>"<?= $wide ? ' class="wide"' : '' ?>>
+<?php if ($readerWindow && has_reader_banner()): ?>
+  <img class="reader-banner" src="<?= h(url(['r' => 'reader_banner'])) ?>" alt="">
+<?php endif; ?>
 <header class="site">
   <a class="brand" href="<?= h(url()) ?>"><?= h(SITE_NAME) ?></a>
   <nav>
@@ -184,6 +187,20 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
           </form>
         </div>
 
+        <section class="admin-block">
+          <h2>Reader sign-in banner</h2>
+          <?php $hasBanner = has_reader_banner(); ?>
+          <?php if ($hasBanner): ?><img class="reader-banner" src="<?= h(url(['r' => 'reader_banner'])) ?>" alt="Current sign-in banner"><?php endif; ?>
+          <form method="post" action="index.php" enctype="multipart/form-data" class="form">
+            <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
+            <input type="hidden" name="action" value="reader_banner_update">
+            <label>Banner image <small>PNG, JPEG or WebP, up to 2 MiB. A wide image works best.</small>
+              <input type="file" name="banner" accept="image/png,image/jpeg,image/webp" required>
+            </label>
+            <button><?= $hasBanner ? 'Replace banner' : 'Upload banner' ?></button>
+            <?php if ($hasBanner): ?><button type="submit" class="secondary" name="remove" value="1" formnovalidate>Remove banner</button><?php endif; ?>
+          </form>
+        </section>
         <section class="admin-block">
           <h2>New note</h2>
           <form method="post" action="index.php" class="form">

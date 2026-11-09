@@ -592,3 +592,12 @@ body.wide main,body.wide footer.site { max-width:1200px; }
 .reader-card > a { justify-self: start; font-size: .9rem; }
 .reader-divider { display: flex; align-items: center; gap: .75rem; color: var(--muted); font-size: .85rem; }
 .reader-divider::before, .reader-divider::after { content: ''; flex: 1; border-top: 1px solid var(--line-soft); }
+
+.reader-banner {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 1;
+  object-fit: cover;
+  object-position: center;
+  flex: none;
+}

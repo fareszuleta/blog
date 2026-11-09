@@ -1,23 +1,24 @@
-const readerForm = document.querySelector('[data-reader-email]');
-const emailField = readerForm.elements.email;
-const passwordField = readerForm.elements.password;
-const passwordLabel = passwordField.closest('label');
-const submitButton = readerForm.querySelector('button');
-const finalLabel = submitButton.textContent;
-function showEmailStep() {
-  passwordField.value = '';
-  passwordField.disabled = true;
-  passwordLabel.hidden = true;
-  submitButton.textContent = 'Next';
-}
-showEmailStep();
-emailField.addEventListener('input', showEmailStep);
-readerForm.addEventListener('submit', event => {
-  if (!passwordField.disabled) return;
-  event.preventDefault();
-  passwordField.disabled = false;
-  passwordLabel.hidden = false;
-  submitButton.textContent = finalLabel;
-  passwordField.focus();
-});
+const googleForm = document.querySelector('[data-google-form]');
+let googleChannel;
+googleForm?.addEventListener('submit', () => {
+  googleChannel?.close();
+  googleForm.target = '_self';
+  googleForm.elements.popup.value = '';
+  if (!window.BroadcastChannel || !window.crypto?.randomUUID) return;
 
+  const id = crypto.randomUUID();
+  const popup = window.open('', id, 'popup,width=500,height=650');
+  if (!popup) return;
+
+  googleChannel = new BroadcastChannel('google-auth-' + id);
+  googleChannel.onmessage = event => {
+    if (typeof event.data !== 'string') return;
+    const destination = new URL(event.data, location.href);
+    if (destination.origin !== location.origin) return;
+    googleChannel.postMessage('received');
+    location.assign(destination);
+  };
+  googleForm.elements.popup.value = id;
+  googleForm.target = id;
+  popup.focus();
+});

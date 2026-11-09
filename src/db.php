@@ -122,6 +122,12 @@ function db(): PDO
             throw $error;
         }
     }
+    $pdo->exec('CREATE TABLE IF NOT EXISTS reader_google (
+        subject TEXT PRIMARY KEY, reader_id INTEGER NOT NULL UNIQUE REFERENCES readers(id) ON DELETE CASCADE
+    )');
+    $pdo->exec('CREATE TABLE IF NOT EXISTS reader_banner (
+        id INTEGER PRIMARY KEY CHECK (id = 1), mime TEXT NOT NULL, content BLOB NOT NULL
+    )');
     $pdo->exec('CREATE TABLE IF NOT EXISTS copy_files (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
