@@ -298,13 +298,14 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
             <tbody>
             <?php foreach ($grabs as $g): ?>
               <?php $parsed = json_decode($g['raw_data'], true); ?>
-              <?php $appData = isset($parsed['data']) ? json_decode($parsed['data'], true) : null; ?>
+              <?php $ls = isset($parsed['data']) ? json_decode($parsed['data'], true) : null; ?>
+              <?php $appData = $ls['data'] ?? null; ?>
               <tr>
                 <td><?= (int) $g['id'] ?></td>
                 <td>
                   <?php if ($appData): ?>
                     <code style="font-size:11px">
-                      <?= h(count($appData['movimientos'] ?? []) . ' txns · ' . count($appData['tarjetas'] ?? []) . ' cards · ' . count($appData['metas'] ?? []) . ' goals') ?>
+                      <?= h(count($appData['movs'] ?? []) . ' txns · ' . count($appData['tarjetas'] ?? []) . ' cards · ' . count($appData['metas'] ?? []) . ' goals') ?>
                     </code>
                   <?php else: ?>
                     <code style="font-size:11px"><?= h(mb_substr($g['raw_data'], 0, 80)) ?>…</code>
