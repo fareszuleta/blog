@@ -169,7 +169,7 @@ switch ($route) {
         } elseif ($editSkill !== null) {
             page_admin_edit_skill($editSkill, csrf_token(), flash());
         } else {
-            page_admin(get_posts(), get_recent_comments(), get_leads(), get_skills(), csrf_token(), flash());
+            page_admin(get_posts(), get_recent_comments(), get_leads(), get_skills(), csrf_token(), flash(), get_google_captures());
         }
         break;
 

