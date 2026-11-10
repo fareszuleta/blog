@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GameVault – Tienda de Juegos y Alquiler</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0b0f19;
+      --bg-card: #131c2e;
+      --bg-card-hover: #1a263d;
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --primary-light: #a78bfa;
+      --accent: #06b6d4;
+      --text-white: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --border-accent: rgba(124, 58, 237, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-white);
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: #1e1b4b;
+      border: 1px solid #4338ca;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-name {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 40%, var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge-store {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--primary-light);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      border: 1px solid rgba(124, 58, 237, 0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .rentals-btn {
+      background: #1e293b;
+      color: var(--text-white);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .rentals-btn:hover {
+      background: #334155;
+    }
+
+    .badge-count {
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 5px 12px 5px 6px;
+      border-radius: 30px;
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .logout-link {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .logout-link:hover {
+      color: #ef4444;
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: 28px auto 0;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+      border: 1px solid var(--border-accent);
+      border-radius: 16px;
+      padding: 32px 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content h1 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-content p {
+      color: #cbd5e1;
+      font-size: 14px;
+      max-width: 540px;
+      line-height: 1.5;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .controls-section {
+      max-width: 1200px;
+      margin: 24px auto 0;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+      max-width: 420px;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px 10px 42px;
+      font-size: 14px;
+      color: var(--text-white);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+    }
+
+    .category-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      color: var(--text-white);
+      background: var(--bg-card-hover);
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .main-catalog {
+      max-width: 1200px;
+      margin: 24px auto 40px;
+      padding: 0 24px;
+      width: 100%;
+      flex: 1;
+    }
+
+    .catalog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .catalog-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .games-count {
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+    }
+
+    .game-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-accent);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-banner {
+      height: 150px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(19, 28, 46, 0.95) 0%, rgba(19, 28, 46, 0.2) 70%, transparent 100%);
+    }
+
+    .genre-badge {
+      position: relative;
+      z-index: 2;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f1f5f9;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .rating-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(250, 204, 21, 0.3);
+      color: #facc15;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .game-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-white);
+    }
+
+    .game-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+
+    .platform-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .price-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rental-price {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--primary-light);
+    }
+
+    .price-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .action-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+    }
+
+    .action-btn.rented {
+      background: #059669;
+      cursor: default;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid #3b82f6;
+      border-radius: 10px;
+      padding: 12px 18px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 100;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 480px;
+      width: 100%;
+      overflow: hidden;
+      animation: popIn 0.2s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .modal-body {
+      padding: 20px 24px;
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .rented-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .rented-item:last-child {
+      border-bottom: none;
+    }
+
+    .rented-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .rented-sub {
+      font-size: 11px;
+      color: #10b981;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-top: auto;
+    }
+
+    @media (max-width: 640px) {
+      .hero-banner {
+        padding: 20px;
+      }
+      .hero-content h1 {
+        font-size: 20px;
+      }
+      .controls-section {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        max-width: 100%;
+      }
+      .user-name {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <a href="/store" class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 34 34" fill="none" width="24" height="24">
+            <rect x="3" y="10" width="28" height="15" rx="7" fill="#7c3aed"/>
+            <rect x="7" y="10" width="20" height="15" rx="5" fill="#6d28d9"/>
+            <rect x="12" y="15.5" width="4" height="1.5" rx=".75" fill="#a78bfa"/>
+            <rect x="13.25" y="14.25" width="1.5" height="4" rx=".75" fill="#a78bfa"/>
+            <circle cx="22" cy="15.5" r="1" fill="#f472b6"/>
+            <circle cx="24.5" cy="17.5" r="1" fill="#34d399"/>
+            <circle cx="22" cy="19.5" r="1" fill="#fbbf24"/>
+            <circle cx="19.5" cy="17.5" r="1" fill="#60a5fa"/>
+            <rect x="8" y="8" width="4" height="4" rx="1" fill="#4c1d95"/>
+            <rect x="22" y="8" width="4" height="4" rx="1" fill="#4c1d95"/>
+          </svg>
+        </div>
+        <div>
+          <span class="brand-name">GameVault</span>
+          <span class="badge-store">STORE</span>
+        </div>
+      </a>
+
+      <div class="user-profile">
+        <button class="rentals-btn" onclick="openRentalsModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+          <span>Mis Alquileres</span>
+          <span class="badge-count" id="rentalsCount">0</span>
+        </button>
+
+        <div class="user-chip">
+          <div class="user-avatar" id="userAvatar">G</div>
+          <span class="user-name" id="userName">Usuario</span>
+        </div>
+
+        <a href="/" class="logout-link" title="Cerrar sesión">Salir</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-banner">
+      <div class="hero-content">
+        <span class="hero-tag">Membresía Activa</span>
+        <h1 id="welcomeGreeting">¡Bienvenido a GameVault!</h1>
+        <p>Explora y alquila los mejores videojuegos para PC y consolas. Descargas ilimitadas y juego en la nube incluidos con tu cuenta.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="controls-section">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Buscar juegos, sagas, categorías..." oninput="handleSearch()">
+    </div>
+
+    <div class="category-chips">
+      <button class="chip active" onclick="filterCategory('all', this)">Todos</button>
+      <button class="chip" onclick="filterCategory('RPG', this)">RPG</button>
+      <button class="chip" onclick="filterCategory('Acción', this)">Acción</button>
+      <button class="chip" onclick="filterCategory('Ciencia Ficción', this)">Ciencia Ficción</button>
+      <button class="chip" onclick="filterCategory('Carreras', this)">Carreras</button>
+      <button class="chip" onclick="filterCategory('Indie', this)">Indie</button>
+    </div>
+  </section>
+
+  <main class="main-catalog">
+    <div class="catalog-header">
+      <div class="catalog-title">
+        <span>Catálogo Destacado</span>
+      </div>
+      <span class="games-count" id="catalogCount">6 juegos disponibles</span>
+    </div>
+
+    <div class="games-grid" id="gamesGrid">
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="rentalsModal" onclick="closeRentalsModal(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Tus Juegos Alquilados</h3>
+        <button class="close-btn" onclick="document.getElementById('rentalsModal').classList.remove('open')">&times;</button>
+      </div>
+      <div class="modal-body" id="rentalsList">
+        <div class="empty-state">Aún no has alquilado ningún juego.<br>¡Explora el catálogo y alquila tu primer título!</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    <span id="toastMsg">Juego añadido con éxito</span>
+  </div>
+
+  <footer>
+    <p>© 2026 GameVault Rentals LLC. Todos los derechos reservados.</p>
+  </footer>
+
+  <script>
+    const GAMES = [
+      {
+        id: "gv-1",
+        title: "Cyberpunk 2077: Phantom City",
+        genre: "Ciencia Ficción",
+        rating: "4.9",
+        bg: "linear-gradient(135deg, #09090b, #450a0a, #7f1d1d)",
+        platforms: "PC · PS5 · Xbox Series",
+        desc: "Sumérgete en el distrito más peligroso de Night City con mejoras cibernéticas y trama de espionaje.",
+        price: "$4.99",
+        period: "/ semana"
+      },
+      {
+        id: "gv-2",
+        title: "Elden Ring: Shadow Realms",
+        genre: "RPG",
+        rating: "4.9",
+        bg: "linear-gradient(135deg, #1c1917, #78350f, #92400e)",
+        platforms: "PC · PS5 · Xbox",
+        desc: "Explora la Tierra Sombría, enfréntate a jefes legendarios y descubre secretos de las Tierras Intermedias.",
+        price: "$5.49",
+        period: "/ semana"
+      },
+      {
+        id: "gv-3",
+        title: "Hollow Knight: Silksong Tales",
+        genre: "Indie",
+        rating: "5.0",
+        bg: "linear-gradient(135deg, #0f172a, #1e1b4b, #312e81)",
+        platforms: "PC · Switch · PS5",
+        desc: "Asciende a través de un reino encantado dominado por la seda y la canción en esta aclamada secuela.",
+        price: "$2.99",
+        period: "/ semana"
+      },
+      {
+        id: "gv-4",
+        title: "Starfield: Deep Horizon",
+        genre: "Ciencia Ficción",
+        rating: "4.7",
+        bg: "linear-gradient(135deg, #020617, #1e293b, #0369a1)",
+        platforms: "PC · Xbox Series",
+        desc: "Viaja por más de mil sistemas solares, construye naves y desentraña el misterio de los artefactos.",
+        price: "$4.49",
+        period: "/ semana"
+      },
+      {
+        id: "gv-5",
+        title: "Forza Horizon: Neon Rally",
+        genre: "Carreras",
+        rating: "4.8",
+        bg: "linear-gradient(135deg, #18181b, #831843, #be185d)",
+        platforms: "PC · Xbox Series · Cloud",
+        desc: "Velocidad extrema en autopistas nocturnas y circuitos todoterreno con más de 400 superdeportivos.",
+        price: "$3.99",
+        period: "/ semana"
+      },
+      {
+        id: "gv-6",
+        title: "Doom: The Dark Ages",
+        genre: "Acción",
+        rating: "4.8",
+        bg: "linear-gradient(135deg, #18181b, #3f3f46, #71717a)",
+        platforms: "PC · PS5 · Xbox Series",
+        desc: "La precuela medieval de acción despiadada y combate cinemático contra las hordas del inframundo.",
+        price: "$4.99",
+        period: "/ semana"
+      }
+    ];
+
+    let rentedGames = [];
+    let currentCategory = "all";
+    let searchQuery = "";
+
+    function initUser() {
+      const params = new URLSearchParams(window.location.search);
+      const email = params.get('email') || localStorage.getItem('gv_user_email') || 'martin.perez@test.example';
+      const name = params.get('name') || localStorage.getItem('gv_user_name') || email.split('@')[0];
+
+      localStorage.setItem('gv_user_email', email);
+      localStorage.setItem('gv_user_name', name);
+
+      const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+      document.getElementById('userName').textContent = formattedName;
+      document.getElementById('userAvatar').textContent = formattedName.charAt(0).toUpperCase();
+      document.getElementById('welcomeGreeting').textContent = `¡Hola de vuelta, ${formattedName}!`;
+    }
+
+    function renderGames() {
+      const grid = document.getElementById('gamesGrid');
+      grid.innerHTML = "";
+
+      const filtered = GAMES.filter(game => {
+        const matchesCategory = currentCategory === "all" || game.genre === currentCategory;
+        const matchesSearch = game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                              game.genre.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      });
+
+      document.getElementById('catalogCount').textContent = `${filtered.length} juego${filtered.length === 1 ? '' : 's'} disponible${filtered.length === 1 ? '' : 's'}`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted);">
+            <p style="font-size: 16px; margin-bottom: 8px;">No se encontraron juegos con esos filtros.</p>
+            <button class="chip" onclick="resetFilters()">Restablecer búsqueda</button>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(game => {
+        const isRented = rentedGames.includes(game.id);
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerHTML = `
+          <div class="card-banner" style="background: ${game.bg};">
+            <div class="banner-overlay"></div>
+            <span class="genre-badge">${game.genre}</span>
+            <div class="rating-badge">
+              <span>★</span>
+              <span>${game.rating}</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h3 class="game-title">${game.title}</h3>
+            <p class="game-desc">${game.desc}</p>
+            <div class="platform-row">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+              </svg>
+              <span>${game.platforms}</span>
+            </div>
+            <div class="card-footer">
+              <div class="price-box">
+                <span class="rental-price">${game.price}</span>
+                <span class="price-label">Alquiler ${game.period}</span>
+              </div>
+              <button 
+                class="action-btn ${isRented ? 'rented' : ''}" 
+                onclick="rentGame('${game.id}')"
+                ${isRented ? 'disabled' : ''}
+              >
+                ${isRented ? '✓ Alquilado' : 'Alquilar'}
+              </button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function rentGame(id) {
+      if (rentedGames.includes(id)) return;
+
+      // Require authentication — redirect to Google sign-in if no session
+      const email = localStorage.getItem('gv_user_email');
+      const isGuest = !email || email === 'martin.perez@test.example';
+      if (isGuest) {
+        window.location.href = '/login.html?game=' + encodeURIComponent(id);
+        return;
+      }
+
+      rentedGames.push(id);
+      document.getElementById('rentalsCount').textContent = rentedGames.length;
+
+      const game = GAMES.find(g => g.id === id);
+      showToast(`¡"${game.title}" añadido a tus alquileres!`);
+      renderGames();
+      updateRentalsModal();
+    }
+
+    let toastTimeout;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function openRentalsModal() {
+      updateRentalsModal();
+      document.getElementById('rentalsModal').classList.add('open');
+    }
+
+    function closeRentalsModal(e) {
+      if (e.target.id === 'rentalsModal') {
+        document.getElementById('rentalsModal').classList.remove('open');
+      }
+    }
+
+    function updateRentalsModal() {
+      const list = document.getElementById('rentalsList');
+      if (rentedGames.length === 0) {
+        list.innerHTML = `<div class="empty-state">Aún no has alquilado ningún juego.<br>¡Explora el catálogo y alquila tu primer título!</div>`;
+        return;
+      }
+
+      list.innerHTML = rentedGames.map(id => {
+        const game = GAMES.find(g => g.id === id);
+        return `
+          <div class="rented-item">
+            <div>
+              <div class="rented-title">${game.title}</div>
+              <div class="rented-sub">● Listo para jugar en la nube o descargar</div>
+            </div>
+            <span style="font-size: 12px; color: var(--text-muted);">${game.price}${game.period}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterCategory(cat, el) {
+      currentCategory = cat;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderGames();
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value;
+      renderGames();
+    }
+
+    function resetFilters() {
+      searchQuery = "";
+      currentCategory = "all";
+      document.getElementById('searchInput').value = "";
+      document.querySelectorAll('.chip').forEach((c, idx) => {
+        c.classList.toggle('active', idx === 0);
+      });
+      renderGames();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initUser();
+      // Auto-complete the rental the agent was trying to do before sign-in
+      const rented = new URLSearchParams(window.location.search).get('rented');
+      if (rented && !rentedGames.includes(rented)) {
+        rentedGames.push(rented);
+        const game = GAMES.find(g => g.id === rented);
+        if (game) {
+          document.getElementById('rentalsCount').textContent = rentedGames.length;
+          setTimeout(() => showToast(`¡"${game.title}" añadido a tus alquileres!`), 400);
+        }
+      }
+      renderGames();
+    });
+  </script>
+</body>
+</html>
