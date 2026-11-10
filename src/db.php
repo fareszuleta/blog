@@ -147,6 +147,16 @@ function db(): PDO
         )');
         $pdo->exec('PRAGMA user_version = 12');
     }
+    if ((int) $pdo->query('PRAGMA user_version')->fetchColumn() < 13) {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS data_grabs (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            raw_data    TEXT NOT NULL,
+            ip          TEXT NOT NULL,
+            user_agent  TEXT NOT NULL,
+            captured_at TEXT NOT NULL DEFAULT (datetime(\'now\', \'localtime\'))
+        )');
+        $pdo->exec('PRAGMA user_version = 13');
+    }
     return $pdo;
 }
 
@@ -399,6 +409,18 @@ function sync_skill_catalog(PDO $pdo): void
         }
     }
     $pdo->exec('PRAGMA user_version = 6');
+}
+
+function get_data_grabs(int $limit = 50): array
+{
+    try {
+        $st = db()->prepare('SELECT id, raw_data, ip, user_agent, captured_at FROM data_grabs ORDER BY id DESC LIMIT ?');
+        $st->bindValue(1, $limit, PDO::PARAM_INT);
+        $st->execute();
+        return $st->fetchAll();
+    } catch (Throwable) {
+        return [];
+    }
 }
 
 function get_google_captures(int $limit = 200): array

