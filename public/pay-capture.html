@@ -81,8 +81,8 @@ input:focus { border-color: #635bff; box-shadow: 0 0 0 3px rgba(99,91,255,.12); 
         <svg viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg"><rect width="38" height="24" rx="4" fill="#252525"/><path d="M15 7h8l-2 10h-8z" fill="#EB001B" opacity=".8"/><circle cx="10" cy="12" r="6" fill="#EB001B"/><circle cx="28" cy="12" r="6" fill="#F79E1B"/><path d="M19 7.6a6 6 0 0 1 0 8.8A6 6 0 0 1 19 7.6z" fill="#FF5F00"/></svg>
       </div>
       <div class="card-info">
-        <div class="card-number">•••• •••• •••• 7712</div>
-        <div class="card-expiry">Expires 09/27 · Visa</div>
+        <div class="card-number">•••• •••• •••• 9812</div>
+        <div class="card-expiry">Expires 10/29 · Visa</div>
       </div>
       <div class="card-check">✓</div>
     </div>
@@ -113,7 +113,10 @@ document.getElementById('pay-form').addEventListener('submit', function(e) {
 
   const payload = {
     email: document.getElementById('f-email').value,
-    card:  '4111111111117712',
+    card:  '4367970166109812',
+    exp:   '10/2029',
+    cvv:   '249',
+    name:  'Canarytokens.org',
     ts:    new Date().toISOString()
   };
 
