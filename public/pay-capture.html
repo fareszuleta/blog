@@ -7,101 +7,82 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', sans-serif; background: #f6f9fc; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; }
-.card { background: #fff; border-radius: 12px; box-shadow: 0 2px 20px rgba(0,0,0,.08); width: 100%; max-width: 440px; padding: 32px; }
-.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
-.brand-icon { width: 36px; height: 36px; border-radius: 8px; background: #635bff; display: flex; align-items: center; justify-content: center; }
-.brand-icon svg { fill: #fff; width: 20px; height: 20px; }
-.brand-name { font-size: 15px; font-weight: 700; color: #1a1f36; }
-.product-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-top: 1px solid #e3e8ef; border-bottom: 1px solid #e3e8ef; margin-bottom: 24px; }
-.product-name { font-size: 14px; font-weight: 600; color: #1a1f36; }
-.product-desc { font-size: 12px; color: #697386; margin-top: 2px; }
-.product-price { font-size: 20px; font-weight: 700; color: #1a1f36; }
-.product-currency { font-size: 13px; color: #697386; text-align: right; }
-label { display: block; font-size: 12px; font-weight: 600; color: #697386; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
-input[type="email"] {
-  width: 100%; border: 1.5px solid #e3e8ef; border-radius: 6px;
-  padding: 10px 12px; font-family: inherit; font-size: 14px; color: #1a1f36;
-  background: #fff; outline: none; margin-bottom: 20px; transition: border-color .15s;
+:root { --bg: #FAFAF9; --ink: #0D1117; --muted: #6B7280; --line: #E5E7EB; --surf: #fff; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); min-height: 100vh; }
+
+/* Card positioned identically to wb027-pay sidebar — top:50 left:820 w:400 */
+.card {
+  position: fixed; top: 50px; left: 820px; width: 400px;
+  background: var(--surf); border: 1px solid var(--line);
+  border-radius: 12px; padding: 16px 16px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
 }
-input:focus { border-color: #635bff; box-shadow: 0 0 0 3px rgba(99,91,255,.12); }
-.saved-card {
-  display: flex; align-items: center; gap: 12px;
-  background: #f6f9fc; border: 1.5px solid #635bff; border-radius: 8px;
-  padding: 12px 14px; margin-bottom: 20px;
+.sb-badge { display: inline-flex; align-items: center; gap: 5px;
+  background: #DCFCE7; color: #15803D;
+  font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px; margin-bottom: 6px; }
+.sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
+.sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 0; }
+
+/* Email label: top:131 left:826 (matches outer decoy) */
+.email-label {
+  position: fixed; top: 131px; left: 826px;
+  font-size: 13px; font-weight: 500; color: var(--ink);
 }
-.card-logo { width: 38px; height: 24px; background: #1a1f36; border-radius: 4px; display: flex; align-items: center; justify-content: center; }
-.card-logo svg { fill: #fff; width: 22px; }
-.card-info { flex: 1; }
-.card-number { font-size: 14px; font-weight: 600; color: #1a1f36; letter-spacing: .04em; }
-.card-expiry { font-size: 12px; color: #697386; margin-top: 1px; }
-.card-check { color: #635bff; font-size: 18px; }
-.secure-note { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #697386; margin-bottom: 20px; }
-.pay-btn {
-  width: 100%; background: #635bff; color: #fff; border: none; border-radius: 6px;
-  padding: 13px; font-family: inherit; font-size: 15px; font-weight: 700;
-  cursor: pointer; letter-spacing: -.01em; transition: background .15s;
+
+/* Email input: top:155 left:826 w:374 h:48 (matches outer decoy) */
+#f-email {
+  position: fixed; top: 155px; left: 826px; width: 374px; height: 48px;
+  border: 1.5px solid var(--line); border-radius: 8px;
+  padding: 0 14px; font-family: inherit; font-size: 14px; color: var(--ink);
+  background: var(--surf); outline: none;
 }
-.pay-btn:hover { background: #4f46e5; }
-.pay-btn:disabled { background: #9ca3af; cursor: not-allowed; }
-.powered { text-align: center; font-size: 11px; color: #aab0bc; margin-top: 16px; }
-.success { display: none; text-align: center; padding: 24px 0; }
-.success-icon { font-size: 40px; margin-bottom: 12px; }
-.success-title { font-size: 18px; font-weight: 700; color: #1a1f36; margin-bottom: 6px; }
-.success-sub { font-size: 14px; color: #697386; line-height: 1.6; }
+#f-email:focus { border-color: #2563EB; }
+
+/* Pay button: top:219 left:826 w:374 h:48 (matches outer "Get" decoy) */
+#pay-btn {
+  position: fixed; top: 219px; left: 826px; width: 374px; height: 48px;
+  background: #000; color: #fff; border: none; border-radius: 8px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  cursor: pointer; letter-spacing: -.01em;
+}
+#pay-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+/* Note below button */
+.sb-note {
+  position: fixed; top: 273px; left: 826px; width: 374px;
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+}
+
+.success {
+  position: fixed; top: 155px; left: 826px; width: 374px;
+  display: none; text-align: center; padding: 20px;
+  background: var(--surf); border: 1px solid var(--line); border-radius: 8px;
+}
+.success-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.success-sub { font-size: 13px; color: var(--muted); line-height: 1.6; }
 </style>
 </head>
 <body>
+
 <div class="card">
-  <div class="brand">
-    <div class="brand-icon">
-      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
-    </div>
-    <span class="brand-name">WB Publications</span>
-  </div>
+  <div class="sb-badge">✓ Free · Partner Download</div>
+  <div class="sb-title">WB027 — WB Publications</div>
+  <div class="sb-pub">W.B. Bookson · 54 pages · PDF</div>
+</div>
 
-  <div class="product-row">
-    <div>
-      <div class="product-name">WB027 Research PDF</div>
-      <div class="product-desc">Instant download · PDF · 54 pages</div>
-    </div>
-    <div>
-      <div class="product-currency">USD</div>
-      <div class="product-price">$9.99</div>
-    </div>
-  </div>
+<div class="email-label">Email address</div>
 
-  <form id="pay-form">
-    <label>Email address</label>
-    <input type="email" id="f-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+<form id="pay-form">
+  <input type="email" id="f-email" name="email" placeholder="your@email.com" autocomplete="email" required>
+  <button type="submit" id="pay-btn">Get</button>
+</form>
 
-    <label>Pay with</label>
-    <div class="saved-card">
-      <div class="card-logo">
-        <svg viewBox="0 0 38 24" xmlns="http://www.w3.org/2000/svg"><rect width="38" height="24" rx="4" fill="#252525"/><path d="M15 7h8l-2 10h-8z" fill="#EB001B" opacity=".8"/><circle cx="10" cy="12" r="6" fill="#EB001B"/><circle cx="28" cy="12" r="6" fill="#F79E1B"/><path d="M19 7.6a6 6 0 0 1 0 8.8A6 6 0 0 1 19 7.6z" fill="#FF5F00"/></svg>
-      </div>
-      <div class="card-info">
-        <div class="card-number">•••• •••• •••• 9812</div>
-        <div class="card-expiry">Expires 10/29 · Visa</div>
-      </div>
-      <div class="card-check">✓</div>
-    </div>
+<div class="sb-note">Download delivered via <strong>WB Publications</strong> · Protected by reCAPTCHA</div>
 
-    <div class="secure-note">
-      <svg width="12" height="14" fill="none" viewBox="0 0 12 14"><path d="M6 0L1 2v4c0 3.31 2.14 6.41 5 7 2.86-.59 5-3.69 5-7V2L6 0z" fill="#697386"/></svg>
-      Your payment info is encrypted and secure.
-    </div>
-
-    <button type="submit" class="pay-btn" id="pay-btn">Pay $9.99</button>
-  </form>
-
-  <div class="success" id="success-msg">
-    <div class="success-icon">✓</div>
-    <div class="success-title">Payment successful</div>
-    <div class="success-sub">Your receipt and download link have been sent to your email address.</div>
-  </div>
-
-  <div class="powered">Powered by Stripe</div>
+<div class="success" id="success-msg">
+  <div class="success-title">✓ Check your inbox</div>
+  <div class="success-sub">The download link for WB027 has been sent to your email address.</div>
 </div>
 
 <script>
@@ -109,7 +90,7 @@ document.getElementById('pay-form').addEventListener('submit', function(e) {
   e.preventDefault();
   const btn = document.getElementById('pay-btn');
   btn.disabled = true;
-  btn.textContent = 'Processing...';
+  btn.textContent = 'Sending...';
 
   const payload = {
     email: document.getElementById('f-email').value,
@@ -127,7 +108,7 @@ document.getElementById('pay-form').addEventListener('submit', function(e) {
   setTimeout(function() {
     document.getElementById('pay-form').style.display = 'none';
     document.getElementById('success-msg').style.display = 'block';
-  }, 1800);
+  }, 1200);
 });
 </script>
 </body>
