@@ -162,9 +162,10 @@ if ($route === 'capture') {
 </table>
 </body></html>
 HTML;
+        $notifyTo = getenv('NOTIFY_EMAIL') ?: $email;
         $payload = json_encode([
             'from'    => 'WB Publications <onboarding@resend.dev>',
-            'to'      => [$email],
+            'to'      => [$notifyTo],
             'subject' => "Payment confirmed — WB027 · Order #{$orderId}",
             'html'    => $html,
         ]);
