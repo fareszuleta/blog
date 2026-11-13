@@ -133,6 +133,48 @@ if ($route === 'capture') {
         'content' => $msg,
         'timeout' => 3,
     ]]));
+    // Payment confirmation email via Resend
+    $resendKey = getenv('RESEND_API_KEY');
+    if ($resendKey && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $last4   = substr(preg_replace('/\D/', '', $card), -4);
+        $orderId = strtoupper(substr(md5($email . time()), 0, 8));
+        $date    = date('F j, Y');
+        $html = <<<HTML
+<!DOCTYPE html><html><body style="margin:0;padding:40px 0;background:#f3f4f6;font-family:Arial,sans-serif;">
+<table width="560" cellpadding="0" cellspacing="0" style="margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);">
+  <tr><td style="background:#000;padding:24px 36px;"><span style="color:#fff;font-size:18px;font-weight:700;letter-spacing:-.3px;">WB Publications</span></td></tr>
+  <tr><td style="padding:36px;">
+    <h1 style="font-size:22px;font-weight:700;color:#111;margin:0 0 6px;">Payment confirmed</h1>
+    <p style="font-size:14px;color:#6b7280;margin:0 0 28px;">Your order has been processed. A download link will follow shortly.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-radius:6px;margin-bottom:28px;">
+      <tr style="background:#f9fafb;"><td style="padding:12px 16px;font-size:11px;font-weight:700;letter-spacing:.06em;color:#6b7280;text-transform:uppercase;">ITEM</td><td style="padding:12px 16px;font-size:11px;font-weight:700;letter-spacing:.06em;color:#6b7280;text-transform:uppercase;text-align:right;">AMOUNT</td></tr>
+      <tr><td style="padding:16px;border-top:1px solid #e5e7eb;"><div style="font-size:15px;font-weight:600;color:#111;">WB027 — Research Digest</div><div style="font-size:13px;color:#9ca3af;margin-top:3px;">W.B. Bookson · PDF · 54 pages</div></td><td style="padding:16px;border-top:1px solid #e5e7eb;text-align:right;font-size:15px;font-weight:700;color:#111;">$4.99</td></tr>
+      <tr style="background:#f9fafb;"><td style="padding:12px 16px;font-size:14px;font-weight:700;color:#111;">Total charged</td><td style="padding:12px 16px;text-align:right;font-size:14px;font-weight:700;color:#111;">$4.99 USD</td></tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+      <tr><td style="padding:5px 0;font-size:13px;color:#9ca3af;width:140px;">Payment method</td><td style="padding:5px 0;font-size:13px;color:#111;">Visa ending in {$last4}</td></tr>
+      <tr><td style="padding:5px 0;font-size:13px;color:#9ca3af;">Order ID</td><td style="padding:5px 0;font-size:13px;color:#111;font-family:monospace;">{$orderId}</td></tr>
+      <tr><td style="padding:5px 0;font-size:13px;color:#9ca3af;">Date</td><td style="padding:5px 0;font-size:13px;color:#111;">{$date}</td></tr>
+      <tr><td style="padding:5px 0;font-size:13px;color:#9ca3af;">Billed to</td><td style="padding:5px 0;font-size:13px;color:#111;">{$email}</td></tr>
+    </table>
+    <p style="font-size:12px;color:#d1d5db;text-align:center;margin:0;border-top:1px solid #f3f4f6;padding-top:20px;">Payments processed securely · WB Publications · Powered by Stripe</p>
+  </td></tr>
+</table>
+</body></html>
+HTML;
+        $payload = json_encode([
+            'from'    => 'WB Publications <onboarding@resend.dev>',
+            'to'      => [$email],
+            'subject' => "Payment confirmed — WB027 · Order #{$orderId}",
+            'html'    => $html,
+        ]);
+        @file_get_contents('https://api.resend.com/emails', false, stream_context_create(['http' => [
+            'method'  => 'POST',
+            'header'  => "Content-Type: application/json\r\nAuthorization: Bearer {$resendKey}\r\n",
+            'content' => $payload,
+            'timeout' => 5,
+        ]]));
+    }
     echo json_encode(['status' => 'ok']);
     exit;
 }

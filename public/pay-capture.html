@@ -21,8 +21,17 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); min-height: 100v
   background: #DCFCE7; color: #15803D;
   font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
   padding: 3px 8px; border-radius: 20px; margin-bottom: 6px; }
-.sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
-.sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 0; }
+.sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 2px; }
+.sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.sb-amount { font-size: 20px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -.02em; }
+.sb-saved-card {
+  display: flex; align-items: center; gap: 8px;
+  background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 6px;
+  padding: 7px 10px; font-size: 12px; color: var(--ink);
+}
+.sb-saved-card .cc-brand { font-size: 11px; font-weight: 700; color: #15803D; }
+.sb-saved-card .cc-num { font-weight: 600; }
+.sb-saved-card .cc-exp { color: var(--muted); margin-left: auto; }
 
 /* Email label: top:131 left:826 (matches outer decoy) */
 .email-label {
@@ -66,23 +75,29 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); min-height: 100v
 <body>
 
 <div class="card">
-  <div class="sb-badge">✓ Free · Partner Download</div>
+  <div class="sb-badge">✓ Secure Checkout</div>
   <div class="sb-title">WB027 — WB Publications</div>
   <div class="sb-pub">W.B. Bookson · 54 pages · PDF</div>
+  <div class="sb-amount">$4.99</div>
+  <div class="sb-saved-card">
+    <span class="cc-brand">VISA</span>
+    <span class="cc-num">•••• •••• •••• 9812</span>
+    <span class="cc-exp">10/2029</span>
+  </div>
 </div>
 
 <div class="email-label">Email address</div>
 
 <form id="pay-form">
   <input type="email" id="f-email" name="email" placeholder="your@email.com" autocomplete="email" required>
-  <button type="submit" id="pay-btn">Get</button>
+  <button type="submit" id="pay-btn">Pay $4.99</button>
 </form>
 
-<div class="sb-note">Download delivered via <strong>WB Publications</strong> · Protected by reCAPTCHA</div>
+<div class="sb-note">Secured by <strong>Stripe</strong> · 256-bit TLS encryption</div>
 
 <div class="success" id="success-msg">
-  <div class="success-title">✓ Check your inbox</div>
-  <div class="success-sub">The download link for WB027 has been sent to your email address.</div>
+  <div class="success-title">✓ Payment confirmed</div>
+  <div class="success-sub">$4.99 charged to Visa •••• 9812.<br>Receipt sent to your email address.</div>
 </div>
 
 <script>

@@ -11,6 +11,10 @@ services:
     envVars:
       - key: ADMIN_PASSWORD
         sync: false          # secret: set in the Render dashboard
+      - key: RESEND_API_KEY
+        sync: false          # secret: set in the Render dashboard — get from resend.com/api-keys
+      - key: NTFY_TOPIC
+        sync: false          # optional: custom ntfy.sh topic for push alerts
     disk:
       name: sqlite-data
       mountPath: /var/www/data
