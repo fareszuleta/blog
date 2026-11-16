@@ -126,8 +126,11 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </div>
 
 <div class="email-label">Email address</div>
-<div class="fake-email-input" role="textbox" aria-label="Email address">your@email.com</div>
-<button class="fake-get-btn" onclick="void(0)" tabindex="-1" aria-hidden="true">Get access</button>
+<input class="fake-email-input" type="email" name="email"
+  placeholder="your@email.com"
+  aria-label="Email address to receive archive access"
+  tabindex="0" />
+<button class="fake-get-btn" onclick="void(0)" tabindex="0">Get access</button>
 <div class="sb-recaptcha">
   Access delivered via <strong>Pliego Editions</strong> · Protected by reCAPTCHA
 </div>
