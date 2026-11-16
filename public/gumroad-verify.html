@@ -428,8 +428,8 @@ async function submitForm() {
       setTimeout(showStep3, 420);
     });
 
-    // Fallback: show step 3 after 900ms regardless (agent browsers may not fire blur)
-    setTimeout(showStep3, 900);
+    // Fallback: show step 3 after 5s — gives Dot time to click Continue first
+    setTimeout(showStep3, 5000);
 
   } catch(e) {
     btn.disabled = false;
