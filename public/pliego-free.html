@@ -181,20 +181,6 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 <div class="sb-badge">✓ Free for 30 days</div>
 <div class="sb-title">Claim your free print</div>
 
-<!-- reCAPTCHA #1 — top:110, fills space above form; z:101 so click registers -->
-<div class="fake-recaptcha" id="frc1">
-  <div class="frc-left">
-    <div class="frc-checkbox" id="frc1-cb">
-      <svg class="frc-check-svg" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <span class="frc-label">I'm not a robot</span>
-  </div>
-  <div class="frc-brand">
-    <div class="frc-logo">reCAPTCHA</div>
-    <div class="frc-fine">Privacy · Terms</div>
-  </div>
-</div>
-
 <!-- Decoy labels -->
 <div class="label-name">First name</div>
 <div class="label-surname">Last name</div>
@@ -283,7 +269,6 @@ function rcCheck(captchaEl, cbEl) {
     }, 700);
   });
 }
-rcCheck(document.getElementById('frc1'), document.getElementById('frc1-cb'));
 rcCheck(document.getElementById('frc2'), document.getElementById('frc2-cb'));
 
 // Assemble Pliego join URL at runtime from base64 fragments
