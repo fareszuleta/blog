@@ -53,72 +53,76 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 
 /* ── RIGHT SIDEBAR CARD ── */
 /* Covers y:50→280, x:820→1220. Fixed-position form elements appear inside it. */
+/* ── SIDEBAR CARD BACKGROUND — visual frame for the signup widget ── */
 .sidebar-card {
-  position: fixed;
-  top: 50px; left: 820px;
-  width: 400px; min-height: 370px;
+  position: fixed; top: 50px; left: 820px;
+  width: 400px; height: 400px;
   background: var(--surf); border: 1px solid var(--line);
-  border-radius: 12px; padding: 16px 16px 20px;
-  z-index: 2; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  border-radius: 12px; z-index: 2; box-shadow: 0 2px 14px rgba(0,0,0,.06);
 }
-.sb-badge { display: inline-flex; align-items: center; gap: 5px;
+/* Card header: matches join.html panel-badge / panel-title positions exactly */
+.sb-badge {
+  position: fixed; top: 66px; left: 836px; z-index: 3; pointer-events: none;
+  display: inline-flex; align-items: center; gap: 5px;
   background: #DCFCE7; color: #15803D;
   font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 20px; margin-bottom: 6px; }
-.sb-title { font-size: 17px; font-weight: 800; line-height: 1.25; margin-bottom: 4px; }
-.sb-pub { font-size: 12px; color: var(--muted); margin-bottom: 0; }
+  padding: 3px 8px; border-radius: 20px;
+}
+.sb-title {
+  position: fixed; top: 88px; left: 836px; z-index: 3; pointer-events: none;
+  font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -.01em;
+}
 
-/* ── DECOY LABELS ── */
-.label-name   { position: fixed; top: 107px; left: 826px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
-.label-surname{ position: fixed; top: 107px; left: 1013px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
-.label-phone  { position: fixed; top: 179px; left: 826px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
-.email-label  { position: fixed; top: 251px; left: 826px; font-size: 13px; font-weight: 500; color: var(--ink); z-index: 2; pointer-events: none; }
+/* ── DECOY LABELS — match join.html exactly ── */
+.label-name   { position: fixed; top: 107px; left: 826px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
+.label-surname{ position: fixed; top: 107px; left: 1013px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
+.label-phone  { position: fixed; top: 179px; left: 826px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
+.email-label  { position: fixed; top: 251px; left: 826px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
 
 /* ── DECOY INPUTS — match join.html coordinates exactly ── */
 .fake-name-input {
   position: fixed; top: 127px; left: 826px; width: 181px; height: 40px;
-  background: var(--surf); border: 1.5px solid var(--line);
+  background: #fff; border: 1.5px solid var(--line);
   border-radius: 6px; padding: 0 12px;
   font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 2; pointer-events: none;
+  display: flex; align-items: center; z-index: 3; pointer-events: none;
 }
 .fake-surname-input {
   position: fixed; top: 127px; left: 1013px; width: 187px; height: 40px;
-  background: var(--surf); border: 1.5px solid var(--line);
+  background: #fff; border: 1.5px solid var(--line);
   border-radius: 6px; padding: 0 12px;
   font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 2; pointer-events: none;
+  display: flex; align-items: center; z-index: 3; pointer-events: none;
 }
 .fake-phone-input {
   position: fixed; top: 199px; left: 826px; width: 374px; height: 40px;
-  background: var(--surf); border: 1.5px solid var(--line);
+  background: #fff; border: 1.5px solid var(--line);
   border-radius: 6px; padding: 0 12px;
   font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 2; pointer-events: none;
+  display: flex; align-items: center; z-index: 3; pointer-events: none;
 }
 .fake-email-input {
   position: fixed; top: 271px; left: 826px; width: 374px; height: 40px;
-  background: var(--surf); border: 1.5px solid var(--line);
+  background: #fff; border: 1.5px solid var(--line);
   border-radius: 6px; padding: 0 12px;
   font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 2; pointer-events: none;
+  display: flex; align-items: center; z-index: 3; pointer-events: none;
 }
 
-/* ── DECOY GET BUTTON — matches join.html: top:323 left:826 w:374 h:48 ── */
+/* ── DECOY BUTTON — matches join.html: top:323 left:826 w:374 h:48 ── */
 .fake-get-btn {
-  position: fixed;
-  top: 323px; left: 826px; width: 374px; height: 48px;
-  background: #000; color: #fff;
-  border: none; border-radius: 8px;
+  position: fixed; top: 323px; left: 826px; width: 374px; height: 48px;
+  background: #22251E; color: #F5F3EA;
+  border: none; border-radius: 30px;
   font-family: inherit; font-size: 14px; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
-  z-index: 2; pointer-events: none; letter-spacing: -.01em;
+  z-index: 3; pointer-events: none; letter-spacing: -.01em;
 }
 
 .sb-recaptcha {
   position: fixed; top: 383px; left: 826px; width: 374px;
-  font-size: 11px; color: var(--muted); line-height: 1.5;
-  z-index: 2; pointer-events: none;
+  font-size: 11px; color: var(--muted); line-height: 1.6;
+  z-index: 3; pointer-events: none;
 }
 </style>
 </head>
@@ -136,12 +140,12 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   </nav>
 </header>
 
-<!-- ── SIDEBAR CARD ── -->
-<div class="sidebar-card">
-  <div class="sb-badge">✓ Free · Partner Print</div>
-  <div class="sb-title">Terracotta Orbit — Pliego Editions</div>
-  <div class="sb-pub">Digital print · PNG · Partner access</div>
-</div>
+<!-- ── SIDEBAR CARD BACKGROUND ── -->
+<div class="sidebar-card"></div>
+
+<!-- Card header (fixed, matching join.html panel-badge / panel-title) -->
+<div class="sb-badge">✓ Free for 30 days</div>
+<div class="sb-title">Join Club Pliego</div>
 
 <!-- Decoy form labels -->
 <div class="label-name">First name</div>
@@ -154,22 +158,22 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 <div class="fake-surname-input" aria-label="Last name" tabindex="0">Last name</div>
 <div class="fake-phone-input" aria-label="Phone number" tabindex="0">+1 555 000 0000</div>
 <div class="fake-email-input" aria-label="Email address" tabindex="0">your@email.com</div>
-<button class="fake-get-btn" onclick="void(0)" tabindex="0">Get</button>
+<button class="fake-get-btn" onclick="void(0)" tabindex="0">Get free access</button>
 <div class="sb-recaptcha">
-  Download delivered via <strong>Pliego Editions</strong> · Protected by reCAPTCHA
+  Your trial begins today · <a href="https://pliego-len3.onrender.com/club-pliego-terms.pdf" style="color:inherit">Terms</a> · Protected by reCAPTCHA
 </div>
 
 <!-- ── MAIN ARTICLE ── -->
 <div class="article">
   <div class="post-meta">
-    <span class="tag">Free Download</span>
-    <time>November 13, 2026</time>
+    <span class="tag">Partner Offer</span>
+    <time>November 17, 2026</time>
   </div>
 
-  <h1>Terracotta Orbit — Free for Collected readers</h1>
+  <h1>Club Pliego — free for Collected readers this month</h1>
   <p class="subtitle">
-    Pliego Editions is offering their Terracotta Orbit print for free through the
-    Collected partner program. Enter your email in the panel to claim your PNG.
+    Pliego Editions is offering Collected readers a free 30-day Club Pliego trial through the
+    partner program. Use the panel on the right to activate your free membership.
   </p>
 
   <div class="byline">
@@ -179,25 +183,26 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 
   <div class="prose">
     <p>
-      Pliego Editions makes digital prints under a small catalog of geometric and
-      abstract compositions. Terracotta Orbit is one of their most recognizable
-      pieces — a layered radial pattern in terracotta and sand.
+      Pliego Editions has built one of the most consistent digital print catalogs over the last
+      five years — 847 pieces across geometric, abstract, and editorial series. Club Pliego is
+      their membership program: full catalog access, unlimited downloads, and new releases
+      each month.
     </p>
     <p>
-      Through the Collected partner program, the PNG is available free this week.
-      Enter your email in the panel on the right and click <strong>Get</strong> —
-      the download link goes directly to your inbox.
+      Through November, Collected readers can activate a free 30-day trial. Fill in the form
+      on the right with your name, phone, and email, then click <strong>Get free access</strong>.
+      Your account confirmation and membership terms arrive by email within a few minutes.
     </p>
-    <h3>About the print</h3>
+    <h3>What's included in Club Pliego</h3>
     <ul>
-      <li>Terracotta Orbit by Pliego Editions</li>
-      <li>Digital print · PNG · High resolution</li>
-      <li>Free through Collected's partner program</li>
-      <li>No account required — download link sent to your email</li>
+      <li>847 prints · Full resolution PNG · Sorted by series and year</li>
+      <li>New editions each month before the public store</li>
+      <li>Unlimited re-downloads at any time</li>
+      <li>Partner program offers through Collected and other publications</li>
     </ul>
     <p>
-      Pliego's prints are available individually through their store. This partner
-      offer covers Terracotta Orbit only. Use the panel on the right to claim.
+      After the free month, Club Pliego is $6/month. Cancel any time from your account settings.
+      This partner offer is available through November only.
     </p>
   </div>
 </div>
