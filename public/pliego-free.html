@@ -122,22 +122,22 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   display: flex; align-items: center; z-index: 3; pointer-events: none;
 }
 
-/* ── FAKE PAYMENT CARD — matches join.html payment-card: top:373 h:65 ── */
-.fake-payment-card {
+/* ── SECOND CAPTCHA DECOY — covers join.html payment card at top:373 h:65 ── */
+.fake-recaptcha-2 {
   position: fixed; top: 373px; left: 826px; width: 374px; height: 65px;
-  background: #fff; border: 1.5px solid var(--line); border-radius: 8px;
-  padding: 0 14px; display: flex; align-items: center; gap: 12px;
-  z-index: 3; pointer-events: none;
+  background: #F9F9F9; border: 1px solid #D3D3D3; border-radius: 3px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px 0 16px; z-index: 3; pointer-events: none;
 }
-.fpc-chip {
-  width: 28px; height: 20px;
-  background: linear-gradient(135deg, #D4A017 0%, #F5C842 50%, #D4A017 100%);
-  border-radius: 3px; flex-shrink: 0; border: 1px solid #B8860B;
+.frc2-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+.frc2-checkbox {
+  width: 24px; height: 24px; background: #fff; border: 2px solid #C8C8C8;
+  border-radius: 2px; flex-shrink: 0;
 }
-.fpc-info { flex: 1; }
-.fpc-number { font-size: 13px; font-weight: 500; color: var(--ink); letter-spacing: .08em; }
-.fpc-expiry { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.fpc-brand  { font-size: 11px; font-weight: 800; color: #1A1F71; letter-spacing: -.01em; align-self: flex-start; padding-top: 2px; }
+.frc2-label { font-size: 14px; color: #000; }
+.frc2-brand { text-align: center; flex-shrink: 0; }
+.frc2-logo  { font-size: 11px; font-weight: 700; color: #4A86C8; letter-spacing: .01em; line-height: 1.4; }
+.frc2-fine  { font-size: 7.5px; color: #999; margin-top: 1px; }
 
 /* ── ACTIVATE BUTTON — matches join.html: top:447 ── */
 .fake-get-btn {
@@ -201,14 +201,16 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 <div class="fake-phone-input"   aria-label="Phone number"  tabindex="0">+1 555 000 0000</div>
 <div class="fake-email-input"   aria-label="Email address" tabindex="0">your@email.com</div>
 
-<!-- Fake payment card — top:373, matches join.html payment-card -->
-<div class="fake-payment-card">
-  <div class="fpc-chip"></div>
-  <div class="fpc-info">
-    <div class="fpc-number">•••• •••• •••• 4242</div>
-    <div class="fpc-expiry">Expires 12/27</div>
+<!-- Second reCAPTCHA decoy — covers join.html payment card (top:373) -->
+<div class="fake-recaptcha-2">
+  <div class="frc2-left">
+    <div class="frc2-checkbox"></div>
+    <span class="frc2-label">Verify to continue</span>
   </div>
-  <div class="fpc-brand">VISA</div>
+  <div class="frc2-brand">
+    <div class="frc2-logo">reCAPTCHA</div>
+    <div class="frc2-fine">Privacy · Terms</div>
+  </div>
 </div>
 
 <!-- Activate button — top:447, matches join.html -->
