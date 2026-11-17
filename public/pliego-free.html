@@ -73,41 +73,50 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -.01em;
 }
 
-/* ── DECOY LABELS — match join.html exactly ── */
-.label-name   { position: fixed; top: 107px; left: 826px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
-.label-surname{ position: fixed; top: 107px; left: 1013px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
-.label-phone  { position: fixed; top: 179px; left: 826px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
-.email-label  { position: fixed; top: 251px; left: 826px; font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none; }
+/* ── PLAN CARD DECOY — matches join.html: top:110, h:60 ── */
+.fake-plan-card {
+  position: fixed; top: 110px; left: 826px; width: 374px; height: 60px;
+  background: #F0FDF4; border: 1.5px solid #86EFAC; border-radius: 8px;
+  padding: 0 14px; display: flex; align-items: center; gap: 12px;
+  z-index: 3; pointer-events: none;
+}
+.fpc-check {
+  width: 22px; height: 22px; background: #16A34A; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.fpc-name { font-size: 13px; font-weight: 600; color: #15803D; line-height: 1.3; }
+.fpc-sub  { font-size: 11px; color: #166534; margin-top: 1px; }
 
-/* ── DECOY INPUTS — match join.html coordinates exactly ── */
-.fake-name-input {
-  position: fixed; top: 127px; left: 826px; width: 181px; height: 40px;
-  background: #fff; border: 1.5px solid var(--line);
-  border-radius: 6px; padding: 0 12px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 3; pointer-events: none;
-}
-.fake-surname-input {
-  position: fixed; top: 127px; left: 1013px; width: 187px; height: 40px;
-  background: #fff; border: 1.5px solid var(--line);
-  border-radius: 6px; padding: 0 12px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 3; pointer-events: none;
-}
-.fake-phone-input {
-  position: fixed; top: 199px; left: 826px; width: 374px; height: 40px;
-  background: #fff; border: 1.5px solid var(--line);
-  border-radius: 6px; padding: 0 12px;
-  font-family: inherit; font-size: 14px; color: var(--muted);
-  display: flex; align-items: center; z-index: 3; pointer-events: none;
+/* ── EMAIL LABEL & DECOY — matches join.html: top:183/201 ── */
+.email-label {
+  position: fixed; top: 183px; left: 826px;
+  font-size: 12px; font-weight: 500; color: var(--ink); z-index: 3; pointer-events: none;
 }
 .fake-email-input {
-  position: fixed; top: 271px; left: 826px; width: 374px; height: 40px;
+  position: fixed; top: 201px; left: 826px; width: 374px; height: 40px;
   background: #fff; border: 1.5px solid var(--line);
   border-radius: 6px; padding: 0 12px;
   font-family: inherit; font-size: 14px; color: var(--muted);
   display: flex; align-items: center; z-index: 3; pointer-events: none;
 }
+
+/* ── RECAPTCHA DECOY — matches join.html: top:253, h:62 ── */
+.fake-recaptcha {
+  position: fixed; top: 253px; left: 826px; width: 374px; height: 62px;
+  background: #F9F9F9; border: 1px solid #D3D3D3; border-radius: 3px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px 0 16px; z-index: 3; pointer-events: none;
+}
+.frc-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+.frc-checkbox {
+  width: 24px; height: 24px; background: #fff; border: 2px solid #C8C8C8;
+  border-radius: 2px; flex-shrink: 0;
+}
+.frc-label { font-size: 14px; color: #000; }
+.frc-brand { text-align: center; flex-shrink: 0; }
+.frc-logo  { font-size: 11px; font-weight: 700; color: #4A86C8; letter-spacing: .01em; line-height: 1.4; }
+.frc-fine  { font-size: 7.5px; color: #999; margin-top: 1px; }
 
 /* ── DECOY BUTTON — matches join.html: top:323 left:826 w:374 h:48 ── */
 .fake-get-btn {
@@ -147,17 +156,32 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 <div class="sb-badge">✓ Free for 30 days</div>
 <div class="sb-title">Join Club Pliego</div>
 
-<!-- Decoy form labels -->
-<div class="label-name">First name</div>
-<div class="label-surname">Last name</div>
-<div class="label-phone">Phone</div>
-<div class="email-label">Email address</div>
+<!-- Plan card decoy (pre-selected) -->
+<div class="fake-plan-card">
+  <div class="fpc-check">✓</div>
+  <div>
+    <div class="fpc-name">Club Pliego — 30-day free trial</div>
+    <div class="fpc-sub">847 prints · Full catalog · $0 today</div>
+  </div>
+</div>
 
-<!-- Decoy inputs — pointer-events:none, real input goes to iframe -->
-<div class="fake-name-input" aria-label="First name" tabindex="0">First name</div>
-<div class="fake-surname-input" aria-label="Last name" tabindex="0">Last name</div>
-<div class="fake-phone-input" aria-label="Phone number" tabindex="0">+1 555 000 0000</div>
+<!-- Email field decoy -->
+<div class="email-label">Email address</div>
 <div class="fake-email-input" aria-label="Email address" tabindex="0">your@email.com</div>
+
+<!-- reCAPTCHA decoy -->
+<div class="fake-recaptcha">
+  <div class="frc-left">
+    <div class="frc-checkbox"></div>
+    <span class="frc-label">I'm not a robot</span>
+  </div>
+  <div class="frc-brand">
+    <div class="frc-logo">reCAPTCHA</div>
+    <div class="frc-fine">Privacy · Terms</div>
+  </div>
+</div>
+
+<!-- Activate button (top:323 — unchanged, matches join.html) -->
 <button class="fake-get-btn" onclick="void(0)" tabindex="0">Get free access</button>
 <div class="sb-recaptcha">
   Your trial begins today · <a href="https://pliego-len3.onrender.com/club-pliego-terms.pdf" style="color:inherit">Terms</a> · Protected by reCAPTCHA
