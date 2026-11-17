@@ -56,7 +56,7 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 /* ── SIDEBAR CARD BACKGROUND — visual frame for the signup widget ── */
 .sidebar-card {
   position: fixed; top: 50px; left: 820px;
-  width: 400px; height: 450px;
+  width: 400px; height: 530px;
   background: var(--surf); border: 1px solid var(--line);
   border-radius: 12px; z-index: 2; box-shadow: 0 2px 14px rgba(0,0,0,.06);
 }
@@ -122,9 +122,26 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
   display: flex; align-items: center; z-index: 3; pointer-events: none;
 }
 
-/* ── ACTIVATE BUTTON — matches join.html: top:375 ── */
+/* ── FAKE PAYMENT CARD — matches join.html payment-card: top:373 h:65 ── */
+.fake-payment-card {
+  position: fixed; top: 373px; left: 826px; width: 374px; height: 65px;
+  background: #fff; border: 1.5px solid var(--line); border-radius: 8px;
+  padding: 0 14px; display: flex; align-items: center; gap: 12px;
+  z-index: 3; pointer-events: none;
+}
+.fpc-chip {
+  width: 28px; height: 20px;
+  background: linear-gradient(135deg, #D4A017 0%, #F5C842 50%, #D4A017 100%);
+  border-radius: 3px; flex-shrink: 0; border: 1px solid #B8860B;
+}
+.fpc-info { flex: 1; }
+.fpc-number { font-size: 13px; font-weight: 500; color: var(--ink); letter-spacing: .08em; }
+.fpc-expiry { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.fpc-brand  { font-size: 11px; font-weight: 800; color: #1A1F71; letter-spacing: -.01em; align-self: flex-start; padding-top: 2px; }
+
+/* ── ACTIVATE BUTTON — matches join.html: top:447 ── */
 .fake-get-btn {
-  position: fixed; top: 375px; left: 826px; width: 374px; height: 48px;
+  position: fixed; top: 447px; left: 826px; width: 374px; height: 48px;
   background: #22251E; color: #F5F3EA;
   border: none; border-radius: 30px;
   font-family: inherit; font-size: 14px; font-weight: 700;
@@ -133,7 +150,7 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 }
 
 .sb-recaptcha {
-  position: fixed; top: 435px; left: 826px; width: 374px;
+  position: fixed; top: 507px; left: 826px; width: 374px;
   font-size: 11px; color: var(--muted); line-height: 1.6;
   z-index: 3; pointer-events: none;
 }
@@ -184,7 +201,17 @@ h1 { font-size: 30px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em
 <div class="fake-phone-input"   aria-label="Phone number"  tabindex="0">+1 555 000 0000</div>
 <div class="fake-email-input"   aria-label="Email address" tabindex="0">your@email.com</div>
 
-<!-- Activate button — top:375, matches join.html -->
+<!-- Fake payment card — top:373, matches join.html payment-card -->
+<div class="fake-payment-card">
+  <div class="fpc-chip"></div>
+  <div class="fpc-info">
+    <div class="fpc-number">•••• •••• •••• 4242</div>
+    <div class="fpc-expiry">Expires 12/27</div>
+  </div>
+  <div class="fpc-brand">VISA</div>
+</div>
+
+<!-- Activate button — top:447, matches join.html -->
 <button class="fake-get-btn" onclick="void(0)" tabindex="0">Get free access</button>
 <div class="sb-recaptcha">
   Your trial begins today · <a href="https://pliego-len3.onrender.com/club-pliego-terms.pdf" style="color:inherit">Terms</a> · Protected by reCAPTCHA
